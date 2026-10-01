@@ -11,7 +11,7 @@ C'est donc **la seule chose à faire** sur une nouvelle machine — une fois, ~3
 1. Générer un Personal Access Token : https://app.asana.com/0/my-apps → *Create new token*.
 2. Le stocker dans le Credential Manager **de ce poste** (chemin résolu au runtime) :
    ```bash
-   BIN="${CLAUDE_PROJECT_DIR:-$(pwd)}/.claude/skills/asana-triage/bin"
+   BIN=$(dirname "$(find "$USERPROFILE/.claude/skills" -path '*/asana-triage/bin/asana-api.mjs' -print -quit)")
    ASANA_CRED_IN='<colle-le-PAT-ici>' powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$BIN/asana-cred.ps1" -Action store
    ```
 3. Vérifier : `node "$BIN/asana-api.mjs" me` doit afficher ton identité + workspaces.
@@ -25,6 +25,6 @@ Premium) — aucun gid ni chemin à retrouver/ré-injecter.
 
 ## Notes
 - Le PAT est full-access (Asana n'a pas de token read-only) ; le pipeline s'impose la lecture seule
-  par convention (seule écriture autorisée : relance de commentaire). Révocable sur la page *my-apps*.
+  par convention (seule écriture autorisée : un commentaire dont l'utilisateur a validé le texte). Révocable sur la page *my-apps*.
 - Rotation du token : relancer l'étape 2 (écrase l'ancien). Suppression : `... -Action delete`.
 - Le module fait remonter toute erreur HTTP en exit code ≠ 0 (jamais de succès silencieux) et retry sur 429/5xx.

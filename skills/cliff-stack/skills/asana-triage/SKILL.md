@@ -9,8 +9,8 @@ description: >-
   par correction, max 5 en parallèle) avec validation adversariale et test Playwright réel si pas sûr
   à 100 %. À utiliser quand l'utilisateur demande de « voir / lister / traiter / triager mes tickets
   Asana », « qu'est-ce qui m'est assigné », « analyse mes tickets », ou veut démarrer les correctifs
-  de ses tickets. Le pipeline lit en Asana et peut poster une relance de commentaire sur un ticket
-  incompris ; il ne corrige le code QUE sur go explicite.
+  de ses tickets, ou donne l'URL/le gid d'UN ticket à analyser. Le pipeline lit en Asana et ne poste
+  un commentaire qu'après validation du texte par l'utilisateur ; il ne corrige le code QUE sur go explicite.
 ---
 
 # Asana triage
@@ -21,8 +21,10 @@ Pipeline : **détecter → comprendre → router vers le projet → proposer →
 
 ## 0. Connexion & découverte
 ```bash
-BIN="$USERPROFILE/.claude/skills/asana-triage/bin"   # skill GLOBAL, $USERPROFILE résolu par poste
-API="$BIN/asana-api.mjs"
+# Chemin découvert à l'exécution (le skill vit dans un plugin, son emplacement n'est pas fixe)
+API=$(find "$USERPROFILE/.claude/skills" -path '*/asana-triage/bin/asana-api.mjs' -print -quit 2>/dev/null)
+[ -n "$API" ] || { echo "ERREUR: module asana-api.mjs introuvable sous ~/.claude/skills"; exit 1; }
+BIN=$(dirname "$API")
 node "$API" me            # -> identité + workspaces (aucun gid supposé)
 ```
 **Premier lancement sur un nouveau poste** (seule étape manuelle, le secret ne peut pas être dans git) :
@@ -33,6 +35,9 @@ ASANA_CRED_IN='<pat-collé-par-l-utilisateur>' powershell.exe -NoProfile -Execut
 ```
 Le PAT Asana est full-access (pas de read-only) ; stocké chiffré (vault utilisateur Windows), jamais commité.
 Tout le reste (skill, module, agent) est versionné : aucun élément à retrouver/ré-injecter à part ce collage unique.
+
+## Entrée « un seul ticket » (URL ou gid fourni)
+Si l'utilisateur donne une URL Asana ou un gid, **ne pas lister** les tickets : extraire le gid (dernier segment numérique de l'URL, ex. `…/task/<gid>`) et passer directement à l'étape 2 pour ce seul ticket.
 
 ## 1. Détecter (assignés non terminés, tous workspaces, paginé)
 ```bash
@@ -49,12 +54,14 @@ Pour chaque ticket, déléguer à l'agent **`asana-ticket-analyzer`** (gid + nom
 
 Agréger en **rapport** : un bloc par ticket — titre/statut, problématique reformulée, **dossier projet local prouvé**, fichiers suspects, début de correctif, **statut COMPRIS / PARTIEL / INCOMPRIS**.
 
-## 3. Tickets incompris → relance autorisée
-Pour un ticket **INCOMPRIS** ou **PARTIEL faute d'info** (URL/symptôme manquants), poster une relance ciblée (signée au nom de l'utilisateur, réversible). Le texte n'est pas un secret ; le token reste interne au module :
+## 3. Commentaires Asana (relance, réponse) → toujours validés avant envoi
+Tout commentaire part au nom de l'utilisateur et est lu par le client : **proposer le texte, attendre son accord explicite, puis poster**. Jamais d'envoi direct, y compris pour une relance de ticket **INCOMPRIS** ou **PARTIEL faute d'info**.
+- Ton : court, non technique, au but (cause en une phrase, état actuel, action restante). Pas de jargon (cache, chiffrement, base64), pas de pavé.
+- Ne dire « en ligne » que si le correctif est réellement déployé.
 ```bash
-node "$API" comment <gid> "Salut, pour avancer il me manque : 1) l'URL exacte, 2) le symptôme précis, 3) le navigateur. Merci."
+node "$API" comment <gid> "<texte validé par l'utilisateur>"
 ```
-Montrer le texte posté à l'utilisateur ; story supprimable via `DELETE /stories/{gid}`.
+Story supprimable via `DELETE /stories/{gid}`.
 
 ## 4. Présenter + GATE « go »
 Présenter le rapport. **Ne jamais corriger sans validation explicite.** Demander à l'utilisateur lesquels lancer (il peut n'en vouloir qu'une partie). Les tickets PARTIEL/INCOMPRIS sans piste sûre restent en attente d'info.
@@ -72,6 +79,6 @@ Pour chaque correction validée, déléguer à un agent qui corrige **dans le bo
 - Ne déclarer « résolu » qu'après validation par signal sémantique DIRECT (l'élément réel ciblé), jamais par proxy.
 
 ## Garde-fous
-- Lecture Asana libre ; **écriture Asana** limitée à la relance de commentaire ; **écriture code** seulement après go.
+- Lecture Asana libre ; **écriture Asana** limitée aux commentaires validés par l'utilisateur (étape 3) ; **écriture code** seulement après go.
 - Token jamais en clair (lu en interne par le module, jamais en argv/historique).
 - Échouer visiblement : ne jamais rapporter un succès si une étape a été sautée ou un workspace ignoré en silence.
