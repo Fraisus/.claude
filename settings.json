@@ -60,10 +60,12 @@
       "~/.claude"
     ]
   },
+  "model": "opus[1m]",
   "enableAllProjectMcpServers": true,
   "enabledPlugins": {},
   "language": "french",
   "effortLevel": "high",
+  "agentPushNotifEnabled": true,
   "autoMode": {
     "environment": [
       "$defaults",
@@ -75,6 +77,5 @@
       "Source control: dépôts git locaux, sans remote pour la plupart"
     ]
   },
-  "agentPushNotifEnabled": true,
-  "model": "opus[1m]"
+  "switchModelsOnFlag": false
 }
