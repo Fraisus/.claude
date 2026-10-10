@@ -11,7 +11,7 @@ allowed-tools:
 
 > **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.
 
-> **Project context**: when `context.mjs` reports `NO_PRODUCT_MD` but the project already documents its product and UI rules (CLAUDE.md, docs), use them as PRODUCT.md/DESIGN.md and skip `init`. Write PRODUCT.md, DESIGN.md or `.impeccable/` only where the project allows it; `context.mjs` reads both files from the first of the project root, `.agents/context/` and `docs/` that holds either one, so keep them together. For motion, the dedicated motion skills (`animate`, `review-animations`, `design-motion-principles`) are the reference when available.
+> **Project context**: when `context.mjs` reports `NO_PRODUCT_MD` but the project already documents its product and UI rules (CLAUDE.md, docs), use them as PRODUCT.md/DESIGN.md and skip `init`. Write PRODUCT.md, DESIGN.md or `.impeccable/` only where the project allows it; `context.mjs` reads both files from the first of the project root, `.agents/context/` and `docs/` that holds either one, so keep them together. For motion, the dedicated motion skills (`animate`, `review-animations`) are the reference when available.
 
 > **Path convention**: `<SKILL_DIR>` in every command below (here and in `reference/*.md`) is `${CLAUDE_SKILL_DIR}`, the directory of this SKILL.md inside the global plugin, never the project's `.claude/`. Substitute it before running; never execute the literal placeholder.
 

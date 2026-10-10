@@ -4,34 +4,75 @@
     "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
     "license": "MIT"
   },
-  "audit": "2026-10-10: markdown only, no script in the repository; read before adoption.",
+  "audit": "2026-10-10: markdown only, no script in the repository; read before adoption. 2026-10-10: break-ui and mobile-native read in full, markdown only, no network or command beyond the dev server and device debugging they describe.",
   "skills": [
     {
       "skill": "animate",
-      "path": "skills/animate",
-      "transforms": [
-        {
-          "op": "frontmatterAppend",
-          "files": ["SKILL.md"],
-          "field": "description",
-          "text": " For playful or polish-first registers (kids, portfolio, marketing) weighted across several designers, or a motion audit report, use design-motion-principles."
-        }
-      ]
+      "path": "skills/animate"
     },
-    { "skill": "review-animations", "path": "skills/review-animations" },
+    {
+      "skill": "review-animations",
+      "path": "skills/review-animations"
+    },
     {
       "skill": "improve-animations",
-      "path": "skills/improve-animations",
+      "path": "skills/improve-animations"
+    },
+    {
+      "skill": "find-animation-opportunities",
+      "path": "skills/find-animation-opportunities"
+    },
+    {
+      "skill": "animation-vocabulary",
+      "path": "skills/animation-vocabulary"
+    },
+    {
+      "skill": "break-ui",
+      "path": "skills/break-ui",
       "transforms": [
         {
-          "op": "frontmatterAppend",
-          "files": ["SKILL.md"],
-          "field": "description",
-          "text": " For a single-pass review weighted by project context with an HTML report, use design-motion-principles."
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "For visual design critique use emil-design-eng;",
+          "replacement": "For visual design critique use design-auditor or impeccable;",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "It does not redesign the component \\(that's `prototype`\\), critique its taste \\(that's `emil-design-eng`\\)",
+          "replacement": "It does not redesign the component or critique its taste (that's `impeccable`)",
+          "min": 1
         }
       ]
     },
-    { "skill": "find-animation-opportunities", "path": "skills/find-animation-opportunities" },
-    { "skill": "animation-vocabulary", "path": "skills/animation-vocabulary" }
+    {
+      "skill": "mobile-native",
+      "path": "skills/mobile-native",
+      "transforms": [
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "; for React Native use animate-expo\\.",
+          "replacement": ".",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "or build for React Native \\(that's `animate-expo`\\)",
+          "replacement": "or build for React Native",
+          "min": 1
+        }
+      ]
+    }
   ]
 }

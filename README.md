@@ -74,8 +74,7 @@ versionnement.
 
 ### Skills tiers (vendor)
 
-Un skill repris d'un dépôt tiers (aujourd'hui `impeccable`, `design-motion-principles`
-et les skills de mouvement d'Emil Kowalski) n'est jamais retouché à la main : son dossier
+Un skill repris d'un dépôt tiers (aujourd'hui `impeccable` et une partie des skills d'Emil Kowalski) n'est jamais retouché à la main : son dossier
 sous `skills/` est une sortie de build. Chaque dépôt amont a son manifeste
 `vendor/<source>/vendor.json` : dépôt git, commit complet épinglé, puis la liste des
 skills qu'on en tire (sous-dossier, transformations maison : remplacement par motif,

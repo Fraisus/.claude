@@ -1,6 +1,6 @@
 ---
 name: improve-animations
-description: Survey a codebase's animation and motion code as a senior motion advisor, then produce a prioritized audit and self-contained implementation plans for other agents (or cheaper models) to execute. Read-only on source code — it plans improvements, it does not apply them. Use when the user asks to "improve the animations", "audit the motion", "make this app feel better", or wants a roadmap of animation fixes rather than a review of a single diff. For a single-pass review weighted by project context with an HTML report, use design-motion-principles.
+description: Survey a codebase's animation and motion code as a senior motion advisor, then produce a prioritized audit and self-contained implementation plans for other agents (or cheaper models) to execute. Read-only on source code — it plans improvements, it does not apply them. Use when the user asks to "improve the animations", "audit the motion", "make this app feel better", or wants a roadmap of animation fixes rather than a review of a single diff.
 ---
 
 > **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.

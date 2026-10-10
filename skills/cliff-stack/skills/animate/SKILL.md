@@ -1,6 +1,6 @@
 ---
 name: animate
-description: Build an animation from scratch, making the decisions in the order that determines whether it feels right — should it animate at all, what purpose, which tool, which properties, which curve and duration, how it interrupts, how it exits. Writes the implementation. Use when asked to animate something, add motion, make a component feel alive, or build a transition. For critiquing existing motion use review-animations; for auditing a whole codebase use improve-animations. For playful or polish-first registers (kids, portfolio, marketing) weighted across several designers, or a motion audit report, use design-motion-principles.
+description: Build an animation from scratch, making the decisions in the order that determines whether it feels right — should it animate at all, what purpose, which tool, which properties, which curve and duration, how it interrupts, how it exits. Writes the implementation. Use when asked to animate something, add motion, make a component feel alive, or build a transition. For critiquing existing motion use review-animations; for auditing a whole codebase use improve-animations.
 ---
 
 > **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.
