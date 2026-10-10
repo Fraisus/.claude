@@ -1,0 +1,37 @@
+{
+  "source": {
+    "git": "https://github.com/emilkowalski/skills.git",
+    "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+    "license": "MIT"
+  },
+  "audit": "2026-10-10: markdown only, no script in the repository; read before adoption.",
+  "skills": [
+    {
+      "skill": "animate",
+      "path": "skills/animate",
+      "transforms": [
+        {
+          "op": "frontmatterAppend",
+          "files": ["SKILL.md"],
+          "field": "description",
+          "text": " For playful or polish-first registers (kids, portfolio, marketing) weighted across several designers, or a motion audit report, use design-motion-principles."
+        }
+      ]
+    },
+    { "skill": "review-animations", "path": "skills/review-animations" },
+    {
+      "skill": "improve-animations",
+      "path": "skills/improve-animations",
+      "transforms": [
+        {
+          "op": "frontmatterAppend",
+          "files": ["SKILL.md"],
+          "field": "description",
+          "text": " For a single-pass review weighted by project context with an HTML report, use design-motion-principles."
+        }
+      ]
+    },
+    { "skill": "find-animation-opportunities", "path": "skills/find-animation-opportunities" },
+    { "skill": "animation-vocabulary", "path": "skills/animation-vocabulary" }
+  ]
+}

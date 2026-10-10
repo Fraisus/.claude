@@ -62,7 +62,8 @@ complet développé directement dans le dépôt (pas de dépôt séparé, pas de
         ├── hooks/
         │   ├── hooks.json       # Câblage des hooks (source de vérité)
         │   └── scripts/         # Scripts des hooks (guards, PHPCS, sons, timer)
-        ├── scripts/             # Utilitaires d'administration
+        ├── scripts/             # Utilitaires d'administration (dont vendor-sync.ps1)
+        ├── vendor/              # Skills tiers : manifeste épinglé + surcouches maison
         ├── sounds/              # Sons des notifications
         └── phpcs-wp-native.xml  # Ruleset PHPCS WordPress
 ```
@@ -70,6 +71,30 @@ complet développé directement dans le dépôt (pas de dépôt séparé, pas de
 **Convention** : tout nouveau skill, agent ou hook se crée dans `skills/cliff-stack/`,
 jamais à la racine de `~/.claude`, afin de rester dans le périmètre du plugin et du
 versionnement.
+
+### Skills tiers (vendor)
+
+Un skill repris d'un dépôt tiers (aujourd'hui `impeccable`, `design-motion-principles`
+et les skills de mouvement d'Emil Kowalski) n'est jamais retouché à la main : son dossier
+sous `skills/` est une sortie de build. Chaque dépôt amont a son manifeste
+`vendor/<source>/vendor.json` : dépôt git, commit complet épinglé, puis la liste des
+skills qu'on en tire (sous-dossier, transformations maison : remplacement par motif,
+texte ajouté, complément de description, correctif `.patch`). `vendor/_shared/` porte
+les textes et les transformations communs à tous les skills tiers (priorité des règles
+du projet, convention de chemins).
+
+```powershell
+skills/cliff-stack/scripts/vendor-sync.ps1            # reconstruit et installe tout
+skills/cliff-stack/scripts/vendor-sync.ps1 -Check     # écart entre build et installé (exit 1)
+skills/cliff-stack/scripts/vendor-sync.ps1 -Skill impeccable -Commit <sha complet> -Out <dossier>
+                                                      # essai d'une autre version, sans installer
+```
+
+Chaque transformation doit agir, sinon le build s'arrête en nommant celle qui a échoué :
+une version amont qui change de structure ne passe jamais en silence. Monter de version,
+c'est auditer le build d'essai, puis changer `commit` (et au besoin les transformations)
+dans le manifeste et relancer. Ajouter un skill tiers, c'est ajouter un dossier dans
+`vendor/`. Seul prérequis : git (déjà requis par Claude Code sous Windows).
 
 ## Modèle de sécurité
 

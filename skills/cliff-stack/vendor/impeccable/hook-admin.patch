@@ -1,0 +1,52 @@
+diff --git a/scripts/hook-admin.mjs b/scripts/hook-admin.mjs
+index 4a80e33..f64a7c6 100644
+--- a/scripts/hook-admin.mjs
++++ b/scripts/hook-admin.mjs
+@@ -21,6 +21,7 @@
+ 
+ import fs from 'node:fs';
+ import path from 'node:path';
++import { fileURLToPath } from 'node:url';
+ 
+ import {
+   getConfigPath,
+@@ -34,6 +35,12 @@ import {
+   normalizeIgnoreValueEntries,
+ } from './hook-lib.mjs';
+ 
++// This skill lives in a global plugin folder, not inside the project's .claude
++// directory: resolve its location from this file, never from cwd. Forward
++// slashes keep the written command valid JSON and marker-matchable.
++const SKILL_DIR = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
++const SKILL_HOOK_SCRIPT = path.join(SKILL_DIR, 'scripts', 'hook.mjs').replace(/\\/g, '/');
++
+ const ACTIONS = new Set(['status', 'on', 'off', 'ignore-rule', 'ignore-file', 'ignore-value', 'reset']);
+ const IMPECCABLE_HOOK_COMMAND_MARKERS = [
+   'skills/impeccable/scripts/hook-probe.mjs',
+@@ -48,7 +55,7 @@ const STATUS_MESSAGE = 'Checking UI changes';
+ const HOOK_MANIFEST_TARGETS = [
+   {
+     provider: '.claude',
+-    skillRel: '.claude/skills/impeccable',
++    skillDir: SKILL_DIR,
+     destRel: '.claude/settings.local.json',
+     sharedDestRel: '.claude/settings.json',
+     manifest: () => ({
+@@ -60,7 +67,7 @@ const HOOK_MANIFEST_TARGETS = [
+             hooks: [
+               {
+                 type: 'command',
+-                command: 'node "${CLAUDE_PROJECT_DIR}/.claude/skills/impeccable/scripts/hook.mjs"',
++                command: `node "${SKILL_HOOK_SCRIPT}"`,
+                 timeout: TIMEOUT_SECONDS,
+                 statusMessage: STATUS_MESSAGE,
+               },
+@@ -331,7 +338,7 @@ function setEnabled(cwd, value) {
+ function repairHookManifests(cwd) {
+   const result = { written: [], already: [], backups: [] };
+   for (const target of HOOK_MANIFEST_TARGETS) {
+-    if (!fs.existsSync(path.join(cwd, target.skillRel))) continue;
++    if (!fs.existsSync(target.skillDir || path.join(cwd, target.skillRel))) continue;
+     const dest = path.join(cwd, target.destRel);
+     const sharedDest = target.sharedDestRel ? path.join(cwd, target.sharedDestRel) : null;
+ 

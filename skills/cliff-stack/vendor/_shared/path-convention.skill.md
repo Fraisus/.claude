@@ -1,0 +1,1 @@
+> **Path convention**: `<SKILL_DIR>` in every command below (here and in `reference/*.md`) is `${CLAUDE_SKILL_DIR}`, the directory of this SKILL.md inside the global plugin, never the project's `.claude/`. Substitute it before running; never execute the literal placeholder.

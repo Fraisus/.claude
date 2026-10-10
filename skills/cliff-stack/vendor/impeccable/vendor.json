@@ -1,0 +1,45 @@
+{
+  "source": {
+    "git": "https://github.com/pbakaus/impeccable.git",
+    "commit": "68a15b6be45b8080e0b8eea98069e8555c0b3b25",
+    "version": "3.7.1",
+    "license": "Apache-2.0"
+  },
+  "audit": "2026-06-21, scripts read before adoption: no network except the update check, disabled by IMPECCABLE_NO_UPDATE_CHECK=1 in settings.json; live mode talks to localhost only. 2026-10-10: live manual-edit commit spawns claude --permission-mode bypassPermissions or codex without sandbox when IMPECCABLE_LIVE_COPY_AGENT is auto; settings.json pins it to chat. v4.5.2 not adopted: default network to impeccable.style (version, roll with no opt-out, choice ping), engine binary verified only by a same-origin .sha256, no provenance attestation.",
+  "skills": [
+    {
+      "skill": "impeccable",
+      "path": ".claude/skills/impeccable",
+      "transforms": [
+        {
+          "op": "replace",
+          "files": ["SKILL.md", "reference/*.md"],
+          "pattern": "node \\.claude/skills/{skill}/scripts/(\\S+?\\.m?js)",
+          "replacement": "node \"<SKILL_DIR>/scripts/$1\"",
+          "min": 35
+        },
+        {
+          "op": "prepend",
+          "files": ["reference/*.md"],
+          "when": "<SKILL_DIR>",
+          "textFile": "_shared/path-convention.reference.md"
+        },
+        {
+          "op": "afterFrontmatter",
+          "files": ["SKILL.md"],
+          "textFile": ["impeccable/context.md", "_shared/path-convention.skill.md"]
+        },
+        {
+          "op": "frontmatterAppend",
+          "files": ["SKILL.md"],
+          "field": "description",
+          "text": " Not for formal accessibility/GDPR/dark-pattern audit reports — use design-auditor."
+        },
+        {
+          "op": "patch",
+          "file": "impeccable/hook-admin.patch"
+        }
+      ]
+    }
+  ]
+}

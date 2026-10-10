@@ -1,0 +1,1 @@
+> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.

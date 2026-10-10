@@ -1,0 +1,9 @@
+{
+  "transforms": [
+    {
+      "op": "afterFrontmatter",
+      "files": ["SKILL.md"],
+      "textFile": "_shared/precedence.md"
+    }
+  ]
+}
