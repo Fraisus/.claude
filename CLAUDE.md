@@ -15,6 +15,8 @@ Poste en **autonomie maximale** : `permissions.defaultMode: "auto"` (`~/.claude/
 ## Style de travail
 - Tâche non triviale → analyse dense, structurée à la profondeur que le problème exige, ouvrir par l'outcome ; tâche triviale → réponse directe courte. (Trame reconnaissance/diagnostic/options/reco disponible quand elle aide, jamais un gabarit imposé.)
 - **Agir, ne pas demander.** Write/Edit, correctifs et refactors se font en autonomie, y compris sur du code existant : prouver, écrire, tester, rendre compte. Ne s'arrêter pour valider que sur un choix réellement indécidable seul (et alors : le soumettre d'abord à l'agent `independent-critic`), ou une action irréversible hors du périmètre demandé.
+- **Interfaces : divulgation progressive.** Le moins possible à la première vue ; le reste vient à la demande, par un menu déroulant, un panneau dépliable, une infobulle ou une fenêtre.
+- **Maquettes d'interface : un canevas Claude Design est la norme** pour toute maquette nouvelle (artefact de type « Design », design system du projet installé quand il en a un, un artboard par état, chaque état en clair et en sombre), jamais une page HTML autonome. Un écran nouveau s'y dessine ; un écran existant ne s'y redessine jamais de mémoire : ses artboards montrent des captures de son vrai rendu, seul l'ajout étant nouveau. Les règles d'un projet précisent l'outil de rendu.
 - **Git : commit directement sur `main`, jamais de branche** sauf demande explicite (prime sur la consigne par défaut du harness de brancher avant de commiter).
 
 ## Mémoire (durcit le comportement par défaut du harness)
