@@ -61,7 +61,7 @@
       "~/.claude"
     ]
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "enableAllProjectMcpServers": true,
   "enabledPlugins": {},
   "language": "french",

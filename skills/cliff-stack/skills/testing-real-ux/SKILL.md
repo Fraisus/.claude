@@ -10,6 +10,9 @@ But : prouver qu'une fonction marche **pour un utilisateur**, dans l'application
 ## Lancer un parcours
 Run `node <ce skill>/scripts/ux.mjs <parcours.mjs> [--projet <dir>]` depuis le projet. Le script lit l'adaptateur, ouvre l'application, se branche, joue le parcours, rend un rapport JSON (étapes, captures de chaque page, trace) et code 0 seulement si tout passe. Il ne télécharge rien : Playwright est pris dans le projet, dans `PLAYWRIGHT` ou dans le cache de npx ; un navigateur déjà installé sert de repli. Ouvrir la trace : `npx playwright show-trace <trace.zip>`.
 
+## En vérification de fond (niveau 4, silencieux)
+Quand un agent de fond vérifie un lot (CLAUDE.md global, « Vérification de fond »), il écrit le parcours du lot en script et le joue par `ux.mjs` en une seule commande, lancée en tâche de fond ; il lit ensuite le rapport JSON. Jamais geste par geste avec les outils MCP Playwright : chaque appel s'afficherait dans la conversation de l'utilisateur. Un parcours utile au-delà du lot va dans le dossier `parcours` de l'adaptateur, pour être rejoué aux lots suivants ; un parcours propre au lot va dans `sortie`.
+
 ## Mettre en place un projet
 1. Lire les règles du projet sur les tests, les ports et les données (CLAUDE.md, rules) : elles priment.
 2. Écrire `.claude/ux-e2e.json` : format et exemples dans [reference/adaptateur.md](reference/adaptateur.md).
