@@ -3,7 +3,8 @@
 # Rôle : empêcher la pollution de la racine du projet par des artefacts de
 # session (captures d'écran, .md de travail, fichiers de sortie, package.json
 # accidentel). Règle unique et vérifiable :
-#   AUCUN NOUVEAU FICHIER À LA RACINE DU PROJET, quel qu'il soit.
+#   AUCUN NOUVEL ÉLÉMENT (fichier ou dossier) À LA RACINE DU PROJET, quel qu'il soit,
+#   y compris créé en profondeur (« nouveau\sous\fichier » crée le dossier racine « nouveau »).
 # Exceptions : CLAUDE.md + noms listés dans <projet>\.claude\root-allow.txt
 # (1 nom par ligne, # = commentaire). Éditer un fichier racine EXISTANT reste
 # libre (wp-config.php, .htaccess…) ; écrire dans un sous-dossier reste libre.
@@ -101,15 +102,17 @@ function ConvertTo-AbsolutePath([string]$path, [string]$base) {
     try { return [System.IO.Path]::GetFullPath($p) } catch { return $null }
 }
 
-# Un chemin (absolu, ou relatif à $base) désigne-t-il un fichier DIRECTEMENT à la racine
-# du projet ? Retourne le chemin résolu, ou $null si hors sujet.
+# L'élément de la racine du projet par lequel passe un chemin (absolu, ou relatif à $base),
+# à toute profondeur : un « Rob\Pictures\… » né d'un chemin coupé à son espace crée le
+# dossier racine « Rob ». $null hors du projet ou sur la racine elle-même.
 function Resolve-IfRootLevel([string]$path, [string]$base) {
     $p = ConvertTo-AbsolutePath $path $base
     if (-not $p) { return $null }
-    $cut = $p.TrimEnd('\').LastIndexOf('\')
-    if ($cut -lt 0) { return $null }
-    if ($p.Substring(0, $cut).TrimEnd('\').ToLower() -eq $projectRootLower) { return $p }
-    return $null
+    $p = $p.TrimEnd('\')
+    if (-not $p.ToLower().StartsWith($projectRootLower + '\')) { return $null }
+    $first = $p.Substring($projectRootLower.Length + 1).Split('\')[0]
+    if (-not $first) { return $null }
+    return $p.Substring(0, $projectRootLower.Length + 1 + $first.Length)
 }
 
 # $base : dossier contre lequel un chemin relatif se résout. Write/Edit et captures
@@ -122,7 +125,8 @@ function Assert-RootTarget([string]$path, [string]$channel, [string]$base = $pro
     if (Test-Path -LiteralPath $resolved) { return }   # édition/écrasement d'un fichier racine existant : libre
     $base = (Split-Path $resolved -Leaf).ToLower()
     if ($rootAllow -contains $base) { return }
-    Reject ("BLOQUÉ (hygiène racine, $channel) : création de '" + (Split-Path $resolved -Leaf) + "' à la racine du projet interdite. " +
+    Reject ("BLOQUÉ (hygiène racine, $channel) : création de '" + (Split-Path $resolved -Leaf) + "' à la racine du projet interdite (fichier ou dossier, à toute profondeur). " +
+        "Un nom inattendu vient souvent d'un chemin à espace non cité : citer chaque chemin entre guillemets. " +
         "Captures navigateur : filename '.playwright-mcp\<nom>.png', dossier de sortie du serveur MCP (il refuse tout chemin hors du projet) ; fichiers temporaires → scratchpad de session ; docs → un sous-dossier du projet. " +
         "Si ce fichier racine est vraiment légitime (demande explicite de l'utilisateur), ajouter son nom dans .claude\root-allow.txt du projet.")
 }
@@ -207,8 +211,18 @@ function Get-WriteTargets([string]$seg) {
         $v = $m.Value
         if ($v -match '(?i)-(File|Literal)?Path\s+(?:"([^"]+)"|''([^'']+)''|([^\s;&|<>]+))') {
             $targets += if ($matches[2]) { $matches[2] } elseif ($matches[3]) { $matches[3] } else { $matches[4] }
-        } elseif ($v -match '(?i)\b(Out-File|Set-Content|Add-Content|New-Item)\s+(?:"([^"]+)"|''([^'']+)''|([^\s;&|<>-][^\s;&|<>]*))') {
-            $targets += if ($matches[2]) { $matches[2] } elseif ($matches[3]) { $matches[3] } else { $matches[4] }
+        } else {
+            # 1er argument positionnel, une fois retirés les paramètres qui prennent une valeur (-ItemType Directory…)
+            $pos = [regex]::Replace($v, '(?i)^\S+|\s-(ItemType|Type|Value|Name|Encoding|Width|InputObject)\s+(?:"[^"]*"|''[^'']*''|\S+)', ' ')
+            if ($pos -match '(?<!\S)(?:"([^"]+)"|''([^'']+)''|([^\s;&|<>-][^\s;&|<>]*))') {
+                $targets += if ($matches[1]) { $matches[1] } elseif ($matches[2]) { $matches[2] } else { $matches[3] }
+            }
+        }
+    }
+    # mkdir / md : chaque argument non optionnel est un dossier créé
+    foreach ($m in [regex]::Matches($seg, '(?i)(?:^|\s)(mkdir|md)\b(?<args>[^;&|\r\n]*)')) {
+        foreach ($pm in [regex]::Matches($m.Groups['args'].Value, '(?<!\S)(?:"([^"]+)"|''([^'']+)''|([^\s;&|<>-][^\s;&|<>]*))')) {
+            $targets += if ($pm.Groups[1].Value) { $pm.Groups[1].Value } elseif ($pm.Groups[2].Value) { $pm.Groups[2].Value } else { $pm.Groups[3].Value }
         }
     }
     # cp/mv & équivalents : dernière cible de la commande = dépôt
