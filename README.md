@@ -105,7 +105,7 @@ barrière de hooks `PreToolUse` câblés dans le plugin :
 | `guard-write-scope` | Bloque toute écriture ou destruction hors des zones autorisées (projet courant, dossier temporaire, `~/.claude`, plus les racines listées dans un fichier local) |
 | `guard-secrets-read` | Bloque la lecture via shell des fichiers de secrets (`.env`, credentials, clés) |
 | `guard-git-destructive` | Intercepte les commandes git destructrices (reset --hard, push --force, clean) pour confirmation |
-| `guard-workflow-budget` | Bloque tout lancement de `Workflow` sans lecture préalable du script et déclaration `// agents-max: N` (fan-out mécanique calculé) ; plafond 12 agents, au-delà validation explicite de l'user requise (`// agents-max-user-ok`) |
+| `guard-budget-agents` | Budget d'agents à source unique (`hooks/budget-agents.json`). `Workflow` : refus sans lecture préalable du script et déclaration `// agents-max: N` (fan-out mécanique calculé), refus au-delà du total par plan sauf validation explicite de l'user (`// agents-max-user-ok`). `Agent` : compte les agents vivants de la session (plafond simultanés, un seul Playwright, lancement identique en cours, règles P2 si les équipes sont activées) ; en mode `journal` il n'applique que les règles P2 et journalise le reste. L'état et les journaux vivent dans `<projet>/.claude/equipe-log/` (auto-ignoré par git), jamais dans `~/.claude`. Essais : `hooks/tests/test-guard-budget-agents.ps1` |
 
 En complément : `permissions.deny` dans `settings.json` en filet, analyse PHPCS
 WordPress automatique après chaque écriture PHP (`PostToolUse`), rappel des règles

@@ -41,7 +41,7 @@ Préférer les skills/agents maison plutôt qu'improviser. Router par CAPACITÉ 
 - **GTM / vente / contenu** → le skill business correspondant.
 - **Création/MAJ d'un skill ou d'un agent** → le builder dédié.
 
-Fan-out ASYNC (Fable y excelle), plafond maison d'environ 10 agents au TOTAL par recherche/run (motif coût, cf mémoire), jamais plus d'un agent Playwright à la fois. Bon réflexe sous Fable : dans cette enveloppe, privilégier les sous-agents PERSISTANTS à contexte gardé entre sous-tâches (économie cache-read, pas de goulot sur le plus lent) plutôt que multiplier les agents jetables. Note : les agents maison sont épinglés Opus/Sonnet par choix coût — le gain Fable vit dans l'orchestration du thread principal ; une sous-tâche capability-sensitive gagne parfois à rester dans le thread principal (Fable) plutôt qu'être déléguée à un agent Opus.
+Fan-out ASYNC (Fable y excelle), dans les plafonds de `hooks/budget-agents.json` du plugin (agents simultanés, total par plan, un seul agent Playwright à la fois), appliqués par la garde `guard-budget-agents` : un refus se rapporte, jamais contourné. Bon réflexe sous Fable : dans cette enveloppe, privilégier les sous-agents PERSISTANTS à contexte gardé entre sous-tâches (économie cache-read, pas de goulot sur le plus lent) plutôt que multiplier les agents jetables. Note : les agents maison sont épinglés Opus/Sonnet par choix coût — le gain Fable vit dans l'orchestration du thread principal ; une sous-tâche capability-sensitive gagne parfois à rester dans le thread principal (Fable) plutôt qu'être déléguée à un agent Opus.
 
 ## 4. Effort et tokens
 

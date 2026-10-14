@@ -1,0 +1,84 @@
+# 07 · Synthèse du thread principal : proposition amendée pour ~/.claude
+
+Base : 05-conception.md, amendée sur les quinze défauts de 06-adversaire.md (tous retenus : chacun tient à un fait de doc ou de config, aucun n'a été réfuté par une mesure contraire) et sur trois objections du thread principal posées avant son rapport. Les chemins reprennent les abréviations de 02 (`~` = `C:\Users\cliff\.claude`, `CS` = `~\skills\cliff-stack`).
+
+## 1. Ce que « automatique » veut dire ici, dit honnêtement
+
+Le but demandé (« créer des équipes selon les sujets automatiquement, scalable, évolutif de P1 à P2 en cours de code ») se tient à trois conditions, établies par les éclaireurs et non négociables :
+
+1. **Automatique = déterministe à partir des fichiers candidats, jamais un routeur LLM.** Le modèle fait la seule chose qu'un script ne sait pas faire : comprendre le sujet et nommer les fichiers candidats (grep des termes, git ls-files). Tout le reste (zones par co-changement et imports, graphe, couplage, palier, recouvrement, budget) est calculé par `plan.ps1 proposer`, pas écrit par le modèle (lève D8). La recherche mesurée dit que c'est le bon partage : la forme du graphe est le signal fiable, le routage LLM n'explique que 11 % du gain (03 §1).
+2. **Scalable = plafonné.** Il n'existe aujourd'hui aucun plafond mécanique sur l'outil Agent ni sur les équipes (02 §4). La proposition en crée un, à une seule source, en mode journal d'abord.
+3. **Évolutif P1 → P2 = relance à neuf depuis le thread principal, sur porte utilisateur, jamais une promotion.** Le harness l'interdit (01 §1-2) et personne ne l'a fait ailleurs (03 §2). Un travailleur ne lance rien : il rend un signal, le thread principal l'enregistre dans le plan, réécrit le plan, relance.
+
+## 2. Décisions sur les findings de l'adversaire
+
+| Finding | Décision |
+|---|---|
+| D1 `prompt_id` = requête entière | Règle 12 supprimée. `lancements_par_tour` disparaît du budget. La répétition d'une même empreinte n'est refusée que si un agent **vivant** porte déjà cette empreinte (relance après erreur d'API permise). Les rafales sont tenues par `simultanes` seul. |
+| D5 Workflow refusé par `restant` | Pour `Workflow`, la garde garde exactement sa logique actuelle (`agents-max`, `agents-max-user-ok`, `resumeFromRunId`, plafond 12) et y ajoute une seule chose : si `args.plan` (chemin) est présent, `agents-max` doit être ≤ `plan.budget.agents_total`. Aucun décompte de session appliqué aux workflows. |
+| D2 `SubagentStart` ne distingue rien | Détection de doublon par `SubagentStart` supprimée. Le doublon se lit dans `~\.claude\teams\<team>\config.json` (`members`, écrit par le harness) : à chaque `PreToolUse Agent` et `TeammateIdle` en P2, si `members` hors chef > `p2_coequipiers`, stderr à l'utilisateur, journal `doublon`, et `continue:false` à l'inactivité de **tous** les coéquipiers (on ne sait pas lequel est en trop ; P2 se relance proprement). Hypothèse à mesurer en M11 : `config.json` lisible pendant la session. |
+| D3 `name` refusé partout | Les règles sur `name` ne s'appliquent que si `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` est présent dans l'environnement du hook. Sans le flag, `name` passe (c'est un sous-agent adressable, usage recommandé par fable-mode). |
+| D4 porte P2 non réservée à l'utilisateur | **Le flag d'équipe n'est jamais posé dans un fichier de réglages.** P2 exige une session lancée avec `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` dans l'environnement du lanceur (terminal, ou réglages VS Code de variables d'environnement, posés par l'utilisateur à la main). Le modèle ne peut pas relancer la session : la porte est mécanique par construction, sans variable `CLIFF_EQUIPE_P2`, qui disparaît. Les surcharges `CLIFF_EQUIPE_*` ne sont lues que depuis `~\settings.local.json` (déjà sous `ask`), jamais depuis les réglages d'un projet. Un budget de plan au-dessus du défaut sans surcharge → `verifier` exit 4. |
+| D6 `AGENTS_MAX` par `args` | `AGENTS_MAX` reste la constante déclarée ; `args.agentsMax` ne peut que l'**abaisser** (`Math.min`). |
+| D7 types inconnus = écrivains | Classement : préfixe de plugin retiré (`^[^:]+:`) ; définition cherchée dans `<projet>\.claude\agents` puis `CLAUDE_PLUGIN_ROOT\agents` ; écrivain = définition trouvée et (`tools` absent ou contenant Edit ou Write) ; `Explore`, `Plan`, `claude-code-guide`, `statusline-setup` = lecteurs ; `general-purpose` et `claude` = écrivains **seulement dans un plan** (ligne `plan:` présente) ; type introuvable = lecteur, journal `type_inconnu`. **Le plafond écrivains et la règle un-écrivain-par-zone ne s'appliquent que dans un plan** ; hors plan, seuls `simultanes` et Playwright valent (objection du thread principal). |
+| D8 composition à la main | Nouvelle sous-commande `plan.ps1 proposer -Plan <p> -Fichiers <liste>` : lit les fichiers candidats, les `paths:` des rules du projet, `co-changement.ps1` et les imports, construit zones, `fichiers_partages`, `graphe` (arêtes et couplages notés), palier proposé, et les écrit dans le plan. Champ `fichiers_candidats[]` ajouté au schéma. Le modèle ne remplit que `sujet`, `restitution`, `fichiers_candidats` (avec la commande qui les a produits) et `verification` ; il peut amender les zones proposées, chaque amendement journalisé. |
+| D9 signaux comptés seulement en auto | Le canal principal devient `plan.ps1 signal -Plan <p> -Zone <z> -Type <t> -Detail <d>`, que le thread principal appelle en lisant la ligne `SIGNAL:` du rapport (toujours disponible, quel que soit le mode). Le hook `rapport` sur `SubagentHandback` est un accélérateur facultatif (après M10), jamais une dépendance. `plan.ps1 contrat -Plan <p> -Id <c> -Reecrit` incrémente `reecritures`. Le JSON SIGNAL porte aussi `plan`. |
+| D10 descente P2 → P1 sans événement | Signal de descente : compteur `messages_p2` (hook `pre SendMessage`, expéditeur et destinataire coéquipiers du même plan) rapporté aux événements `TeammateIdle` : deux cycles d'inactivité consécutifs de chaque coéquipier sans message échangé → `plan.ps1 escalade` propose P1. Perte des coéquipiers : constatée par le thread principal (erreur d'envoi, notification), qui appelle `escalade -Vers P1`. Dit tel quel : la descente est décidée par le principal sur compteurs, pas par le hook. |
+| D11 deux écrivains de `steriles` | `integrer.ps1` est le seul écrivain de `steriles` (il exécute la vérification). `echec_repete` d'un ouvrier n'est qu'un signal journalisé ; l'ouvrier s'arrête lui-même au 3e échec (sa règle). |
+| D12 statut `intégration` refusé | Règle 4 accepte {validé, actif, intégration, relance}. `plan.ps1 activer` pose `actif` ; `integrer.ps1` pose `intégration` ; `clore` pose `clos`. |
+| D13 Playwright | Règle ajoutée : un agent dont la définition liste un outil `mcp__playwright__*` compte dans `playwright_simultanes` (1). Workflows : `N_CRITICS` forcé à 1 quand l'agent critique est `independent-critic`. |
+| D14 plan dans `.claude` protégé | Le plan vit hors du projet : `~\.equipe-log\plans\<slug-projet>\<date-slug>\` (déjà hors versionnement, aucun chemin protégé, écrit par `plan.ps1` donc par Bash, jamais par Edit). Le brief porte le chemin absolu ; worktrees et sous-agents le lisent. Pour Réactorm, c'est un état du harness comme `critics.jsonl`, pas un temporaire d'essai. |
+| D15 | Renvois corrigés ; P0 → P1 « besoin d'un vérificateur » retiré (un vérificateur seul s'appelle directement, hors skill) ; `plugin.json` compte skills et agents ; la désactivation d'une variable se fait par relance de session, dit tel quel. |
+| S1 `name` dans `tool_input` | Si M4 montre que `name` est absent du hook, la porte P2 reste entière : sans flag dans l'environnement du lanceur, aucun coéquipier n'existe. Les règles sur `name` deviennent alors un simple confort de message. |
+| S4, S5 | Mesures M12 (un coéquipier émet-il `SubagentStop`) et M13 (second P2 dans une même session) ajoutées à l'étape 0 ; en attendant, un P2 par session, relancé à neuf. |
+
+Objection du thread principal retenue en plus : **aucun total par session hors plan**. Le total ne se compte que par plan (`total_par_plan` 12). Hors plan, la garde ne tient que `simultanes` (5), `playwright_simultanes` (1) et l'empreinte vivante.
+
+## 3. Architecture finale (ce qui reste de 05, en court)
+
+- **Une source de plafonds** : `CS\hooks\budget-agents.json` (`mode: journal` puis `bloquer`) : `simultanes 5`, `ecrivains_simultanes 3` (dans un plan), `ecrivains_par_zone 1`, `total_par_plan 12`, `p2_coequipiers 3`, `playwright_simultanes 1`, `iterations_max 8`, `steriles_arret 3`, `ttl_agent_min 60`, seuils de composition (`p0_fichiers_max 5`, `zone_min_fichiers 2`, `items_homogenes_min 5`, `couplage_parallele_max 0.3`, `couplage_fusion_min 0.7`, `relais_p2_min 3`, `p2_cycles_sans_echange 2`). Tous les chiffres épars (fable-mode, asana-triage, README, SECURITY-SETUP, workflows) renvoient à ce fichier. Les « 20 à la fois » de Réactorm restent un choix de l'utilisateur à trancher (abaisser, ou `CLIFF_EQUIPE_SIMULTANES` dans `~\settings.local.json`).
+- **Une garde** : `guard-workflow-budget.ps1` → `guard-budget-agents.ps1` (git mv), modes `pre` (Workflow, Agent, SendMessage), `post` (Agent), `stop` (SubagentStop), `idle` (TeammateIdle), `rapport` (facultatif). État de session `~\.equipe-log\etat\<session_id>.json` sous mutex, compteurs de plan dans le dossier du plan, `decisions.jsonl`. Règles de refus, dans l'ordre : (flag présent) `name` depuis un sous-agent ; (flag présent) `name` sans plan P2 ; (flag présent) même `name` vivant ou `members` > plafond ; plan présent et statut hors {validé, actif, intégration, relance} ; vivants ≥ `simultanes` ; Playwright ≥ 1 ; dans un plan : écrivains ≥ 3, zone manquante, zone déjà tenue, lancés ≥ `agents_total`, zone stérile ou itérations épuisées, échéance dépassée ; empreinte identique vivante. En mode `journal`, tout est laissé passer avec `aurait_refuse`, sauf les règles P2.
+- **Un journal** : `log-critic.ps1` → `log-agents.ps1`, `critics.jsonl` inchangé, `agents.jsonl` pour tous.
+- **Un skill** : `CS\skills\equipe\` (cadrer, activer, intégrer, escalader), scripts `plan.ps1` (nouveau, proposer, verifier, valider, activer, resume, signal, contrat, escalade, clore), `co-changement.ps1`, `integrer.ps1`, `sonde-hooks.ps1` (étape 0 seulement) ; références `plan.schema.json`, `brief-ouvrier.md`, `escalade.md`.
+- **Un rôle** : `CS\agents\ouvrier-zone.md`, `model: opus` (pas `inherit` : Fable n'est pas le modèle par défaut des agents de la maison), `tools: Read, Grep, Glob, Bash, Edit, Write, Skill`, créé par `agent-builder` avec sa cible corrigée vers `CS\agents\`.
+- **Workflows** : `agentType` vers `independent-critic` et `ouvrier-zone` (après M9), Gate sautée sur plan validé, `AGENTS_MAX` constante abaissable seulement, `N_CRITICS` 1 sous Playwright.
+- **CLAUDE.md global** : trois puces (05 §3.8), inchangées. **`settings.json`** : rien de nouveau pour les équipes (le flag ne s'y pose pas) ; seulement `subagentPromptCacheTtl: "1h"` et le renvoi du compte de hooks vers `hooks.json`.
+
+## 4. Protocole d'escalade, version finale
+
+| Passage | Signal | Détecte | Décide |
+|---|---|---|---|
+| P0 → P1 | `proposer` : ≥ 2 zones à couplage ≤ 0,3, chacune ≥ 2 fichiers ; fichiers candidats > 5 | script | principal ; porte utilisateur si ≥ 2 écrivains |
+| P0 → P1b | ≥ 5 éléments homogènes + vérification déterministe | script | principal ; `ask` natif sur Workflow |
+| P1 → P1b | signal `fanout_homogene` d'un ouvrier | ouvrier, enregistré par `plan.ps1 signal` | principal, puis `ask` Workflow |
+| P1 → P0 (fusion) | `hors_zone_requis` vers la même zone 2 fois | `plan.ps1 signal` | principal, sans porte |
+| P1 → arrêt | même empreinte d'échec 3 fois (`integrer.ps1`), itérations 8, échéance | script, garde refuse la zone | utilisateur |
+| P1 → P2 | relais inter-zones ≥ 3 ou même paire 2 fois, **et** contrat réécrit ≥ 2 fois | `plan.ps1 escalade` (compteurs) | principal propose ; **utilisateur relance la session avec le flag** ; le plan survit sur disque |
+| P2 → P1 | 2 cycles d'inactivité de chaque coéquipier sans message, ou contrat figé, ou perte des coéquipiers | garde (compteurs) + principal | principal ; coéquipiers coupés à l'inactivité (`continue:false`) |
+| P2 → arrêt | `members` > plafond (doublon) | garde (`config.json`) | garde coupe, utilisateur prévenu |
+
+## 5. Mise en place, et ce qui attend un « go »
+
+| Étape | Contenu | Mesure avant la suivante |
+|---|---|---|
+| 0 | Mesures M1-M13 sur un projet d'essai, sonde temporaire câblée dans son `settings.local.json` | réponses écrites dans `08-mesures.md` ; M4 et M10 tranchent la forme des règles `name` et du mode `rapport` |
+| 1 | `budget-agents.json` (journal), `guard-budget-agents.ps1` (pre/post/stop), `log-agents.ps1`, `hooks.json`, renvois des chiffres | une semaine de `decisions.jsonl` : refus qui auraient eu lieu, vrais ou faux ; latence par lancement |
+| 2 | skill `equipe` (P0/P1), `ouvrier-zone`, `plan.ps1` avec `proposer`, `co-changement.ps1`, `integrer.ps1`, trois puces CLAUDE.md | 3 chantiers réels : part de « P0 », zones refusées à l'intégration, écart estimé/réel |
+| 3 | `mode: bloquer` si faux refus < 10 % ; workflows modifiés | critiques maison appelés par `agentType` |
+| 4 | P2 : modes `idle` et `rapport`, règles `name`, lecture de `config.json` ; essai sur un cas à couplage négocié, session relancée avec le flag | zéro doublon, descente observée |
+
+Ce qui attend l'accord de l'utilisateur avant toute écriture : tout (aucun fichier de configuration n'a été touché). Écritures sous règle `ask` à prévoir : `hooks.json`, les scripts de hooks, `settings.json`. Décision de l'utilisateur à part : les « 20 à la fois » du CLAUDE.md de Réactorm, et le renvoi mort de sa ligne 208 (« Vérification de fond », section absente du CLAUDE.md global).
+
+## 6. Ce que la proposition ne fait pas, et pourquoi
+
+- Pas de montée en P2 sans relance de session par l'utilisateur : c'est la seule porte que le modèle ne peut pas franchir seul (D4), et P2 reste expérimental, in-process seulement sous Windows, fragile après compaction (#55586).
+- Pas de routeur LLM de composition, pas d'escalade sur « ça semble complexe » : la mesure dit que le multi-agent perd sur le séquentiel et que plus d'écrivains parallèles est le schéma qui échoue.
+- Pas de garde de zone en direct sur Write/Edit tant que le lien agent → zone n'est pas mesuré fiable (M4, M5, M7) : la barrière de zone est à l'intégration, déterministe.
+- Pas de dépendance aux outils Task ni à `SubagentHandback`.
+
+## 8. Décisions prises après la livraison de l'étape 1 (2026-10-14)
+
+- **Étape 1 livrée** : `budget-agents.json` (mode journal), `guard-budget-agents.ps1` (pre Workflow|Agent|SendMessage, post Agent, stop), `log-agents.ps1`, `hooks.json`, essais `hooks/tests/test-guard-budget-agents.ps1` (50 verts). État et journaux dans `<projet>/.claude/equipe-log/` (auto-ignoré), jamais dans `~/.claude` : la configuration globale ne reçoit aucune donnée d'un projet. Les anciens scripts sont retirés ; les mentions (CLAUDE.md global, README, SECURITY-SETUP, fable-mode, stack-maison, asana-triage, workflows) renvoient au budget.
+- **Politique de modèles** : Fable pour la conversation qui orchestre et pour `independent-critic` (frontmatter `model: fable`, effort `medium`) ; Opus pour tout sous-agent qui écrit ou juge (plancher `CLAUDE_CODE_SUBAGENT_MODEL=opus` dans `settings.json`, les définitions épinglées et un modèle passé à l'appel priment) ; Sonnet pour la récupération pure, passé à l'appel (`Explore` avec `model: sonnet`) puis fixé par rôle dans le plan à l'étape 2. Motif : une erreur d'orchestration se multiplie sur toute l'équipe ; l'adversaire est un run borné et gagne à être d'un autre modèle que les ouvriers qu'il réfute. Non mesuré : l'écart d'orchestration entre Fable et Opus ; `critics.jsonl` mélange désormais les deux modèles, coupure à la date.
+- **Étape 2 réduite à ce qui manque au natif**, pour ne pas refaire `/batch` (découpe en 5 à 30 sous-agents en worktree), les workflows dynamiques (un script tient le plan) et le mode plan : seulement le fichier de plan (zones, fichiers permis, vérification, budget), le gabarit de brief, le contrôle d'intégration (fichier hors zone refusé) et un skill qui route vers `/batch`, un workflow ou de simples sous-agents selon la forme du travail. Aucun orchestrateur nouveau. Avant d'écrire : mesurer à l'usage ce que `/batch` et `/workflow-authoring` couvrent vraiment.
+- **Playwright** : la règle « un agent à la fois » vaut pour le navigateur MCP partagé (la garde ne compte que les agents dont la définition porte `mcp__playwright__*`). Plusieurs vérificateurs de niveau 4 par script (`scripts/ux.mjs`, cible isolée : copie du kit, session d'essai, port tiré) peuvent tourner ensemble, un par parcours touché, sur demande ; le programmatique (niveaux 0 à 3) reste la première marche et ne remplace jamais un vrai geste.

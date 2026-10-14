@@ -31,13 +31,13 @@ But : router vers le bon skill/agent SANS coder de nom en dur (les noms peuvent 
 | Vrai save humain éditeur via Playwright | skill wp save UI test |
 | Minifier JS/CSS | skill minify assets |
 | Audit UI/design/a11y/dark patterns | skill design auditor |
-| Recherche multi-sources vérifiée et arbitrée | skill research-arbitrate ou deep-research selon l'ampleur |
+| Recherche multi-sources vérifiée et arbitrée | workflow research-arbitrate (`~/.claude/workflows/`) ou deep-research selon l'ampleur |
 | Réfuter une affirmation sur un artefact (diff, commande, URL), sur les critères du CLAUDE.md global seulement | agent critique indépendant |
-| Boucle générateur→critique→vérifieur en worktree | skill generator-critic-verifier |
+| Boucle générateur→critique→vérifieur en worktree | workflow generator-critic-verifier (`~/.claude/workflows/`) |
 | Créer/MAJ un skill | skill builder de skills |
 | Créer/MAJ un agent | skill builder d'agents |
 
 ## Règles de fan-out (Fable)
 - Fable excelle en sous-agents async : déléguer les sous-tâches indépendantes et continuer.
-- Plafond maison : environ 10 agents par recherche. Ne pas exploser (les workflows challenge×pivots peuvent dériver à 19-21).
+- Plafonds : `hooks/budget-agents.json` du plugin (une seule source : simultanés, total par plan, Playwright), appliqués par la garde `guard-budget-agents` sur Agent et Workflow ; les deux workflows déclarent leur fan-out en tête (`// agents-max: N`) et sont bornés par elle.
 - Jamais plus d'un agent Playwright à la fois (navigateur + session admin partagés → faux positifs).

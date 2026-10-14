@@ -6,7 +6,7 @@ description: >-
   commentaires + pièces jointes images/PDF analysées visuellement), identifie par preuve le dossier
   projet local sous la racine web locale, produit un rapport + un début de correctif par ticket —
   PUIS, sur validation explicite « go » de l'utilisateur, lance les corrections en fan-out (1 agent
-  par correction, max 5 en parallèle) avec validation adversariale et test Playwright réel si pas sûr
+  par correction, en parallèle dans la limite `simultanes` du budget d'agents du plugin) avec validation adversariale et test Playwright réel si pas sûr
   à 100 %. À utiliser quand l'utilisateur demande de « voir / lister / traiter / triager mes tickets
   Asana », « qu'est-ce qui m'est assigné », « analyse mes tickets », ou veut démarrer les correctifs
   de ses tickets, ou donne l'URL/le gid d'UN ticket à analyser. Le pipeline lit en Asana et ne poste
@@ -49,8 +49,8 @@ node "$API" assigned --involved   # + tickets où l'utilisateur est follower (Pr
 - « Mentionné » n'est pas filtrable par l'API (limite assumée).
 - Périmètre par défaut = **assignés**. N'activer `--involved` que si l'utilisateur demande « de près ou de loin / impliqué ».
 
-## 2. Comprendre — fan-out d'analyse (1 agent par ticket, max 5 en parallèle)
-Pour chaque ticket, déléguer à l'agent **`asana-ticket-analyzer`** (gid + nom + permalink en entrée). Il lit le ticket+commentaires+PJ via le module, analyse les images, **trouve le dossier projet par preuve**, propose un début de fix. Traiter par **lots de 5** ; enchaîner les lots jusqu'à épuisement (scalable).
+## 2. Comprendre — fan-out d'analyse (1 agent par ticket, en parallèle dans la limite `simultanes` de `hooks/budget-agents.json`)
+Pour chaque ticket, déléguer à l'agent **`asana-ticket-analyzer`** (gid + nom + permalink en entrée). Il lit le ticket+commentaires+PJ via le module, analyse les images, **trouve le dossier projet par preuve**, propose un début de fix. Traiter par **lots** de la taille du plafond `simultanes` ; enchaîner les lots jusqu'à épuisement (scalable).
 
 Agréger en **rapport** : un bloc par ticket — titre/statut, problématique reformulée, **dossier projet local prouvé**, fichiers suspects, début de correctif, **statut COMPRIS / PARTIEL / INCOMPRIS**.
 
@@ -66,7 +66,7 @@ Story supprimable via `DELETE /stories/{gid}`.
 ## 4. Présenter + GATE « go »
 Présenter le rapport. **Ne jamais corriger sans validation explicite.** Demander à l'utilisateur lesquels lancer (il peut n'en vouloir qu'une partie). Les tickets PARTIEL/INCOMPRIS sans piste sûre restent en attente d'info.
 
-## 5. Corriger — fan-out de correction (sur go : 1 agent par correction, max 5)
+## 5. Corriger — fan-out de correction (sur go : 1 agent par correction, dans la limite `simultanes` du budget)
 Pour chaque correction validée, déléguer à un agent qui corrige **dans le bon dossier projet** identifié.
 - **Routage préférentiel** : router vers l'agent spécialisé le plus pertinent pour le projet ciblé (ex. pour un projet dont le thème embarque le moteur responsive morph, un agent `morph-*` ou `regression-tester`) plutôt que `general-purpose`. Découvrir les agents disponibles, ne pas en supposer.
 - Doctrine de l'utilisateur (cf. `~/.claude/CLAUDE.md`) : **cause racine** (pas de rustine), **DRY** sur le code/filters/hooks **du projet ciblé**, rien en dur, code moderne perf/sécu/LCP.

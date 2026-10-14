@@ -1,7 +1,7 @@
 export const meta = {
   name: 'research-arbitrate',
   description: 'Recherche multi-sources VÉRIFIÉE et ARBITRÉE sur une question liée à un projet : balaye jusqu\'à 5 voies de sources (Context7 quand le sujet est une lib, dépôts/guides officiels, sources officielles du sujet, sources communautaires, code/contexte du projet courant), croise les affirmations, fait challenger les affirmations pivot fragiles (une lentille choisie selon leur nature), puis un arbitre tranche selon une vue globale en signalant ce qui reste incertain. Sortie = rapport tranché et cité (ne modifie rien dans le repo).',
-  whenToUse: 'Question de réflexion à enjeu où il faut croiser doc officielle, communauté et vérité terrain du projet, puis trancher — pas une simple lookup factuelle (le Gate refuse alors). Lancer par scriptPath vers ce fichier : le garde guard-workflow-budget bloque un lancement par name seul.',
+  whenToUse: 'Question de réflexion à enjeu où il faut croiser doc officielle, communauté et vérité terrain du projet, puis trancher — pas une simple lookup factuelle (le Gate refuse alors). Lancer par scriptPath vers ce fichier : la garde guard-budget-agents bloque un lancement par name seul.',
   phases: [
     { title: 'Gate', detail: 'la recherche multi-sources est-elle justifiée ?' },
     { title: 'Cadrage', detail: 'sous-questions + voies de sources pertinentes' },
@@ -169,7 +169,7 @@ phase('Sweep')
 //    laissé à leur jugement, pas d'injonction ici.
 //  - MCP : utilisé UNIQUEMENT là où le workflow le prescrit explicitement (voie context7
 //    ci-dessous). Pas d'usage MCP implicite dans les autres voies.
-//  - AGENTS : total borné par AGENTS_MAX (déclaré en tête pour guard-workflow-budget) ;
+//  - AGENTS : total borné par AGENTS_MAX (déclaré en tête pour guard-budget-agents) ;
 //    le Challenge prend ce qui reste après les phases fixes.
 // Économie d'input partagée par les voies web : le Sweep est le poste input dominant
 // du run — on borne les fetches sans borner la recherche (chercher large, charger ciblé).

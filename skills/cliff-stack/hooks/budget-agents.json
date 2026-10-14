@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "mode": "journal",
+  "_mode": "journal : la garde calcule et journalise sa decision sans refuser (sauf les regles P2) ; bloquer : elle refuse. Passage en bloquer apres deux semaines de decisions.jsonl relues (suivi/equipes-agents/07-synthese.md, etape 3).",
+  "_unites": "simultanes = agents vivants en meme temps dans la session, tous lanceurs confondus ; total = lancements comptes par plan d'equipe (jamais par session). Un Workflow est borne par sa declaration // agents-max: N, comparee a total_par_plan.",
+  "simultanes": 5,
+  "ecrivains_simultanes": 3,
+  "ecrivains_par_zone": 1,
+  "total_par_plan": 12,
+  "p2_coequipiers": 3,
+  "playwright_simultanes": 1,
+  "iterations_max": 8,
+  "steriles_arret": 3,
+  "ttl_agent_min": 60,
+  "seuils": {
+    "_": "composition et escalade (etape 2) ; aucun seuil valide publiquement, tous reglables et journalises",
+    "p0_fichiers_max": 5,
+    "zone_min_fichiers": 2,
+    "items_homogenes_min": 5,
+    "couplage_parallele_max": 0.3,
+    "couplage_fusion_min": 0.7,
+    "relais_p2_min": 3,
+    "p2_cycles_sans_echange": 2
+  },
+  "plafond_harness": {
+    "variable": "CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS",
+    "defaut_documente": 20,
+    "source": "code.claude.com/docs/en/sub-agents, Concurrent subagent limit ; une surcharge CLIFF_EQUIPE_SIMULTANES ne depasse jamais cette valeur"
+  },
+  "appliques": {
+    "etape_1": ["simultanes", "playwright_simultanes", "total_par_plan (Workflow, declaration agents-max)", "empreinte identique vivante", "regles P2 si CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1"],
+    "etape_2": ["ecrivains_simultanes", "ecrivains_par_zone", "total_par_plan (Agent dans un plan)", "iterations_max", "steriles_arret", "seuils"],
+    "etape_4": ["p2_coequipiers"]
+  },
+  "sources_des_valeurs": {
+    "total_par_plan": "ancienne garde guard-workflow-budget (12 depuis le 19/07/2026) ; la prose « ~10 » renvoie ici",
+    "simultanes": "asana-triage (5 en parallele)",
+    "ecrivains_simultanes": "communaute : 3, 5 au plus (suivi/equipes-agents/03-communaute.md)",
+    "playwright_simultanes": "regle maison : un seul agent Playwright a la fois (navigateur et session partages)"
+  }
+}
