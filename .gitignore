@@ -56,6 +56,10 @@
 # et sauf les caches runtime : régénérés à l'usage, pur bruit de diff
 /plugins/plugin-catalog-cache.json
 /plugins/.last_inuse_sweep
+/plugins/plugin-directory-cache-v2.json
+# et sauf l'état de synchronisation claude.ai (etag, tour de sync, copies .staging) : réécrit à chaque session
+/plugins/synced/
+/skills/synced/
 
 # 3) Garde-fous : ré-exclure tout secret même s'il se glisse dans une zone whitelistée
 **/*.key
