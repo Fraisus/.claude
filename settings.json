@@ -67,6 +67,12 @@
   "enabledPlugins": {},
   "language": "french",
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
+  "switchModelsOnFlag": false,
   "agentPushNotifEnabled": true,
   "autoMode": {
     "environment": [
@@ -78,6 +84,5 @@
       "Cloud provider(s): aucun",
       "Source control: dépôts git locaux, sans remote pour la plupart"
     ]
-  },
-  "switchModelsOnFlag": false
+  }
 }
