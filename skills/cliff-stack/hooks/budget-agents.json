@@ -3,7 +3,7 @@
   "mode": "journal",
   "_mode": "journal : la garde calcule et journalise sa decision sans refuser (sauf les regles P2) ; bloquer : elle refuse. Passage en bloquer apres deux semaines de decisions.jsonl relues (suivi/equipes-agents/07-synthese.md, etape 3).",
   "_unites": "simultanes = agents vivants en meme temps dans la session, tous lanceurs confondus ; total = lancements comptes par plan d'equipe (jamais par session). Un Workflow est borne par sa declaration // agents-max: N, comparee a total_par_plan.",
-  "simultanes": 5,
+  "simultanes": 10,
   "ecrivains_simultanes": 3,
   "ecrivains_par_zone": 1,
   "total_par_plan": 12,
