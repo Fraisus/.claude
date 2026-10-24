@@ -26,7 +26,7 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 ## Coût (un agent repris garde tout son historique)
 - Un agent = un lot ; son rapport est sa passation, écrite dans un fichier. La suite part avec un agent neuf qui lit passation et diff ; jamais reprendre un agent qui a rendu, sauf code à moitié écrit après une coupure.
 - Brief commun et annuaire dans un fichier lu par chaque agent.
-- Sous-agents : pas de message d'agent à agent hors blocage ; rien envoyé à un agent fini.
+- Sous-agents : pas de message d'agent à agent hors blocage ; rien envoyé à un agent fini. Un agent qui doit écrire à un voisin a l'outil SendMessage (`general-purpose`) ; `ouvrier-zone` et les experts de projet ne l'ont pas : leurs fichiers partagés se tranchent par le principal avant le lancement.
 - Adversaire neuf par lot, sur le diff ; arbitre neuf par vague.
 - Petite retouche : le principal. Tâche mécanique : modèle léger.
 
