@@ -23,7 +23,15 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 - Deux écrivains jamais sur le même fichier. Jamais plus d'agents que le budget.
 - Route selon la forme : fan-out homogène → `/batch` natif ; pipeline ordonné → un workflow ; zones disjointes → sous-agents simples. Ne refais pas ce que le natif fait déjà.
 
+## Coût (un agent repris garde tout son historique)
+- Un agent = un lot ; son rapport est sa passation, écrite dans un fichier. La suite part avec un agent neuf qui lit passation et diff ; jamais reprendre un agent qui a rendu, sauf code à moitié écrit après une coupure.
+- Brief commun et annuaire dans un fichier lu par chaque agent.
+- Sous-agents : pas de message d'agent à agent hors blocage ; rien envoyé à un agent fini.
+- Adversaire neuf par lot, sur le diff ; arbitre neuf par vague.
+- Petite retouche : le principal. Tâche mécanique : modèle léger.
+
 ## 3. Intégrer
+- À chaque lot reçu, le principal relance le niveau 0 (CLAUDE.md, « Vérification de fond ») ; une hausse renvoie le lot à un agent neuf.
 - Vérifie qu'aucun agent n'a écrit hors de ses fichiers permis (diff des fichiers touchés contre les globs de sa zone) ; un fichier hors zone = zone refusée, à relancer.
 - Lance la vérification déclarée du plan.
 - Une seule relecture finale quand le projet l'exige (sécurité, machines, adversaire), à contexte vierge, sur les lignes changées.
