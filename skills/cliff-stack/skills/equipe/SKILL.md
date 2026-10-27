@@ -31,7 +31,9 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 - Petite retouche : le principal. Tâche mécanique : modèle léger.
 
 ## 3. Intégrer
-- À chaque lot reçu, le principal relance le niveau 0 (CLAUDE.md, « Vérification de fond ») ; une hausse renvoie le lot à un agent neuf.
+- Une équipe se juge à son orchestration, jamais à son nombre : chaque agent reçoit un rôle net (codeur d'une zone, vérificateur, adversaire) et connaît, par l'annuaire, les agents des zones voisines et les fichiers de chacun ; il ne message un voisin que pour un blocage.
+- Un seul arbitre des essais à la fois (niveaux 1 à 4 de la porte (8) du CLAUDE.md global) : un agent dédié les tient pour toute l'équipe avec l'environnement d'essai de séance ; un arbitre neuf le remplace par vague et reprend l'environnement par la passation, jamais un arbitre gardé toute la séance. Il reçoit les lots rendus, lance une seule fois l'union des essais des fichiers touchés sur l'arbre intégré (jamais un essai par lot, par copie ni par agent), borne le parallélisme à la capacité mesurée de la machine et tient la file ; il n'isole un lot (copie, bissection) que pour attribuer un rouge. Il tourne en tâche de fond, ne corrige rien et rend un rapport court.
+- À chaque lot reçu, le principal relance le niveau 0 (CLAUDE.md, porte (8)) ; une hausse renvoie le lot à un agent neuf.
 - Vérifie qu'aucun agent n'a écrit hors de ses fichiers permis (diff des fichiers touchés contre les globs de sa zone) ; un fichier hors zone = zone refusée, à relancer.
 - Lance la vérification déclarée du plan.
 - Une seule relecture finale quand le projet l'exige (sécurité, machines, adversaire), à contexte vierge, sur les lignes changées.

@@ -1,7 +1,6 @@
 ﻿# log-agents.ps1 — Journalise la fin de tout sous-agent (hook SubagentStop). Succède à log-critic.ps1.
 # Deux journaux :
-#   - critics.jsonl, inchangé, dans ~\.claude\.critic-log\ (mesure en cours citée par le CLAUDE.md global ;
-#     à déplacer dans le projet quand cette mesure sera close) : une ligne par critique terminé (agent_type
+#   - critics.jsonl, inchangé, dans ~\.claude\.critic-log\ : une ligne par critique terminé (agent_type
 #     finissant par « independent-critic », nom nu ou préfixé par un plugin) ;
 #   - agents.jsonl, nouveau, dans le PROJET : <projet>\.claude\equipe-log\ (projet = CLAUDE_PROJECT_DIR, sinon
 #     le cwd du payload ; dossier auto-ignoré par git, créé par guard-budget-agents.ps1 ou ici) : une ligne par

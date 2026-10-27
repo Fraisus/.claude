@@ -27,7 +27,7 @@ Levier bonus : **donner la raison, pas seulement la requête**. Fable performe m
 
 ⚠️ **Garde reasoning_extraction (critique)** : ne JAMAIS formuler la rigueur comme « montre / explicite / transcris ton raisonnement en réponse ». Cette formulation déclenche un refus classé reasoning_extraction sur Fable et le fait retomber silencieusement sur Opus 4.8. Formuler la rigueur comme des ACTIONS (reproduire, mesurer, grep, lire le code) ; le raisonnement lui-même vit dans les thinking blocks, pas dans le texte de réponse.
 
-Les 3 portes anti-fausse-correction, le contrat de preuve et les critères du critique indépendant sont déjà dans le CLAUDE.md global (toujours chargé) : ne pas les re-réciter, s'y référer. Valeur ajoutée Fable-spécifique ici :
+Les huit portes, le contrat de preuve et les critères du critique indépendant sont déjà dans le CLAUDE.md global (toujours chargé) : ne pas les re-réciter, s'y référer. Valeur ajoutée Fable-spécifique ici :
 - Fable détecte mieux les flakes intermittents : exploiter ça pour NE PAS déclarer résolu après un seul run propre.
 - Le modèle vérifie déjà son travail : pas de « re-vérifie » ni de critique par défaut. Le critique indépendant du plugin ne se délègue que sur les critères du CLAUDE.md global (zone critique ou code distribué, action irréversible, run long non surveillé, cause sans reproduction réelle possible, demande explicite) ; il reçoit l'artefact et le critère, jamais le raisonnement.
 
@@ -59,4 +59,4 @@ Fan-out ASYNC (Fable y excelle), dans les plafonds de `hooks/budget-agents.json`
 - **Refus / fallback silencieux hors de portée du prompt** : les classifieurs de sécurité Fable (bio/cyber) peuvent produire un refus et rerouter vers Opus 4.8, en lisant le contexte workspace avant la requête. Un refus n'est pas un bug du skill. Surveiller un stop_reason de refus ou un ton soudain plus prudent ; ne pas formuler une tâche légitime comme du tooling d'exploit.
 - Contraintes maison actives (déjà dans le CLAUDE.md, non ré-énumérées ici) : français, contenu sans marqueurs IA, DRY. Elles vont dans le même sens que le remède verbosité Fable (pas d'arrow-chains, pas de compounds à tirets).
 - Un blocage de hook (git destructif, secrets, write-scope) est un point d'arrêt LÉGITIME au sens de l'anti-stop-prématuré (bloqué sur une entrée que seul l'utilisateur peut fournir), pas un obstacle à contourner ni une raison de trimmer le travail.
-- Les 3 portes anti-faux-positif du CLAUDE.md sont capacité-NEUTRES (actions + mesure, pas transcription de raisonnement) : les conserver telles quelles sous Fable, elles ne comptent pas parmi les consignes à lâcher.
+- Les huit portes du CLAUDE.md sont capacité-NEUTRES (actions + mesure, pas transcription de raisonnement) : les conserver telles quelles sous Fable, elles ne comptent pas parmi les consignes à lâcher.
