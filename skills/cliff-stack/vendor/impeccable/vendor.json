@@ -13,31 +13,92 @@
       "transforms": [
         {
           "op": "replace",
-          "files": ["SKILL.md", "reference/*.md"],
+          "files": [
+            "SKILL.md",
+            "reference/*.md"
+          ],
           "pattern": "node \\.claude/skills/{skill}/scripts/(\\S+?\\.m?js)",
           "replacement": "node \"<SKILL_DIR>/scripts/$1\"",
           "min": 35
         },
         {
           "op": "prepend",
-          "files": ["reference/*.md"],
+          "files": [
+            "reference/*.md"
+          ],
           "when": "<SKILL_DIR>",
           "textFile": "_shared/path-convention.reference.md"
         },
         {
           "op": "afterFrontmatter",
-          "files": ["SKILL.md"],
-          "textFile": ["impeccable/context.md", "_shared/path-convention.skill.md"]
+          "files": [
+            "SKILL.md"
+          ],
+          "textFile": [
+            "impeccable/context.md",
+            "_shared/path-convention.skill.md"
+          ]
         },
         {
           "op": "frontmatterAppend",
-          "files": ["SKILL.md"],
+          "files": [
+            "SKILL.md"
+          ],
           "field": "description",
           "text": " Not for formal accessibility/GDPR/dark-pattern audit reports — use design-auditor."
         },
         {
           "op": "patch",
           "file": "impeccable/hook-admin.patch"
+        },
+        {
+          "op": "patch",
+          "file": "impeccable/reference-claude-code.patch"
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "allowed-tools:\\n  - Bash\\(npx impeccable \\*\\)\\n",
+          "replacement": "",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "If the output ends with an `UPDATE_AVAILABLE` directive, follow it \\(ask the user once about updating, then continue\\)\\. It never blocks the current task\\.",
+          "replacement": "Si la sortie se termine par une directive `UPDATE_AVAILABLE`, l'ignorer : cette copie est vendorisée, sa mise à jour passe par `vendor-sync.ps1`, jamais par `npx impeccable update`.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Take no shortcuts unless the user asks for them \\(when in doubt, ask\\)\\.",
+          "replacement": "Take no shortcuts unless the user asks for them.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": " using the tools available to you \\(browser screenshotting, computer use, etc\\)\\. Claude is capable of extraordinary work\\. Don't hold back\\.",
+          "replacement": ". Preuve par le contenu (DOM, état, parcours réel du projet), une capture seulement si l'aspect visuel est la question.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "the saturated AI default of 2026\\.",
+          "replacement": "the current saturated AI default.",
+          "min": 1
         }
       ]
     }

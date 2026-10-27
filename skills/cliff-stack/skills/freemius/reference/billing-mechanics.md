@@ -2,7 +2,7 @@
 
 > **Frontière :** ce skill couvre l'**implémentation/configuration** commerciale dans Freemius (plans, coupons, dunning, gating SDK). **Décider** le niveau de prix, le modèle, le multiple lifetime ou la stratégie de grandfathering relève de `pricing-strategist` (reference `wordpress_plugin_licensing.md`) — on décide là-bas, on implémente ici.
 >
-> Faits vérifiés (help center Freemius + code du WordPress SDK), 2026-06-20. Chaque claim daté/sourcé. Plusieurs « règles » du blog Freemius circulant sur le web sont **fausses ou déformées** : corrigées ici.
+> Faits tirés du help center Freemius et du code du WordPress SDK, chacun sourcé. Plusieurs « règles » du blog Freemius circulant sur le web sont **fausses ou déformées** : corrigées ici.
 
 ## Sommaire
 - [1. Dunning (échecs de paiement) — calendrier FIXE](#1-dunning-échecs-de-paiement--calendrier-fixe)
@@ -23,16 +23,15 @@ Source : `freemius.com/help/documentation/selling-with-freemius/dunning-failed-p
 **Mode `Expired`** pendant un délai de traitement du renouvellement (source : `.../license-renewals-mechanism/` : *« the license will be set to `Expired` mode »*). Durée exacte / maintien d'accès **non chiffrés** dans la doc → rester vague.
 
 ## 2. Rappels de renouvellement AVANT prélèvement (pas un angle mort)
-⚠️ **Correctif** : le claim « le pré-dunning J-7 avant prélèvement est un angle mort que Freemius ne couvre pas » est **FAUX**. Rappels natifs (source `.../license-renewals-mechanism/`) : **J-30, J-7, J-2, J+1**. Page Subscriptions : *« Automated renewal reminders… to meet credit card compliance requirements and reduce failed payments. »*
+**Correctif** : le claim « le pré-dunning J-7 avant prélèvement est un angle mort que Freemius ne couvre pas » est **FAUX**. Rappels natifs (source `.../license-renewals-mechanism/`) : **J-30, J-7, J-2, J+1**. Page Subscriptions : *« Automated renewal reminders… to meet credit card compliance requirements and reduce failed payments. »*
 - Mise à jour auto des cartes **remplacées** : **active**.
-- « Expiring cards recovery » (notice de carte expirante non-updatable) : marquée **[coming soon]** → **ne pas la décrire comme live**.
 → Donc ne pas proposer de « bâtir une pré-dunning J-7 » : c'est natif. Un email maison n'a de sens que pour un message hors-périmètre Freemius (onboarding, valeur), pas pour le rappel de paiement.
 
 ## 3. Exemptions d'activation dev/staging
 Source : `.../selling-with-freemius/license-utilization/`. Les environnements localhost/staging/dev **ne sont pas décomptés** du quota d'activations si le domaine indique clairement un site dev/staging — **activé par défaut** à la création d'un plan. Patterns custom (URLs de staging non standard) → champ **« Custom localhost URLs »** du Developer Dashboard. Pas de liste exhaustive publique des patterns auto-détectés → formuler « auto pour les cas évidents (*.local, *.test, localhost, hébergeurs de staging connus) + override manuel pour le reste ».
 
 ## 4. Coupons : first-payment vs renewals
-Source : `.../selling-with-freemius/coupon-discount/`. Deux options par coupon : **« First payment only »** vs **« First payment and renewals »**. → Le « coupon de sauvetage one-time » se configure en **First payment only** (mais attention : un coupon de cancellation s'applique sur un abonnement existant — vérifier le mécanisme exact côté rétention).
+Source : `.../selling-with-freemius/coupon-discount/`. Deux options par coupon : **« First payment only »** vs **« First payment and renewals »**. « First payment only » ne vaut que pour un achat neuf ; sur un abonnement existant, la remise de rétention porte sur le renouvellement (`subscription.applyRenewalCoupon(...)` avec le coupon de `product.retrieveSubscriptionCancellationCoupon()`, cf. `integration-recipes.md` §4).
 
 ## 5. track_event() — PIÈGE : gaté, à ne pas recommander
 Vérité terrain (`includes/class-freemius.php`) — la fonction **existe** :
@@ -41,7 +40,7 @@ public function track_event( $name, $properties = array(), $process_at = false, 
 public function track_event_once( $name, $properties = array(), $process_at = false )
 ```
 `$properties` = tableau associatif de **scalaires uniquement** (sinon `Freemius_InvalidArgumentException`). POST vers `events.json`.
-⚠️ **MAIS la docstring officielle du SDK dit** : *« Custom event tracking is currently only supported for specific clients. If you are not one of them, please don't use this method. […] the API will simply ignore your request based on the plugin ID […] contact yo@freemius.com »*.
+**MAIS la docstring officielle du SDK dit** : *« Custom event tracking is currently only supported for specific clients. If you are not one of them, please don't use this method. […] the API will simply ignore your request based on the plugin ID […] contact yo@freemius.com »*.
 → **NE PAS recommander `track_event()` comme API d'analytics custom / pour marquer un "aha moment"** : pour un éditeur lambda, l'appel est **silencieusement ignoré** côté serveur. Pour tracker un aha moment de façon fiable → **couche maison** (action hook local + son propre backend/analytics), pas cette méthode SDK gatée.
 
 ## 6. Comportement à l'expiration (gating premium)

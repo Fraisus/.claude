@@ -4,7 +4,7 @@
 
 ### Strict Output Template
 
-> ⚠️ **MANDATORY — ALL AGENTS — NO EXCEPTIONS**
+> **MANDATORY — ALL AGENTS — NO EXCEPTIONS**
 > This template is not optional. Every audit report must use this exact structure regardless
 > of input type (Figma, code, screenshot, live URL, wireframe). Do not substitute a free-form
 > critique, UX review, or bullet-point list. The scored report IS the output.
@@ -17,7 +17,7 @@ Every audit report must use this exact structure — sections marked *(always)* 
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔍  DESIGN AUDIT REPORT
+DESIGN AUDIT REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | Field        | Value                                    |
@@ -25,7 +25,7 @@ Every audit report must use this exact structure — sections marked *(always)* 
 | Input        | [component/page name]                    |
 | Type         | [Figma MCP / HTML / React / Screenshot]  |
 | Framework    | [detected framework] *(code only)*       |
-| Confidence   | [🟢 High / 🟡 Medium / 🔴 Low]           |
+| Confidence   | [High / Medium / Low]           |
 | Scope        | [frame name + page / filename]           |
 | Date         | [date]                                   |
 
@@ -39,7 +39,7 @@ Every audit report must use this exact structure — sections marked *(always)* 
 | Token Coverage | colors [N]% · spacing [N]% · radius [N]% |
 ```
 
-> ⚠️ **Medium confidence audit** — input was a screenshot. Values are estimated.
+> **Medium confidence audit** — input was a screenshot. Values are estimated.
 > For an exact audit, share the Figma file or code.
 > *(Only show this block when confidence is Medium)*
 
@@ -49,7 +49,7 @@ Every audit report must use this exact structure — sections marked *(always)* 
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊  SCORES
+SCORES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Overall       [██████████░░░░░░░░░░]  [X]/100
@@ -58,8 +58,8 @@ Ethics        [███████████████░░░░░]  [X
 Usability     [████████████░░░░░░░░]  [X]/100  *(Cat 19 — H1/H2/H3/H6/H7/H10)*
               ↳ H4 Consistency → Cat 5 · H5 Error Prevention → Cat 7 · H8 Aesthetics → Cat 4 · H9 Recovery → Cat 11/12
 
-Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) − ([N] × 🟢 1) = [X]/100
-⚠️ Ethics Score uses its own formula: 🔴 −15 (Deceptive) · 🟡 −7 (Questionable) · 🟢 0 (Noted) — do not apply the standard formula to Ethics.
+Score formula: 100 − ([N] × Blocker 12) − ([N] × Critical 8) − ([N] × Warning 4) − ([N] × Tip 1) = [X]/100
+Ethics Score uses its own formula: Critical −15 (Deceptive) · Warning −7 (Questionable) · Tip 0 (Noted) — do not apply the standard formula to Ethics.
 
 [One sentence — what dragged the score down most.]
 ```
@@ -69,12 +69,12 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 - Use `█` for filled, `░` for empty.
 - Example: 68/100 → 14 filled → `██████████████░░░░░░`
 - Omit Ethics and Usability bars if those categories were not audited.
-- Append `⚠️ Legal compliance failures` after Accessibility score if any 🚫 Blockers present.
+- Append `Legal compliance failures` after Accessibility score if any Blockers present.
 
 ```
 ### Score by Category
 
-| Category | Score | Bar | 🚫 | 🔴 | 🟡 | 🟢 |
+| Category | Score | Bar | Blocker | Critical | Warning | Tip |
 |---|---|---|---|---|---|---|
 | 1 · Typography | X/10 | ██████░░░░ | 0 | 1 | 2 | 0 |
 | 2 · Color & Contrast | X/10 | █████░░░░░ | 1 | 0 | 1 | 0 |
@@ -82,7 +82,7 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 
 *(Bar is 10 chars wide. Fill = score value. █ filled, ░ empty. Score ≤ 5 → render bar in red context.)*
 *(Only include audited categories. Use — for unchecked severity levels.)*
-*(Score bands: ≥ 8 → ✅ good · 5–7 → 🟡 needs work · ≤ 4 → 🔴 critical · Korean: ≥ 8 → ✅ 양호 · 5–7 → 🟡 개선 필요 · ≤ 4 → 🔴 심각)*
+*(Score bands: ≥ 8 → good · 5–7 → Warning needs work · ≤ 4 → critical)*
 ```
 
 ---
@@ -91,7 +91,7 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🚫  BLOCKERS  ·  cannot ship  ·  −12pts each
+BLOCKERS  ·  cannot ship  ·  −12pts each
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 *(Omit this entire section if no Blockers found)*
 
@@ -102,7 +102,7 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 > Location: [node IDs / line numbers]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔴  CRITICAL ISSUES  ·  must fix  ·  −8pts each
+CRITICAL ISSUES  ·  must fix  ·  −8pts each
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 > **[Issue name]**
@@ -112,14 +112,14 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 > Location: [node IDs / line numbers]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🟡  WARNINGS  ·  should fix  ·  −4pts each
+WARNINGS  ·  should fix  ·  −4pts each
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 > **[Issue name]**
 > [What's wrong] → Fix: [how-to]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🟢  TIPS  ·  nice to have  ·  −1pt each
+TIPS  ·  nice to have  ·  −1pt each
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 > **[Issue name]** — [What's wrong] → [Fix]
@@ -131,7 +131,7 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅  WHAT'S WORKING WELL
+ WHAT'S WORKING WELL
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 - [Specific genuine positive — not generic praise]
@@ -144,7 +144,7 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚡  CROSS-FRAME INCONSISTENCIES
+CROSS-FRAME INCONSISTENCIES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 | Property | Frame A | Frame B |
@@ -158,12 +158,12 @@ Score formula: 100 − ([N] × 🚫 12) − ([N] × 🔴 8) − ([N] × 🟡 4) 
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📈  PROGRESS SINCE LAST AUDIT
+PROGRESS SINCE LAST AUDIT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Score:    [prev] → [current]  ([+/−N] pts)
-Fixed:    ✅ [category] (+Npts)  ✅ [category] (+Npts)
-Open:     🔴 [N] critical issues remaining
+Fixed:    [category] (+Npts)  [category] (+Npts)
+Open:     Critical [N] critical issues remaining
 New:      [N] new issues found
 ```
 
@@ -177,7 +177,6 @@ Bar width: 20 chars. Colour: previous bar in muted gray (#888), current bar in #
 or #E24B4A (regressed). Delta badge right-aligned.
 ```
 - English intro: *"Here's how your score moved since the last audit."*
-- Korean intro: *"지난 감사 이후 점수 변화를 확인해 보세요."*
 - If score is unchanged: show both bars at same fill, no delta badge, note "No change in overall score."
 
 ---
@@ -188,7 +187,6 @@ or #E24B4A (regressed). Delta badge right-aligned.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 *Audit run with Design Auditor Skill v1.2.13 · [input type] · [confidence level]*
 *Re-audit after fixes to track progress.*
-*수정 후 재감사를 실행하여 진행 상황을 추적하세요.*
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -206,9 +204,8 @@ Effort (1–10): 1–2 = single value change · 3–4 = one component rework · 
 
 Impact (1–10): 9–10 = breaks a11y or core usability · 6–8 = degrades experience · 3–5 = polish-level · 1–2 = cosmetic
 
-Use deterministic positioning (no random jitter). Render severity as both color AND a letter inside the dot (C/W/T) for colorblind accessibility. Axis labels: English: "Effort to Fix" (x) / "Impact on Design" (y) · Korean: "수정 난이도" (x) / "개선 효과" (y) — use the user's detected language. Introduce with one sentence in the user's detected language:
+Use deterministic positioning (no random jitter). Render severity as both color AND a letter inside the dot (C/W/T) for colorblind accessibility. Axis labels: English: "Effort to Fix" (x) / "Impact on Design" (y). Introduce with one sentence:
 - English: *"Here's every issue mapped by how hard it is to fix versus how much it will improve the design — start in the top-left."*
-- Korean: *"발견된 모든 문제를 수정 난이도와 개선 효과 기준으로 매핑했습니다 — 왼쪽 위부터 시작하세요."*
 
 ### Step 3b: Radar Chart Visualizer (always run after report)
 
@@ -230,23 +227,21 @@ Store the current overall score in a JS variable accessible to the widget. If a 
 - Score dropped: `−N ↓` in red  
 - No change: omit the badge
 
-**Tone:** Introduce the chart with one short sentence in the user's detected language before the Visualizer call:
+**Tone:** Introduce the chart with one short sentence before the Visualizer call:
 - English: *"Here's a visual breakdown of how your design scores across each category — red spots are your highest-priority fixes."*
-- Korean: *"각 카테고리별 디자인 점수를 시각적으로 확인해 보세요 — 빨간 영역이 가장 우선적으로 수정해야 할 부분입니다."*
 
 **Fallback (if Visualizer is unavailable or rendering fails):**
 Do not skip the visual entirely. Fall back to the Score by Category table from the Strict Output Template — it carries the same per-category data in tabular form. Add a note:
 - English: *"(Radar chart unavailable in this context — see Score by Category table above.)"*
-- Korean: *"(이 환경에서는 레이더 차트를 표시할 수 없습니다 — 위의 카테고리별 점수 표를 참고하세요.)"*
 
 ---
 
 ### Severity Filter
-After presenting the report, offer a filter widget using ask_user_input if there are 5+ issues:
+After presenting the report, offer a filter by AskUserQuestion if there are 5+ issues:
 
 - question: "Would you like to filter the issues?"
 - type: single_select
-- options: "Show only 🔴 Critical / 심각한 문제만" / "Show 🔴 + 🟡 / 심각 + 경고" / "Show everything / 전체 보기" / "No filter / 필터 없음"
+- options: "Show only Critical" / "Show Critical + Warning" / "Show everything" / "No filter"
 
 Apply the filter and re-present only the relevant issue sections. Score and category breakdown always remain visible regardless of filter.
 
@@ -255,16 +250,14 @@ Apply the filter and re-present only the relevant issue sections. Score and cate
 Maintain a running audit history across the session. Every time an audit completes, record:
 - Overall score
 - Accessibility score
-- Count of 🔴 critical / 🟡 warning / 🟢 tip issues
+- Count of critical / warning / tip issues
 - Timestamp label (e.g. "Audit 1", "Audit 2")
 
-**On re-audit**, open with a delta summary before the report in the user's detected language:
-- English: *"Since the last audit: score improved from [X] → [Y]. 🔴 issues down from [N] to [N]. Here's what's new..."*
-- Korean: *"지난 감사 이후: 점수가 [X] → [Y]로 향상되었습니다. 🔴 심각한 문제가 [N]개에서 [N]개로 감소했습니다. 변경된 내용은 다음과 같습니다..."*
+**On re-audit**, open with a delta summary before the report:
+- English: *"Since the last audit: score improved from [X] → [Y]. Critical issues down from [N] to [N]. Here's what's new..."*
 
-Then show only the **changed or new** issues — do not re-list resolved ones. Acknowledge wins explicitly in the user's detected language:
-- English: *"✅ Fixed since last audit: Color & Contrast (+3pts), States (+4pts)"*
-- Korean: *"✅ 지난 감사 이후 수정됨: 색상 대비 (+3점), 상태 (+4점)"*
+Then show only the **changed or new** issues — do not re-list resolved ones. Acknowledge wins explicitly:
+- English: *"Fixed since last audit: Color & Contrast (+3pts), States (+4pts)"*
 
 **After the radar chart**, if 2+ audits exist in the session, render a second small Visualizer widget — a simple horizontal progress bar or sparkline showing score history across audits (e.g. 58 → 71 → 84). Keep it minimal: one line, scores as labels, no axes. This helps users feel the momentum of improvement.
 

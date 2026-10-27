@@ -8,7 +8,7 @@
 | **CLS** (stabilité) | ≤ 0,1 | 0,1-0,25 | > 0,25 |
 
 - **INP** a remplacé FID le 12 mars 2024. C'est la CWV **la plus souvent échouée** (~43 % des sites) → point de vigilance n°1.
-- ⚠️ Mythe à ne pas encoder : « Google a resserré le LCP à 2,0 s » → **non confirmé** par web.dev, le seuil reste 2,5 s.
+- Mythe à ne pas encoder : « Google a resserré le LCP à 2,0 s » → **non confirmé** par web.dev, le seuil reste 2,5 s.
 - Causes CLS fréquentes : images/embeds/ads sans dimensions réservées.
 
 ## Données structurées — vivant vs mort (2026)

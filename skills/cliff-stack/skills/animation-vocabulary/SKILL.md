@@ -3,17 +3,9 @@ name: animation-vocabulary
 description: Reverse-lookup glossary that turns a vague description of a web animation or motion effect into its exact term ("the bouncy thing when a popover opens" → Pop in; "the iOS rubber-band scroll" → Rubber-banding). Use when the user asks "what's it called when…", or describes a motion effect without knowing its name and wants the right word to prompt an AI or designer with. For naming an effect, not designing or building one.
 ---
 
-> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.
+> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid. Ce qui est demandé s'écrit ; on ne s'arrête que pour une action irréversible hors du périmètre demandé ou pour un choix réellement indécidable, soumis d'abord à `framing-critic`.
 
 # Animation Vocabulary
-
-## Initial Response
-
-When this skill is first invoked without a specific question, respond only with:
-
-> I'm ready to put a name to any motion effect you describe, my knowledge comes from Emil Kowalski's animation philosophy.
-
-Do not provide any other information until the user asks a question.
 
 Turn a vague description of a motion or effect into the precise term, so the user knows what to ask for.
 
@@ -30,7 +22,7 @@ If several terms could fit, list the best match first, then 1–2 alternates wit
 ## Instructions
 
 1. **Read for intent, not keywords.** Users describe what they *see* or *feel* ("springy", "slides off", "draws itself in"), not the technical name. Map the sensation to the glossary below.
-2. **Quote the glossary verbatim.** Its descriptions are authoritative — use them as-is, don't paraphrase.
+2. **Garde le terme anglais du glossaire** et donne sa définition dans la langue de l'utilisateur, fidèle au glossaire.
 3. **Disambiguate close terms.** When two compete (*Clip-path* vs *Mask*, *Pop in* vs *Bounce*, *Shared element transition* vs *Layout animation*), contrast them so the user can pick.
 4. **When nothing matches exactly,** name the closest term and say plainly it's an approximation, or describe the effect in the glossary's vocabulary (e.g. "that's a *stagger* of *scale-in* entrances").
 5. **Stay within this glossary.** If a term genuinely isn't here, say so rather than inventing one — though you may explain the concept using these words.
@@ -64,8 +56,6 @@ Output:
 ```
 
 ## Glossary
-
-_A curated snapshot mirroring the project's `/vocabulary` page; keep the two in sync when either changes._
 
 ### Entrances & Exits — how elements appear and disappear
 - **Fade in / Fade out** — Element appears or disappears by changing opacity.

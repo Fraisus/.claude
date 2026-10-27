@@ -5,13 +5,11 @@ description: "Produit le PLAN d'acquisition payante pour vendre un produit logic
 
 # paid-ads — plan d'acquisition payante (produit logiciel, petit budget)
 
-> **Langue : réponds toujours en français** (accents complets). Termes techniques (Smart Bidding, PMax, RSA, Consent Mode, tCPA…) inchangés.
-
 Produit un **plan** d'acquisition payante : canal, structure de compte, angles créa, plan budget/enchères, framework de mesure. Complémentaire : [[seo-launch]] (organique long terme), [[copywriting-landing]] (la landing qui reçoit le clic), [[pricing-strategist]] (LTV/prix), la plateforme de facturation du projet pour le revenu réel de la mesure ([[freemius]] si c'est elle).
 
-> **PÉRIMÈTRE — un plan, pas un pilotage.** Ce skill ne lance ni n'optimise une campagne live (budget réel, Ads Manager, data de compte = hors de portée d'un LLM). Il produit : structure de compte, angles créa, plan budget/enchères, framework de mesure. Être explicite sur cette limite avec l'utilisateur.
+> **Périmètre : un plan, pas un pilotage.** Ce skill ne lance ni n'optimise une campagne live (budget réel, Ads Manager, data de compte = hors de portée d'un LLM). Il produit : structure de compte, angles créa, plan budget/enchères, framework de mesure. Être explicite sur cette limite avec l'utilisateur.
 
-> **RÈGLE NON NÉGOCIABLE — dire quand le paid est un PIÈGE.** Le paid **amplifie** une proposition de valeur qui marche déjà ; il ne la crée pas. Avant tout plan, vérifier l'unit economics (§0). Si le profil ne tient pas, **déconseiller le paid** et renvoyer vers [[seo-launch]] / communauté / wordpress.org / affiliation Freemius — ne pas produire un plan qui brûlera un budget modeste à vide.
+> **RÈGLE NON NÉGOCIABLE — dire quand le paid est un PIÈGE.** Le paid **amplifie** une proposition de valeur qui marche déjà ; il ne la crée pas. Avant tout plan, vérifier l'unit economics (§0). Si le profil ne tient pas, **déconseiller le paid** et renvoyer vers [[seo-launch]] / communauté / wordpress.org / affiliation de la plateforme de facturation du projet, ne pas produire un plan qui brûlera un budget modeste à vide.
 
 ## 0. Gate AVANT tout plan — le paid a-t-il du sens ?
 Déconseiller le paid si l'un de ces signaux est présent :
@@ -30,11 +28,11 @@ Hiérarchie pour solo/petit budget :
 3. **Reddit Ads** — uniquement audiences techniques (dev tools) + démo vidéo. Très catégorie-dépendant.
 4. **Meta** — interruption, pas intention. Bon pour **retargeting** et démo. Faible pour la demande froide B2B de niche.
 5. **LinkedIn** — ciblage B2B précis mais CPC 5-12 $+ → souvent hors budget modeste (sauf ACV élevé). Astuce : ciblage pro via Microsoft Ads (CPA ~31 % plus bas).
-- ⚠️ **Ne pas s'étaler** : sous ~15 000 $/mois, > 2 canaux = pire CAC. Dominer 1 canal, puis ajouter.
+- **Ne pas s'étaler** : sous ~15 000 $/mois, > 2 canaux = pire CAC. Dominer 1 canal, puis ajouter.
 
 ## 2. Structure de compte (Google Ads)
 - **Petit budget → Search classique exclusivement.** PMax bascule sur du Display (CVR ~0,64 % vs 3,82 % Search) et **gaspille jusqu'à 73 %** en B2B sans tracking offline ; il **cannibalise la marque** (91 % de chevauchement Search/PMax mesuré). PMax seulement après **60+ conv/mois + données CRM**.
-- **AI Max for Search** = le bon compromis automation/contrôle 2026 (couche IA sur une campagne Search classique, sans minimum de dépense, garde mots-clés + reporting + brand controls).
+- **AI Max for Search** = un compromis automation/contrôle (couche IA sur une campagne Search classique, sans minimum de dépense, garde mots-clés + reporting + brand controls).
 - **SKAG mort** → ad groups **thématiques** (clusters d'intention : outcome, comparaison/alternative, pain point, marque-concurrent) + une campagne **marque** isolée.
 - Détail structure + Meta (campagnes standard, **pas** Advantage+ Shopping qui est e-commerce only) : `references/campaign-structure.md`.
 
@@ -51,21 +49,21 @@ Hiérarchie pour solo/petit budget :
 
 ## 5. Mesure — ROAS / CAC / attribution cookieless
 - **Consent Mode v2 obligatoire UE/UK** (mars 2024) : sans lui, pas de retargeting ni de tracking conversion EEE, et illégal. **Prérequis avant de lancer.**
-- Stack 2026 : **Consent Mode v2 + Enhanced Conversions + server-side tagging (GTM serveur)**. Récupère ~30-50 % des conversions perdues (le « modélisé » reste une **estimation**).
-- ⚠️ **Ne pas croire le ROAS in-platform** : 60-70 % des users non trackés post-iOS14, last-click trompeur. **Croiser avec le revenu réel** ([[freemius]]/Stripe via import offline conversions) et raisonner **unit economics** (LTV:CAC, payback), pas coût-par-lead.
+- Stack : **Consent Mode v2 + Enhanced Conversions + server-side tagging (GTM serveur)**. Récupère ~30-50 % des conversions perdues (le « modélisé » reste une **estimation**).
+- **Ne pas croire le ROAS in-platform** : 60-70 % des users non trackés post-iOS14, last-click trompeur. **Croiser avec le revenu réel** (la plateforme de facturation du projet, via import offline conversions) et raisonner **unit economics** (LTV:CAC, payback), pas coût-par-lead.
 - Détail : `references/measurement.md`.
 
 ## 6. Quand le paid a du sens (une fois le gate §0 passé)
 - **Lancement** ; **validation d'angle/headline** (apprentissage rapide) ; **retargeting** des visiteurs organiques / free→paid ; **bidding sur marque concurrente** + capture « alternative à X ». La donnée PPC nourrit ensuite [[seo-launch]].
 
 ## Anti-patterns à REFUSER (sourcés, cf. `references/measurement.md` & `references/campaign-structure.md`)
-- ❌ **PMax / broad match / Smart Bidding par défaut** sans seuil de volume ni budget plancher → budget cramé, marque cannibalisée.
-- ❌ **Auto-apply des recommandations Google** → conflit d'intérêt (la régie optimise sa dépense, pas ton ROAS ; auto-apply à désactiver, sauf conflits de négatifs).
-- ❌ **Broad match sans liste de négatifs** → budget cramé sur « free », « jobs », « DIY », « tutorial ».
-- ❌ **Croire le ROAS/CAC plateforme** comme une vérité (attribution cassée).
-- ❌ **Multi-canal simultané à petit budget** → dilution, pire CAC.
-- ❌ **Retargeting pixel « comme avant » en UE** sans Consent Mode v2 → illégal/cassé.
-- ❌ **Scaler vite** → casse le ML + rendements décroissants.
+- **PMax / broad match / Smart Bidding par défaut** sans seuil de volume ni budget plancher → budget cramé, marque cannibalisée.
+- **Auto-apply des recommandations Google** → conflit d'intérêt (la régie optimise sa dépense, pas ton ROAS ; auto-apply à désactiver, sauf conflits de négatifs).
+- **Broad match sans liste de négatifs** → budget cramé sur « free », « jobs », « DIY », « tutorial ».
+- **Croire le ROAS/CAC plateforme** comme une vérité (attribution cassée).
+- **Multi-canal simultané à petit budget** → dilution, pire CAC.
+- **Retargeting pixel « comme avant » en UE** sans Consent Mode v2 → illégal/cassé.
+- **Scaler vite** → casse le ML + rendements décroissants.
 
 ## Références (chargées à la demande)
 - `references/campaign-structure.md` — canaux détaillés, structure Google/Bing/Meta, match types, AI Max vs PMax, SKAG.

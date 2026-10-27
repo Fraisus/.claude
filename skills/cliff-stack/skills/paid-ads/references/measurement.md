@@ -6,7 +6,7 @@ Le paid est un **accélérateur, pas un générateur** : il amplifie une proposi
 - CPC qui mange la marge,
 - attribution cassée empêchant d'optimiser.
 
-**Déconseiller le paid quand** : pas d'ICP clair (CAC ×5) · LTV faible · < 30 conv/mois · proposition non validée organiquement · dépendance à un seul canal payant comme amorçage. Tant que la traction n'existe pas en organique, le paid brûle un budget modeste sans signal exploitable. Pour ce profil, **[[seo-launch]], contenu, communauté, wordpress.org, affiliation [[freemius]]** ont un LTV:CAC structurellement meilleur.
+**Déconseiller le paid quand** : pas d'ICP clair (CAC ×5) · LTV faible · < 30 conv/mois · proposition non validée organiquement · dépendance à un seul canal payant comme amorçage. Tant que la traction n'existe pas en organique, le paid brûle un budget modeste sans signal exploitable. Pour ce profil, **[[seo-launch]], contenu, communauté, wordpress.org, affiliation de la plateforme de facturation du projet** ont un LTV:CAC structurellement meilleur.
 
 ## Mini-formule du gate (rendre le « oui/non » mécanique)
 Estimer le CAC paid AVANT de décider, en back-of-envelope :
@@ -16,14 +16,14 @@ CAC paid          ≈ budget mensuel ÷ conversions/mois
 ```
 - CPC : 1-3 € (ou $) sur des requêtes logicielles/dev ; CVR clic→vente d'un freemium ≈ 1-3 %.
 - Exemple : 400 €/mois ÷ 2 € × 2 % = **~4 ventes/mois** → CAC ≈ **100 €**. Si LTV ≈ 49-130 € → LTV:CAC ≈ 1:1 → **gate ROUGE** (et 4 < 30 conv → Smart Bidding impossible).
-- ⚠️ **Lag freemium** : pour un freemium, la conversion free→paid se mesure sur **semaines/mois** après le clic → l'attribution est encore plus cassée et le CAC réel se révèle tard. Optimiser sur la micro-conversion amont (**install free / lead**), pas la vente directe, et juger sur cohorte.
+- **Lag freemium** : pour un freemium, la conversion free→paid se mesure sur **semaines/mois** après le clic → l'attribution est encore plus cassée et le CAC réel se révèle tard. Optimiser sur la micro-conversion amont (**install free / lead**), pas la vente directe, et juger sur cohorte.
 
 > **Monnaie** : les seuils de ce skill valent en **$ comme en €** (ordres de grandeur, écart faible). Pour une vente UE, raisonner en € et **déduire la TVA OSS** de la LTV nette avant le ratio LTV:CAC.
 
 ## Unit economics (raisonner ici, pas en last-click)
 - **LTV:CAC ≥ 3:1** (SMB SaaS parfois 2,5:1) ; minimum d'efficacité.
 - **CAC payback < 12 mois** (médian SaaS ~6,8 mois, B2B ~8,6).
-- Remonter les **conversions hors-ligne** (vente Freemius/EDD/Stripe → import offline / CRM) pour réaligner l'algo sur le **revenu réel**, pas les form-fills.
+- Remonter les **conversions hors-ligne** (vente sur la plateforme de facturation du projet → import offline / CRM) pour réaligner l'algo sur le **revenu réel**, pas les form-fills.
 
 ## Attribution post-cookieless / iOS14
 - **On rate 60-70 % des users.** Le last-click « était déjà mauvais en B2B, il est désormais activement trompeur ».

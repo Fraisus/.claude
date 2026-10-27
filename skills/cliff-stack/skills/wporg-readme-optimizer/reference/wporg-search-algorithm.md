@@ -1,6 +1,6 @@
 # Algorithme de recherche du dépôt WordPress.org — vérité terrain
 
-> Tout ce fichier concerne le **moteur de recherche interne du répertoire `wordpress.org/plugins/`**, pas Google. Chaque fait load-bearing est attribué à sa source. Daté, parce que l'algo a changé.
+> Tout ce fichier concerne le **moteur de recherche interne du répertoire `wordpress.org/plugins/`**, pas Google. Chaque fait load-bearing est attribué à sa source. Non vérifié contre le code vivant : la formule vient du post de 2017 et du code du directory, les tickets Trac sont connus par citations, le moteur a migré depuis (ES7). Les leviers du skill tiennent quel que soit l'état exact.
 
 ## Sommaire
 - [1. Le moteur](#1-le-moteur)
@@ -32,7 +32,7 @@ Deux sources primaires concordantes : le **post de Greg « Ichneumon » Brown** 
 **Lectures décisives :**
 - `multiply` → les signaux se **combinent** ; aucun n'est « au-dessus » au sens hiérarchique. Mais en coefficients bruts :
 - **active_installs** (0.375 + exp) = signal structurellement le plus fort.
-- **rating** (0.25, `sqrt`) : à **zéro avis**, le paramètre **`missing => 2.5`** s'applique → le plugin entre dans la formule **comme s'il avait 2,5/5** (score `0.25*sqrt(2.5)≈0.395`), **pas 0**. C'est un garde-fou codé en dur (sinon `sqrt(0)=0` écraserait tout nouveau plugin). ⚠️ Ce 2,5 est **interne au tri** ; la note **affichée** reste « no ratings yet ».
+- **rating** (0.25, `sqrt`) : à **zéro avis**, le paramètre **`missing => 2.5`** s'applique → le plugin entre dans la formule **comme s'il avait 2,5/5** (score `0.25*sqrt(2.5)≈0.395`), **pas 0**. C'est un garde-fou codé en dur (sinon `sqrt(0)=0` écraserait tout nouveau plugin). Ce 2,5 est **interne au tri** ; la note **affichée** reste « no ratings yet ».
 - **support_threads_resolved** (0.25, `log2p`, missing 0.5) : un **compte** de fils résolus, log-atténué. Le « 0.5 » est une valeur de substitution, **pas un taux de 50%**.
 - Conséquence : **« le rating pèse plus que les installs » est faux** (rating 0.25 < installs 0.375). L'effet inverse n'apparaît que sur des plugins à très faibles installs, où `log2p(active_installs)` est petit.
 
@@ -42,7 +42,7 @@ Brown (2017), verbatim :
 
 Matching sur un champ agrégé `all_content` (titre + author + slug + content + tags) en **AND** : en 2017, **tous les mots de la requête devaient apparaître** quelque part, sinon le plugin n'entrait pas dans le pool.
 
-⚠️ **Nuance datée** : une source secondaire (dev.to, **15 avril 2025**) rapporte que le moteur semble désormais **splitter les requêtes multi-mots** et pondérer les correspondances individuelles (comportement OR/partiel). **Non confirmé en source primaire.** → Dans un audit, traiter le AND comme **borne de prudence** : couvrir tous les mots reste la stratégie la plus sûre quel que soit l'algo courant, mais ne pas affirmer « un mot manquant = exclusion totale » comme une certitude 2026.
+**Nuance** : une source secondaire (dev.to, **15 avril 2025**) rapporte que le moteur semble désormais **splitter les requêtes multi-mots** et pondérer les correspondances individuelles (comportement OR/partiel). **Non confirmé en source primaire.** → Dans un audit, traiter le AND comme **borne de prudence** : couvrir tous les mots reste la stratégie la plus sûre quel que soit l'algo courant, mais ne pas affirmer « un mot manquant = exclusion totale » comme une certitude.
 
 ## 4. Pondération des champs texte
 Source primaire (Brown 2017) : `title.ngram^2` (boost ×2 sur le titre), et l'**author** ×2 (cas particulier pour détecter les recherches par auteur).
@@ -77,9 +77,9 @@ Ces mythes proviennent surtout de l'article Freemius *Outrank Competitors' SEO o
 - **PRIMAIRE (code)** — plugin directory officiel, `class-plugin-search.php` (`jetpack_search_es_query_args`), miroir `https://github.com/WordPress/wordpress.org/blob/trunk/wordpress.org/public_html/wp-content/plugins/plugin-directory/class-plugin-search.php` : `field_value_factor` exacts (factor/modifier/**missing**, dont `rating … missing 2.5`).
 - **PRIMAIRE** — Greg Brown (Automattic), `https://data.blog/2017/03/15/improving-relevance-and-elasticsearch-query-patterns/` (15 mars 2017) : formule + structure ES + AND + boosts.
 - **PRIMAIRE (officiel)** — Plugin Handbook & Developer FAQ : `https://developer.wordpress.org/plugins/wordpress-org/` (tags 12/5, titre <5 mots, readme).
-- **MÉTA / Trac** — tickets #1692 (qualité search), #4450 (pénalité installs), #6677 (ES7). ⚠️ Non lus directement (Trac meta derrière anti-bot) — connus par citations ; vérifier au navigateur réel avant de citer un contenu exact.
+- **MÉTA / Trac** — tickets #1692 (qualité search), #4450 (pénalité installs), #6677 (ES7). Connus par citations.
 - **SECONDAIRE (origine des mythes)** — Freemius, *Outrank Competitors' SEO on The NEW Plugin Repository* (2017-2018).
 - **SECONDAIRE récent** — dev.to (15 avril 2025), hypothèse OR-split, non confirmée.
 
 ## 9. Précautions de datation
-Toute la mécanique fine date de **2017**. Le moteur a migré (ES7) et un signal 2025 suggère un assouplissement du matching. **Règle pour ce skill** : encoder les leviers robustes au changement (titre fort, installs, couvrir les mots des requêtes, avis, support, fraîcheur), présenter le AND strict et les coefficients exacts comme « état documenté 2017, vérifier si enjeu fort », et **ne jamais ressortir les chiffres 2,5 / 50% comme officiels**.
+Toute la mécanique fine date de **2017**. Le moteur a migré (ES7) et un signal 2025 suggère un assouplissement du matching. **Règle pour ce skill** : encoder les leviers robustes au changement (titre fort, installs, couvrir les mots des requêtes, avis, support, fraîcheur), présenter le AND strict et les coefficients exacts comme l'état documenté. Le 2,5 est la valeur de substitution interne au tri (code), jamais une note publique ; le « 50 % » du support est faux.

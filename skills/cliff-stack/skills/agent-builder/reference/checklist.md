@@ -2,9 +2,9 @@
 
 > Chargé à la demande. Le SKILL.md porte la procédure ; ici : tableaux, gabarits, formats.
 
-> ⚠️ **Anti-péremption** : ce fichier contient des faits VOLATILS (champs frontmatter, IDs de modèle, numéros de version) vérifiés **2026-06**. Avant de t'appuyer dessus, re-confirmer au runtime via `/agents`, la doc officielle (code.claude.com/docs/en/sub-agents) ou Context7. Les **principes** (single-responsibility, moindre privilège, density, finding-contract) sont stables ; les **listes/versions** ne le sont pas.
+> **Anti-péremption** : ce fichier contient des faits VOLATILS (champs frontmatter, IDs de modèle, numéros de version) volatils par nature. Avant de t'appuyer dessus, re-confirmer au runtime via `/agents`, la doc officielle (code.claude.com/docs/en/sub-agents) ou Context7. Les **principes** (single-responsibility, moindre privilège, density, finding-contract) sont stables ; les **listes/versions** ne le sont pas.
 
-## 1. Champs frontmatter officiels (source : code.claude.com/docs/en/sub-agents — au 2026-06)
+## 1. Champs frontmatter officiels (source : code.claude.com/docs/en/sub-agents)
 
 | Champ | Requis | Règle |
 |---|---|---|
@@ -29,7 +29,7 @@ Plugin agents : `hooks`/`mcpServers`/`permissionMode` ignorés (sécurité).
 
 ## 2. Choix du modèle (charge cognitive)
 
-> Les **alias** (`haiku`/`sonnet`/`opus`/`fable`/`inherit`) sont stables ; les **IDs complets** (ex. `claude-opus-4-8`) et « le plus récent » sont volatils → vérifier l'ID courant au besoin, ne pas le coder en dur dans un agent.
+> Les **alias** (`haiku`/`sonnet`/`opus`/`fable`/`inherit`) sont stables ; les **IDs complets** (ex. `claude-opus-5-5`, `claude-sonnet-5-5`) et « le plus récent » sont volatils → vérifier l'ID courant au besoin, ne pas le coder en dur dans un agent.
 
 | Alias | Quand |
 |---|---|

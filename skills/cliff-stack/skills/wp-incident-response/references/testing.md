@@ -1,6 +1,6 @@
 # Tests
 
-Lancer sur **PHP 7.4 et une version 8.x** (le détecteur cible 7.4 à 8.3). Aucune donnée client ni charge en clair n'est stockée sous `~/.claude` : `lib.php` refuse tout dossier de travail sous `~/.claude`, les fixtures de mutation sont générées à la volée en zone temporaire, et le cas réel est référencé par chemin puis copié fraîchement ailleurs.
+Lancer sur **PHP 7.4 et une version 8.x** (le détecteur cible les versions PHP supportées par WordPress). Aucune donnée client ni charge en clair n'est stockée sous `~/.claude` : `lib.php` refuse tout dossier de travail sous `~/.claude`, les fixtures de mutation sont générées à la volée en zone temporaire, et le cas réel est référencé par chemin puis copié fraîchement ailleurs.
 
 ## `tests/unit.php` — logique pure
 

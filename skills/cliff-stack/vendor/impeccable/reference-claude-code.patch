@@ -1,0 +1,220 @@
+--- a/reference/craft.md
++++ b/reference/craft.md
+@@ -6,19 +6,6 @@
+ 
+ Treat any approved visual direction (generated mock or stated reference) as a concrete contract for composition, hierarchy, density, atmosphere, signature motifs, and distinctive visual moves. Don't let mocks replace structure, copy, accessibility, or state design. But if the live result lacks the approved direction's major ingredients, the implementation is wrong.
+ 
+-### Gates: do not compress
+-
+-Craft has **multiple user gates**, not one. When the harness has native image generation (Codex via `image_gen`), the gate sequence before code is:
+-
+-1. **Shape brief confirmed** (Step 1)
+-2. **Direction questions answered** (codex.md Step A)
+-3. **Palette confirmed** (codex.md Step B)
+-4. **One mock direction approved or delegated** (codex.md Step D)
+-
+-You must stop at every gate. **Shape confirmation alone is NOT a green light to start coding.** It is the green light to begin codex.md Step A. Compressing gates 2 through 4 because the shape brief felt complete is the dominant failure mode of this flow.
+-
+-When the harness lacks native image generation, gates 2-4 collapse into the brief itself, and shape confirmation does advance straight to code.
+-
+ ## Step 0: Project Foundation
+ 
+ Before shape, before code: figure out what kind of project you're working in.
+@@ -44,13 +31,11 @@
+ 
+ Run /impeccable shape, passing along whatever feature description the user provided. Shape is **required** for craft; it is what produces a confirmed direction.
+ 
+-Present the shape output and stop. Wait for the user to confirm, override, or course-correct before writing code.
++Présenter le résultat de shape, puis enchaîner sur la construction.
+ 
+ If the user already supplied a confirmed brief or ran shape separately, use it and skip this step.
+ 
+-When the original prompt + PRODUCT.md already answer scope, content, and visual direction with no real ambiguity, the shape output can be **compact** (3-5 bullets stating what you're building and the visual lane, ending with one or two specific questions or "confirm or override"). The full 10-section structured brief is reserved for genuinely ambiguous, multi-screen, or stakeholder-heavy tasks. Don't pad a clear brief into a long one to look thorough; equally, don't skip the pause to look efficient.
+-
+-If the harness has native image generation (Codex), a compact shape's "confirm or override" advances to **Step 3 and the codex.md flow**, not to Step 4. Phrase the closing line accordingly: "Confirm or override; once we lock direction, I'll run a couple of palette and reference questions before generating any mocks." This stops the model from reading shape confirmation as code-green.
++When the original prompt + PRODUCT.md already answer scope, content, and visual direction with no real ambiguity, the shape output can be **compact** (3-5 bullets stating what you're building and the visual lane). The full 10-section structured brief is reserved for genuinely ambiguous, multi-screen, or stakeholder-heavy tasks. Don't pad a clear brief into a long one to look thorough.
+ 
+ ## Step 2: Load References
+ 
+@@ -66,18 +51,14 @@
+ - Responsive requirements? Consult [adapt.md](adapt.md) (Reference Material covers breakpoints, input methods, safe areas, responsive images)
+ - Heavy on copy, labels, or errors? Consult [clarify.md](clarify.md) (Reference Material covers button labels, error formula, voice/tone, translation)
+ 
+-## Step 3: Visual Direction & Assets (Harness-Gated)
+-
+-If the harness has **native image generation** (currently Codex via `image_gen`), this step is mandatory. **Stop and load [codex.md](codex.md)**. It covers palette generation, mock exploration, the approval loop, mock-fidelity inventory, and asset slicing via the `impeccable_asset_producer` subagent. Follow Steps A-F in that file, then return here for Step 4.
++## Step 3: Visual Direction & Assets
+ 
+-If the harness lacks native image generation, **state in one line that the visual-direction-by-generation step is being skipped because the harness lacks native image generation, then proceed**. The one-line announcement is required; it forces a conscious decision instead of letting the step quietly evaporate. The brief is your only visual reference. Implement directly from it, treating any named anchor references and the brief's "Design Direction" as the contract.
++Le brief, et le canevas Claude Design quand shape en a dessiné un, est la référence visuelle. Implémenter directement depuis lui, en traitant les références nommées et la « Design Direction » du brief comme le contrat.
+ 
+-Whether you generated mocks or not: don't replace required imagery with generic cards, bullets, emoji, fake metrics, decorative CSS panels, or filler copy. Image-led briefs (restaurants, hotels, magazines, photography, hobbyist communities, food, travel, fashion, product) need real or sourced imagery in the build, not CSS scenery.
++Don't replace required imagery with generic cards, bullets, emoji, fake metrics, decorative CSS panels, or filler copy. Image-led briefs (restaurants, hotels, magazines, photography, hobbyist communities, food, travel, fashion, product) need real or sourced imagery in the build, not CSS scenery.
+ 
+ ## Step 4: Build to Production Quality
+ 
+-**Precondition.** If Step 3 routed you to codex.md (native image generation available), Steps A through D in that file must be complete before any code: questions answered, palette confirmed, mocks generated, one direction approved or delegated. **Do not mention implementation, file paths, or patch plans until that's done.** A confirmed shape brief is not enough; the model that compressed those gates is the model that already failed this flow.
+-
+ Implement the feature following the design brief. Build in passes so structure, visual system, states, motion/media, and responsive behavior each get deliberate attention. The list below is the definition of done, not inspiration.
+ 
+ ### Production bar
+@@ -100,11 +81,7 @@
+ 
+ ## Step 5: Iterate Visually
+ 
+-Look at what you built like a designer would. Your eyes are whatever the harness gives you: a connected browser, a screenshotting tool, Playwright, or asking the user. Use them for responsive testing (mobile, tablet, desktop minimum) and general visual validation.
+-
+-If your tool returns a file path, read the PNG back into the conversation. A screenshot you didn't read doesn't count.
+-
+-For long-form brand surfaces, inspect major sections individually. Thumbnails hide spacing, clipping, and cascade defects.
++Regarder ce qui a été construit comme le ferait un designer, preuve par le contenu : le DOM et l'état calculé en mobile, tablette et bureau au moins (débordements, éléments coupés, hiérarchie, valeurs de contraste), par le parcours réel du projet (`testing-real-ux`). Une capture seulement si l'aspect visuel lui-même est la question, une fois.
+ 
+ After the first pass, write an honest critique against the brief, the approved mock's major ingredients (hero silhouette, motifs, imagery, nav/CTA, density), and impeccable's DON'Ts. Patch material defects and re-inspect. **Don't invent defects to demonstrate iteration.** A confident "first pass clean, shipping" beats a fake fix.
+ 
+--- a/reference/shape.md
++++ b/reference/shape.md
+@@ -75,9 +75,9 @@
+ 
+ - The work is **net-new** or directionally ambiguous enough that visual exploration will clarify the brief.
+ - The requested fidelity is **mid-fi, high-fi, or production-ready**. Skip for sketch-only planning.
+-- The current harness gives you native image generation (Codex's `image_gen`, an equivalent MCP tool, or similar). Don't ask the user to install APIs or tooling.
++- Les sondes se dessinent dans un canevas Claude Design, un artboard par état, jamais en image générée.
+ 
+-When those conditions are met, this step is mandatory. If image generation isn't natively available, do not ask the user to install APIs or tooling. State in one line that the image step is skipped because the harness lacks native image generation, then proceed. The one-line announcement is required, not optional; it forces a conscious decision instead of letting the step quietly evaporate.
++When those conditions are met, this step is mandatory.
+ 
+ Use probes to explore visual lanes, not to replace the brief.
+ 
+@@ -103,12 +103,10 @@
+ 
+ ### Important limits
+ 
+-- Do **not** skip discovery because image generation is available.
++- Do **not** skip discovery because probes are possible.
+ - Do **not** treat generated imagery as final UX specification, final copy, or final accessibility behavior.
+ - Do **not** use this step for minor refinements of existing work. It's for shaping a new surface or clarifying a big directional choice.
+ 
+-If image generation isn't natively available, announce the skip in one line and proceed to the design brief.
+-
+ ## Phase 2: Design Brief
+ 
+ After the interview and any required probes, present a brief and **end your response**. The user must confirm before any implementation runs. Do not present a brief and then continue to code in the same response, even if the brief feels obvious to you. The user's confirmation is the gate.
+--- a/reference/brand.md
++++ b/reference/brand.md
+@@ -35,7 +35,7 @@
+ 
+ Parallel to the font list. Currently saturated aesthetic families that have flooded brand surfaces. If a brief lands in one of these lanes without a register reason that *requires* it (a literal magazine, a literal terminal, a literal industrial signage system), it's the second-order training reflex: the trap one tier deeper than picking a Fraunces font. Look further.
+ 
+-- **Editorial-typographic.** Display serif (often italic) + small mono labels + ruled separators + monochromatic restraint. Klim-influenced, magazine-cover affectation. By 2026, every Stripe-adjacent and Notion-adjacent brand has landed here. The fingerprint: three rule-separated columns, an italic Fraunces / Recoleta / Newsreader headline, lowercase track-spaced metadata, no imagery.
++- **Editorial-typographic.** Display serif (often italic) + small mono labels + ruled separators + monochromatic restraint. Klim-influenced, magazine-cover affectation. Every Stripe-adjacent and Notion-adjacent brand has landed here. The fingerprint: three rule-separated columns, an italic Fraunces / Recoleta / Newsreader headline, lowercase track-spaced metadata, no imagery.
+ 
+ (More entries land here on the same cadence the font list updates. Brutalist-utility and acid-maximalism may join when they saturate. Removing entries when they fall back below saturation is also fine.)
+ 
+--- a/reference/codex.md
++++ /dev/null
+@@ -1,105 +0,0 @@
+-# Codex: Visual Direction & Asset Production
+-
+-This file is loaded by `/impeccable craft` when the harness has native image generation (currently Codex via `image_gen`). Other harnesses skip it. It covers the two craft steps that depend on real image generation: landing the visual direction, and producing the raster assets the implementation will compose.
+-
+-Read this *before* generating any images. The order matters, and the per-step user pauses are what keep generated imagery from drifting away from the brief.
+-
+-### Four stop points before code
+-
+-Steps A through D each end with the user. Do not advance past any of them on your own read of the situation.
+-
+-1. **STOP after Step A questions.** Wait for answers.
+-2. **STOP after Step B palette generation.** Wait for "confirm palette."
+-3. **STOP after Step C mocks.** Wait for direction approval or delegation.
+-4. **Only after Step D approves a direction** do you return to craft.md Step 4 and write code.
+-
+-Prior shape approval does **not** satisfy any of these. Shape's "confirm or override" advances you into Step A; it is not a substitute for it.
+-
+-## Step A: Explore Directions with the User
+-
+-Before generating anything, run a brief direction conversation grounded in the shape brief.
+-
+-**Step A is required even when shape just produced a confirmed brief.** The shape questions and Step A questions cover different ground: shape pins purpose, content, scope; Step A pins palette, atmosphere, and named visual references for the comps you're about to generate. The only time you can skip Step A is when the user has already answered these exact palette/atmosphere/reference questions in the same session.
+-
+-Ask **2-3 targeted questions** about visual lane, color strategy, atmosphere, and named anchor references. Don't enumerate generic menus; tie each question to the shape brief's answers. Example shape-grounded questions:
+-
+-- "Brief says 'specimen-page restraint.' Are we closer to a quiet typographic page or a wider editorial spread with hero imagery?"
+-- "Palette strategy from shape was 'Committed.' Which one color carries the surface (a brand-driven pick rather than a default warm-or-cool framing)? (And no, the answer isn't a cream/sand body bg; that's the saturated AI default.)"
+-
+-**STOP and wait for answers.** These pin the palette before any pixel gets generated. Do not proceed to Step B until the user has responded.
+-
+-## Step B: Generate the Brand Palette First
+-
+-Generate **one** palette artifact before any mocks. This is a small, focused image: typography pairing on the chosen background, primary + accent color swatches, one signature ornament or motif. Single image, single pass.
+-
+-Why palette first: mocks generated against a vague color sense produce noise that drowns out the structural decisions. A confirmed palette is the first concrete contract for everything downstream.
+-
+-Show the palette to the user. Ask one question: "This is the palette I'm locking in for the mocks. Confirm, or call out what to shift?"
+-
+-**STOP and wait for confirmation.** Do not generate mocks against an unconfirmed palette. "Probably good enough" is the wrong call here; the palette is the contract for everything downstream.
+-
+-## Step C: Generate 1-3 Visual Mocks Against the Palette
+-
+-Once the palette is confirmed, generate **1 to 3** high-fidelity north-star comps. Each mock must use the confirmed palette and typography. Mocks differ in *structural* direction (hierarchy, topology, density, composition), not in color or motif.
+-
+-- Brand work: push visual identity, composition, mood, and signature motifs.
+-- Product work: push hierarchy, topology, density, tone, grounded in realistic product structure.
+-- Landing pages and long-form brand surfaces: show enough of the second fold to establish the system beyond the hero.
+-
+-Use the `image_gen` tool directly (or via the imagegen skill when available). Don't ask the user to install anything.
+-
+-## Step D: Approval Loop
+-
+-Show the comps. Ask what carries forward. Iterate until **one direction is approved** or the user explicitly delegates.
+-
+-**STOP and wait for the approval or the delegation.** Do not begin Step E or return to craft.md Step 4 until a single direction is named. If the user delegates, pick the strongest direction and explain it from the brief, not personal taste.
+-
+-Before moving to assets, summarize what to carry into code and what *not* to literalize from the mock. This is the handoff between visual exploration and semantic implementation.
+-
+-## Step E: Mock Fidelity Inventory
+-
+-Inventory the approved mock's major visible ingredients. For each, decide implementation: semantic HTML/CSS/SVG, generated raster, sourced raster, icon library, canvas/WebGL, or accepted omission.
+-
+-Common ingredients to inventory:
+-
+-- Hero silhouette and dominant composition
+-- Signature motifs (planets, devices, portraits, charts, route lines, insets, badges, etc.)
+-- Nav and primary CTA treatment
+-- Section sequence, especially the second fold
+-- Image-native content the concept depends on
+-- Typography, density, color/material treatment, motion cues
+-
+-Treat the mock as a north star, not a screenshot to trace. Don't rasterize core UI text. But if the live result lacks the mock's major ingredients, the implementation is wrong.
+-
+-If a photographic, architectural, product, or place-led mock becomes generic CSS scenery, decorative diagrams, bullets, or copy, stop and fix it. That's a broken implementation, not a harmless interpretation.
+-
+-Don't substitute a different hero composition or visual driver post-approval without user sign-off.
+-
+-## Step F: Asset Slicing via the Asset Producer
+-
+-Raster ingredients identified in Step E need clean production assets. Use the bundled `impeccable_asset_producer` subagent rather than producing inline.
+-
+-Spawn it as a scoped subagent. If you do not have explicit permission to use agents, stop and ask:
+-
+-```text
+-Asset production will work better as a scoped subagent job. Should I spawn the Impeccable asset producer subagent for this step?
+-```
+-
+-Pass to the agent:
+-
+-- Approved mock path or screenshot reference
+-- Crop paths or a contact sheet with crop ids
+-- Output directory
+-- Required dimensions, format, transparency needs
+-- Avoid list
+-- Notes on what should remain semantic HTML/CSS/SVG instead of raster
+-
+-Attach image generation capability to the spawned agent when the harness supports it. Do **not** load image-generation reference material into the parent thread.
+-
+-Inline asset production is allowed only if the user declines subagents, the harness cannot spawn the authorized agent, or the user explicitly asks for single-thread mode.
+-
+-Prefer HTML/CSS/SVG/canvas when they can credibly reproduce an ingredient; reach for real, generated, or stock imagery when the mock or subject matter calls for actual visual content.
+-
+-## After This File
+-
+-Once Steps A through F are complete, return to `craft.md` Step 5 (Build to Production Quality). The implementation builds against the confirmed palette, approved mock, and the assets the producer wrote.

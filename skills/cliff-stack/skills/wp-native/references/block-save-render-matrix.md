@@ -10,7 +10,7 @@ plus bas « Localiser ») — ne jamais supposer qu'un bloc est statique ou dyna
 ## Le modèle : 3 combos `save()` × `render_callback`
 
 `is_dynamic()` d'un bloc = `is_callable( $render_callback )`
-([`wp-includes/class-wp-block-type.php`](wp-includes/class-wp-block-type.php) — `is_dynamic()`).
+(`wp-includes/class-wp-block-type.php` (cœur WordPress) — `is_dynamic()`).
 La présence d'un `render_callback` (ou d'une clé `render` pointant un `render.php` dans `block.json`)
 est ce qui rend un bloc dynamique. Le `save()` JS et le `render_callback` PHP sont **orthogonaux** :
 
@@ -35,7 +35,7 @@ est ce qui rend un bloc dynamique. Le `save()` JS et le `render_callback` PHP so
 ## Le pipeline de restitution serveur (s'applique à TOUS les blocs, même C1)
 
 Le combo save×`render_callback` ne décrit qu'**une partie** de « ce qui sort au front ». Tout bloc
-rendu serveur traverse aussi `WP_Block::render()` ([`wp-includes/class-wp-block.php`](wp-includes/class-wp-block.php)),
+rendu serveur traverse aussi `WP_Block::render()` (`wp-includes/class-wp-block.php` (cœur WordPress)),
 qui applique des couches **universelles** — y compris aux blocs **statiques C1** que `render_callback` ne touche pas :
 
 - **Filtre `render_block`** (+ `render_block_{name}`) — post-traitement **universel** appliqué à **tout**
@@ -44,7 +44,7 @@ qui applique des couches **universelles** — y compris aux blocs **statiques C1
   En amont, **`render_block_data` / `pre_render_block` / `render_block_context`** filtrent le `parsed_block`
   **avant** rendu (mutation d'attributs/innerHTML, ou court-circuit du rendu).
 - **Block supports** (`spacing`, `color`, `layout`, `border`, `typography`, `dimensions`, `position`,
-  `align`, `elements`…, ~20+ fichiers [`wp-includes/block-supports/`](wp-includes/block-supports/)) —
+  `align`, `elements`…, ~20+ fichiers `wp-includes/block-supports/` (cœur WordPress)) —
   génèrent classes/styles de **wrapper HORS `save()`**, au render, via `get_block_wrapper_attributes()` →
   `WP_Block_Supports::apply_block_supports()`. **Principale source de divergence save↔front** pour les
   blocs statiques : le HTML en BDD n'a pas ces classes, elles sont injectées au rendu.
@@ -102,22 +102,22 @@ par `$bt->attributes[$base]` fait alors `?? null` → `continue`/skip → l'attr
 qui lit `getBlockType(name).attributes[k].source` le voit **sans `source`** → le classe
 « structurel/libre » par défaut.
 
-**Conséquence** : un traitement censé reconnaître/filtrer cet attribut (ex. le réserver à une
-licence, le router, le neutraliser) **ne se déclenche jamais** — fuite silencieuse côté serveur,
+**Conséquence** : un traitement censé reconnaître/filtrer cet attribut (ex. le réserver, le router,
+le neutraliser) **ne se déclenche jamais** — fuite silencieuse côté serveur,
 écriture autorisée à tort côté éditeur. Le bug ne se voit que quand l'attribut existe **et** qu'on
 attend qu'il soit traité (jamais sur un post de test qui n'en a pas).
 
-**Fix** : classer aussi par **nom de base d'attribut** (un 3ᵉ canal, ex. une liste `attrs` dans le
-registre de features) en **fallback** quand `$bt->attributes[$base]` est null, et le brancher
-**identiquement** aux points PHP (build + tout strip/normalisation) **et** au jumeau JS — sinon
-divergence build (gate serveur) vs éditeur (laisse créer). Garder le registre comme source unique
-(aucun nom d'attribut en dur dans la décision) pour qu'un futur attribut synthétique = 1 entrée.
+**Correctif** : classer aussi par **nom de base d'attribut**, en repli quand `$bt->attributes[$base]`
+est null, depuis la source de déclaration que le projet tient déjà pour ses attributs (découvrir
+celle du projet), et le brancher **identiquement** aux points PHP (rendu et toute normalisation)
+**et** au jumeau JS, sinon le serveur et l'éditeur divergent. Aucun nom d'attribut en dur dans la
+décision : un futur attribut synthétique se déclare en une entrée de cette source.
 
 ## Compositions (blocs imbriqués)
 
 Mécanismes WP : `<InnerBlocks/>` (edit) · `<InnerBlocks.Content/>` (save) · `$content`
 (param du `render_callback`) · `inner_content` (tableau côté parser) · `do_blocks()` walk récursif
-([`wp-includes/class-wp-block.php`](wp-includes/class-wp-block.php) — méthode `render()`).
+(`wp-includes/class-wp-block.php` (cœur WordPress) — méthode `render()`).
 
 Invariants à respecter pour toute transformation du pipeline multi-niveaux :
 
@@ -159,7 +159,7 @@ Tous les chemins d'écriture ne déclenchent pas les mêmes hooks. Vérifié sur
   posts-controller : d'autres contrôleurs émettent leur propre `rest_after_insert_*`.)
   Idem un filtre JS `editor.preSavePost` : il ne vit que dans le navigateur de l'éditeur.
 - **`save_post`** est émis **inconditionnellement** dans `wp_insert_post()`
-  ([`wp-includes/post.php`](wp-includes/post.php) — `do_action('save_post', …)`), **tronc commun de toutes les écritures**.
+  (`wp-includes/post.php` (cœur WordPress) — `do_action('save_post', …)`), **tronc commun de toutes les écritures**.
 - **`wp_after_insert_post`** est émis dans le **même** `wp_insert_post()`, mais **gardé par `if ($fire_after_hooks)`**
   (3ᵉ argument de `wp_insert_post`/`wp_update_post`, défaut `true`). Un appelant qui passe
   `$fire_after_hooks = false` (ex. `wp_update_post($arr, $err, false)`) déclenche **`save_post` MAIS PAS**

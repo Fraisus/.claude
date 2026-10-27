@@ -1,6 +1,6 @@
 # Pièges de terrain d'un audit de sécurité WordPress
 
-Ce que la matrice `references/wp-security-controls.md` ne dit pas : failles réellement trouvées sur du
+Ce que la matrice `../../../references/wp-security-controls.md` ne dit pas : failles réellement trouvées sur du
 code maison (plugins d'agence, thèmes sur mesure), la preuve qui les confirme, et le correctif qui ne
 casse rien. Chaque entrée : **signe**, **preuve**, **correctif**, **piège du correctif**.
 
@@ -77,7 +77,7 @@ Crontab serveur, webhook, CRM, application mobile : le code ne voit pas l'appela
 - **`rg` respecte `.gitignore` par défaut** : un dépôt qui ignore `wp-content/plugins/*` fait sauter le plugin audité et ses copies, et la recherche « ne trouve rien ». Passer `--no-ignore` (ou `grep -r`) et étalonner sur un symbole connu-présent avant de conclure.
 - **Un 403 d'un pare-feu applicatif ou d'une règle serveur** sur un payload (`php://filter`, `<svg onload>`) n'est pas un correctif du code : chercher une variante qui passe (`file://`, chevrons seuls), et consigner que la couche existe sans la compter comme protection.
 - Après retrait : l'URL répond 404, et les pages qui l'appelaient (s'il y en avait) sont vérifiées.
-- Code mort ≠ code inutilisé : une méthode d'enveloppe d'API sans appelant ici peut être appelée par une copie ailleurs. Retirer seulement ce qui est mort **et** sans valeur, après passe `independent-critic` (retrait irréversible pour les copies).
+- Code mort ≠ code inutilisé : une méthode d'enveloppe d'API sans appelant ici peut être appelée par une copie ailleurs. Retirer seulement ce qui est mort **et** sans valeur, après la passe `independent-critic` que le CLAUDE.md global demande pour une suppression.
 
 ## 10. Leurres fréquents (ne pas signaler comme faille)
 - `unserialize( $x, [ 'allowed_classes' => false ] )` sur une option que seul un administrateur écrit : pas d'injection d'objet ; au plus une note de style (préférer JSON).

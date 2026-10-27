@@ -1,20 +1,16 @@
 ---
 name: astro-native
-description: "Use when implementing or modifying ANY Astro feature on an Astro project — .astro components, islands, client/server directives, Content Collections, Actions, view transitions, SSR adapters, i18n, middleware. Enforces Astro best practices: zero-JS-by-default, static-first then minimal hydration, Content Collections over raw fs, APIs verified via Context7, perf/LCP as a hard guardrail. Triggers on \"ajoute/code une feature/un composant/une page/une island/une collection Astro\"."
+description: "Use when implementing or modifying ANY Astro feature on an Astro project — .astro components, islands, client/server directives, Content Collections, Actions, view transitions, SSR adapters, i18n, middleware. Enforces Astro best practices: zero-JS-by-default, static-first then minimal hydration, Content Collections over raw fs, perf/LCP as a hard guardrail. Triggers: « ajoute/code une feature/un composant/une page/une island/une collection Astro », « astro.config », « server island », « client:visible », « Content Collection », « Action Astro ». NE PAS utiliser pour un projet non Astro (WordPress → wp-native), ni pour la direction visuelle ou le polish d'une interface (→ impeccable), ni pour un audit d'accessibilité (→ design-auditor)."
 ---
 
 # astro-native — feature Astro en natif, perf-first
 
-> **Langue : réponds toujours en français** (orthographe et accents complets). Les termes techniques Astro (islands, directives, server:defer…) restent en anglais.
-
-Objectif : toute feature Astro est codée **avec le maximum de natif Astro**, **sourcée** (pas de mémoire), **idiomatique au projet courant**, et **perf-first** (zero JS par défaut). Universel : ne suppose aucun chemin/config — **découvre les conventions du projet avant de coder**.
-
-> **RÈGLE NON NÉGOCIABLE** — Toute API / directive / signature / config Astro est **vérifiée via Context7 (MCP) AVANT d'écrire la moindre ligne**, jamais d'après mémoire. Si Context7 indisponible → le dire et fallback doc officielle (WebFetch docs.astro.build) ou `node_modules/astro`, ne pas deviner. IDs Context7 pré-résolus en §0.2.
+Objectif : toute feature Astro est codée **avec le maximum de natif Astro** et **perf-first** (zero JS par défaut).
 
 ## 0. Avant de coder (obligatoire, dans l'ordre)
-1. **Découvre l'existant** (Grep/Read) : y a-t-il déjà un composant/layout/collection/helper qui fait ça ou s'en approche ? Réutilise/étends (DRY). Repère le style maison : `astro.config.mjs` (output static/server/hybrid, adapter, intégrations), structure `src/` (pages/components/layouts/content), framework UI éventuel (React/Svelte/Vue/Preact), TS strict ou non, conventions de nommage.
-2. **Source l'API via Context7** (jamais de mémoire pour une signature). IDs directs :
-   - Doc canonique / patterns / référence : `/withastro/docs` (officiel, ~6800 snippets)
+1. **Lis la config du projet** : `astro.config.mjs` (valeur de `output`, adapter, intégrations), structure `src/` (pages/components/layouts/content), framework UI éventuel (React/Svelte/Vue/Preact), TS strict ou non, conventions de nommage.
+2. **IDs Context7 de la doc Astro** :
+   - Doc canonique / patterns / référence : `/withastro/docs` (officiel)
    - Variante site / exemples : `/websites/astro_build_en`
    - Version épinglée (vérité terrain) : `/withastro/astro` (ex. astro_6.x)
    - Fallback : `node_modules/astro` du projet (version réelle installée) ou WebFetch docs.astro.build.
@@ -43,14 +39,12 @@ Objectif : toute feature Astro est codée **avec le maximum de natif Astro**, **
 - Échappe par défaut (Astro échappe les expressions ; `set:html` UNIQUEMENT sur contenu assaini — jamais d'input brut).
 - Variables d'env via `astro:env` / `import.meta.env` (jamais de secret en dur ; `PUBLIC_` = exposé client, vigilance).
 - Pas d'API `experimental` si une stable existe ; si inévitable, isole + commente la dette + flag dans `astro.config`.
-- Respecte `output` du projet (static vs server) : un `server:defer` / Action exige un adapter — vérifier avant de proposer.
+- Respecte `output` du projet (`static`, où une page sort du prérendu par `export const prerender = false`, ou `server` ; `hybrid` n'existe plus depuis Astro 5) : un `server:defer` / Action exige un adapter — vérifier avant de proposer.
 
 ## 4. Sortie & validation
-- **Diff minimal, modifier > ajouter, pas de code mort.** Idiomatique au projet (TS strict, nommage).
 - **Signale tout risque** : hydratation injustifiée, CLS, secret exposé `PUBLIC_`, feature exigeant un adapter absent.
 - `astro check` (types) sur le code touché ; lint projet si présent (ESLint/Prettier) — sinon le proposer.
-- Vérif comportement réel via **Playwright** quand pertinent (hydratation effective, view transitions, LCP) — pas de proxy.
-- Présente le plan/diff **avant** d'écrire si la tâche n'est pas triviale (règle propose-before-acting).
+- Comportement réel (hydratation effective, view transitions, LCP) par testing-real-ux quand pertinent.
 
 ## Anti-patterns à refuser
-- `client:load` par défaut / hydrater ce qui pourrait être statique ou server island • `<img>` brut au lieu de `astro:assets` • lecture fs au lieu de Content Collections • `set:html` sur input non assaini • secret en `PUBLIC_` ou en dur • route API maison là où une Action typée convient • API d'après mémoire sans check Context7 • feature server (server:defer / Action) sans vérifier l'adapter/output.
+- `client:load` par défaut / hydrater ce qui pourrait être statique ou server island • `<img>` brut au lieu de `astro:assets` • lecture fs au lieu de Content Collections • `set:html` sur input non assaini • secret en `PUBLIC_` ou en dur • route API maison là où une Action typée convient • feature server (server:defer / Action) sans vérifier l'adapter/output.

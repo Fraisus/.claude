@@ -1,6 +1,6 @@
 # Évals — in-product-upgrade-prompts
 
-> Scénarios eval-driven (skill-builder). Rejouer with/without-skill ; succès = correction d'une erreur à coût réel (API inventée, rejet repo, build cassé). Baseline mesurée le 2026-06-20 (gain confirmé 3/3, 6 erreurs corrigées).
+> Scénarios eval-driven (skill-builder). Rejouer with/without-skill ; succès = correction d'une erreur à coût réel (API inventée, rejet repo, build cassé).
 
 ## eval-1 — API « pattern verrouillé inserter » (piège : API inventée)
 ```json

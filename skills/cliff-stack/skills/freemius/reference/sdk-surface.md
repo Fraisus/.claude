@@ -1,6 +1,6 @@
-# `@freemius/sdk` — surface réelle vérifiée (v0.3.x)
+# `@freemius/sdk` — surface réelle (v0.3.x)
 
-> Extrait des **sources TS réelles** du tag publié 0.3.0 (`github.com/Freemius/freemius-js`, `packages/sdk/src/`) + schéma OpenAPI généré (`api/schema.d.ts`, 12 965 lignes). Tout est en **snake_case**. Vérité terrain — ne pas réécrire de mémoire. Re-vérifier via Context7 `/freemius/freemius-js` si la version du projet ≠ 0.3.x.
+> Extrait des **sources TS réelles** du tag publié 0.3.0 (`github.com/Freemius/freemius-js`, `packages/sdk/src/`) + schéma OpenAPI généré (`api/schema.d.ts`, 12 965 lignes). Tout est en **snake_case**. Si la version du projet diffère, la version installée (`node_modules/@freemius/sdk`) fait foi.
 
 ## Constructeur
 ```ts
@@ -60,7 +60,7 @@ retrieveInvoice(paymentId): Promise<Blob | null>                          // PDF
 ### `fs.api.product`
 ```ts
 retrieve(): Promise<ProductEntity | null>                                 // pas d'argument (productId du constructeur)
-retrieveMany(): Promise<ProductEntity[]>                                  // TYPÉ ainsi, mais throw probable au runtime — confirmer (TODO sandbox), ne pas s'y fier
+retrieveMany(): Promise<ProductEntity[]>                                  // typé ainsi, comportement au runtime non confirmé : ne pas s'y fier
 retrievePricingData(): Promise<PricingTableData | null>                   // GET /pricing.json
 retrieveSubscriptionCancellationCoupon(): Promise<CouponEntityEnriched[] | null>
 ```
@@ -117,7 +117,7 @@ Variante `LicenseEnriched` (si enrichi) ajoute : `subscription_id, next_payment,
 | `is_cancelled` existe sur Subscription | ❌ aucune orthographe : Subscription = `canceled_at`/`next_payment` uniquement |
 
 ## Surface REST réelle (au-delà du wrapper `fs.api.*`)
-> Le wrapper 0.3.x n'expose qu'une fraction des routes. Le **schéma OpenAPI complet** est dans `node_modules/@freemius/sdk/dist/index.d.ts` (type `paths`). Vérité terrain — grep avant de conclure « impossible » (cf. SKILL §2bis). Routes vérifiées le 2026-06 (faux-négatifs corrigés) :
+> Le wrapper 0.3.x n'expose qu'une fraction des routes. Le **schéma OpenAPI complet** est dans `node_modules/@freemius/sdk/dist/index.d.ts` (type `paths`). Grep avant de conclure « impossible » (cf. SKILL §2bis). Routes présentes dans le schéma :
 
 | Besoin | Route REST (verbe) | Wrappé ? |
 |---|---|---|
@@ -130,9 +130,9 @@ Variante `LicenseEnriched` (si enrichi) ajoute : `subscription_id, next_payment,
 | Activer / désactiver une licence (REST doc) | `/api/licenses/activate` · `/api/licenses/deactivate` | ❌ non |
 | Prix multi-devises (usd/eur/gbp) | `retrieve-pricing-table-data` → `all_plans_single_site_pricing` | via `product.retrievePricingData()` |
 
-⚠️ **`POST …/licenses.json` (émettre une licence hors checkout)** crée une licence **entitlement-only** : **NI paiement, NI abonnement, NI TVA, NI facture** (`/payments.json` = lecture seule, pas de création de paiement externe). → Un checkout 100% custom est *techniquement* faisable mais **fait perdre le rôle Merchant-of-Record** de Freemius (TVA UE/UK, facturation, dunning, SCA, refunds) + charge PCI + double source de vérité. **À proscrire** sauf migration assumée hors Freemius.
+**`POST …/licenses.json` (émettre une licence hors checkout)** crée une licence **entitlement-only** : **NI paiement, NI abonnement, NI TVA, NI facture** (`/payments.json` = lecture seule, pas de création de paiement externe). → Un checkout 100% custom est *techniquement* faisable mais **fait perdre le rôle Merchant-of-Record** de Freemius (TVA UE/UK, facturation, dunning, SCA, refunds) + charge PCI + double source de vérité. **À proscrire** sauf migration assumée hors Freemius.
 
-⚠️ **Shapes des réponses REST non wrappées = NON typées par le domaine** → `TODO(sandbox)` obligatoire : confirmer les noms de champs (install : `url`, `is_active`, `is_uninstalled`…) sur un vrai achat avant de câbler l'UI.
+**Shapes des réponses REST non wrappées non typées par le domaine** : confirmer les noms de champs (install : `url`, `is_active`, `is_uninstalled`…) sur un vrai achat avant de câbler l'UI.
 
 ## Webhook (service `fs.webhook`)
 - Auth par défaut **`SignatureHeader`** : HMAC-SHA256 du body **brut** avec la **Secret Key produit**, header `x-signature` (confirmé `index.js`). Mode alt `Api` (`WebhookAuthenticationMethod.Api`) re-vérifie l'événement via un appel API.

@@ -5,17 +5,15 @@ description: "Conçoit les SÉQUENCES email lifecycle pour un SaaS / plugin Word
 
 # email-lifecycle — séquences email pour SaaS / plugin freemium
 
-> **Langue : réponds toujours en français** (accents complets). Termes techniques (trigger, aha moment, lifecycle stage, MPP, DMARC…) inchangés.
-
 Concevoir les séquences email d'un freemium plugin/SaaS. Complémentaire : la plateforme de facturation du projet (billing, trials, **dunning** ; [[freemius]] si c'est elle, à vérifier dans le projet, jamais à présumer), [[copywriting-landing]] (le copy des emails de conversion), [[pricing-strategist]]/[[marketing-psychology]] (offre & persuasion).
 
 > **RÈGLE NON NÉGOCIABLE — consentement marketing séparé.** Un téléchargeur du plugin gratuit n'est PAS un consentement marketing : le download fonde le **transactionnel** (licence, sécurité, mises à jour), pas le démarchage. Pour l'envoyer en séquence marketing en UE, il faut un **opt-in marketing dédié, non pré-coché, granulaire**. Sinon = violation GDPR (jusqu'à 20 M€ / 4 % CA). Détail : `references/legal-deliverability.md`.
 
-> **RÈGLE NON NÉGOCIABLE — ne jamais piloter sur l'open rate absolu.** Apple Mail Privacy Protection (~50-58 % des opens = bruit machine) l'a rendu inutilisable en absolu. Piloter sur **événements produit (activation, upgrade), conversions, revenue-per-email, reply rate, clics uniques anti-bot**. L'open rate ne sert qu'au timing relatif / A-B de sujet.
+> **Ne jamais piloter sur l'open rate absolu.** Apple Mail Privacy Protection (~50-58 % des opens = bruit machine) l'a rendu inutilisable en absolu. Piloter sur **événements produit (activation, upgrade), conversions, revenue-per-email, reply rate, clics uniques anti-bot**. L'open rate ne sert qu'au timing relatif / A-B de sujet.
 
 ## 0. Avant d'agir
 1. **Découvrir** : modèle (freemium WP.org vs trial), l'outil d'envoi (ESP simple vs product-triggered type Userlist/Customer.io/Encharge), le **aha moment** du produit (première valeur concrète — ex. premier rendu réussi au front), l'état de l'authentification email (SPF/DKIM/DMARC).
-2. **D'où vient l'email ?** ⚠️ **wordpress.org ne transmet AUCUN email** au téléchargement du plugin gratuit. Pour un freemium WP.org, la **seule source d'email à l'activation est un opt-in intégré au plugin** : celui du SDK de licence/télémétrie s'il en a un (avec Freemius, l'écran « Allow & Continue »), sinon un formulaire d'inscription dans le plugin. C'est un opt-in **produit/transactionnel**, pas un opt-in marketing. Concevoir là la capture, et un **opt-in marketing dédié distinct** (case séparée, non pré-cochée) pour le démarchage. Sans cette étape, il n'y a pas de liste.
+2. **D'où vient l'email ?** **wordpress.org ne transmet AUCUN email** au téléchargement du plugin gratuit. Pour un freemium WP.org, la **seule source d'email à l'activation est un opt-in intégré au plugin** : celui du SDK de licence/télémétrie s'il en a un (avec Freemius, l'écran « Allow & Continue »), sinon un formulaire d'inscription dans le plugin. C'est un opt-in **produit/transactionnel**, pas un opt-in marketing. Concevoir là la capture, et un **opt-in marketing dédié distinct** (case séparée, non pré-cochée) pour le démarchage. Sans cette étape, il n'y a pas de liste.
 3. **Source légale** : audience UE → GDPR + double opt-in recommandé (obligatoire DE/AT/CH/GR/LU/NO).
 
 ## 1. Cartographie des séquences (ROI décroissant)
@@ -64,12 +62,12 @@ Piloter sur : **revenue-per-email + conversion**, **conversions/actions produit*
 - Expéditeur **répondable** (pas `no-reply@`). Jamais d'email tout-image (spam + cassé en dark mode).
 
 ## Anti-patterns à REFUSER (sourcés, cf. `references/legal-deliverability.md`)
-- ❌ **Démarcher (marketing) les téléchargeurs du gratuit sans opt-in marketing séparé** → violation GDPR.
-- ❌ **Acheter/scraper des listes** (même « GDPR-ready ») → illégal UE, CAN-SPAM, réputation détruite.
-- ❌ **Sujets trompeurs** (faux « Re: », fausses alertes) → illégal CAN-SPAM (~51 744 $/sujet), domaine en spam.
-- ❌ **Piloter sur l'open rate** (cassé par MPP).
-- ❌ **Sur-fréquence** (81 % se désabonnent pour volume excessif) → fatigue → réputation → spam. Préférer segmentation + centre de préférences.
-- ❌ `no-reply@`, emails tout-image, « mardi 10h universel » asséné comme règle (point de départ à tester).
+- **Démarcher (marketing) les téléchargeurs du gratuit sans opt-in marketing séparé** → violation GDPR.
+- **Acheter/scraper des listes** (même « GDPR-ready ») → illégal UE, CAN-SPAM, réputation détruite.
+- **Sujets trompeurs** (faux « Re: », fausses alertes) → illégal CAN-SPAM (pénalité civile par email en infraction, montant révisé chaque année par la FTC), domaine en spam.
+- **Piloter sur l'open rate** (cassé par MPP).
+- **Sur-fréquence** (81 % se désabonnent pour volume excessif) → fatigue → réputation → spam. Préférer segmentation + centre de préférences.
+- `no-reply@`, emails tout-image, « mardi 10h universel » asséné comme règle (point de départ à tester).
 
 ## Références (chargées à la demande)
 - `references/sequences.md` — chaque séquence détaillée : emails, rythme, triggers, templates (welcome, onboarding, upgrade free→paid, trial expiration, win-back).

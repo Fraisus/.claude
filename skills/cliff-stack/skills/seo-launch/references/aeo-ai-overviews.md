@@ -18,7 +18,7 @@ ChatGPT s'appuie largement sur l'index Google (SerpAPI), AI Overviews puisent da
 
 ## Garde-fou anti-hype
 - **La plupart des tactiques AEO ne marchent pas** (règle 95/5) ; la mesure est fragile (systèmes fermés). L'AEO = **conséquence d'un contenu factuel, sourcé, attribué**, pas une nouvelle boîte à hacks.
-- ⚠️ **`llms.txt`** : Google a clarifié (juin 2026) qu'il **n'aide ni ne nuit au ranking** et n'est pas utilisé pour les fonctionnalités IA. Les crawlers IA (GPTBot/ClaudeBot/PerplexityBot/Google-Extended) **l'ignorent** et crawlent le HTML. Optionnel, coût quasi nul, **ne jamais le présenter comme un levier de visibilité**.
+- **`llms.txt`** : Google a clarifié (juin 2026) qu'il **n'aide ni ne nuit au ranking** et n'est pas utilisé pour les fonctionnalités IA. Les crawlers IA (GPTBot/ClaudeBot/PerplexityBot/Google-Extended) **l'ignorent** et crawlent le HTML. Optionnel, coût quasi nul, **ne jamais le présenter comme un levier de visibilité**.
 
 ## Sources
 ALM Corp (AEO playbook 2026) · Jasper (GEO vs AEO vs SEO) · xseek (AI traffic decline) · seo.ai (étude Princeton/Georgia Tech) · CXL (AEO/GEO reality check) · Search Engine Land / TechWyse (llms.txt, position Google).

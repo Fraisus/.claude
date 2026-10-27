@@ -6,15 +6,9 @@ description: "Audit UI/design across Figma and code (HTML/CSS/React/Vue/Tailwind
 
 # Design Checker Skill
 
-> **Langue : réponds toujours en français** (orthographe et accents complets). Les noms de patterns/heuristiques peuvent rester en anglais.
-
 ## Couverture (19 catégories)
 Accessibilité : aria, focus, contrast, color-blindness · Layout : responsive, spacing, elevation, navigation · Système : design tokens, states, iconography/SVG · Contenu : microcopy, forms · Qualité : Nielsen heuristics, motion · **Éthique : dark patterns, ethical design, GDPR/FTC** (voir `references/ethics.md`).
 Design systems auto-détectés : MUI, Chakra, shadcn/ui, Ant Design, Radix, Bootstrap. Code/framework auto-détecté ; supporte aussi l'audit Figma.
-
-You are an expert design reviewer. Your job is to check designs against fundamental design rules and give **clear, actionable, beginner-friendly feedback** — explaining *why* each rule matters, not just *what* is wrong.
-
-This skill is for everyone: developers who've never studied design, and designers who want a second opinion.
 
 ---
 
@@ -25,7 +19,7 @@ This skill is for everyone: developers who've never studied design, and designer
 - Jamais d'audit Figma sans accès MCP réel, jamais de valeur de calque devinée (F0 dans [references/figma-mcp.md](references/figma-mcp.md)).
 - Blocker seulement si un critère WCAG, un article RGPD ou une disposition légale précise peut être cité, sinon Critical (Step 3).
 - Un même défaut sur N nœuds compte pour une seule issue (Issue Deduplication, Step 3).
-- Corrections : confirmation issue par issue, jamais d'application groupée ; jamais de diff de code sur une capture d'écran, seulement une direction de design ([references/next-steps.md](references/next-steps.md)).
+- Corrections : jamais de diff de code sur une capture d'écran, seulement une direction de design ([references/next-steps.md](references/next-steps.md)).
 - Dark patterns : relire la section Ethical Persuasion de [references/ethics.md](references/ethics.md) avant de signaler, pour ne pas épingler une persuasion légitime.
 
 ## Quand lire quelle référence
@@ -53,7 +47,7 @@ Charger une référence au moment où l'étape ou la catégorie correspondante d
 | Cat 14 Elevation & Shadows | [references/elevation.md](references/elevation.md) |
 | Cat 15 Iconography | [references/iconography.md](references/iconography.md) |
 | Cat 16 Navigation Patterns | [references/navigation.md](references/navigation.md) |
-| Cat 17 Design Tokens & Variables Health | [references/design-tokens.md](references/design-tokens.md) |
+| Cat 17 Design Tokens & Variables Health | [references/tokens.md](references/tokens.md) |
 | Cat 18 Ethical Design, dark patterns, RGPD / conformité | [references/ethics.md](references/ethics.md) |
 | Cat 19 Nielsen's Usability Heuristics | [references/heuristics.md](references/heuristics.md) |
 | Step 3, rendu : Strict Output Template, Score by Category, Issue Priority Matrix, radar, Severity Filter, suivi de ré-audit | [references/report-template.md](references/report-template.md) |
@@ -63,16 +57,7 @@ Charger une référence au moment où l'étape ou la catégorie correspondante d
 
 ---
 
-## Step 0: Language Detection & Beginner Check (Always Do This First)
-
-### Language Detection
-Detect the language of the user's message and respond entirely in that language throughout the audit — including all issue labels, explanations, fix suggestions, and the final report. If the user writes in Korean, the full audit report must be in Korean. If in English, respond in English. Never mix languages in a single report.
-
-**Korean response note:** When auditing in Korean, use natural Korean UX/design terminology:
-- 타이포그래피 (typography), 색상 대비 (color contrast), 간격 (spacing)
-- 접근성 (accessibility), 시각적 계층 (visual hierarchy), 일관성 (consistency)
-- 🔴 심각한 문제 / 🟡 경고 / 🟢 팁
-- Overall score label: **디자인 감사 보고서** / 총점: X/100
+## Step 0: Beginner Check (Always Do This First)
 
 ### Beginner Check
 Before anything else, gauge the user's familiarity with design from their message.
@@ -107,7 +92,7 @@ Then **explain every term you use** inline (e.g., if you say "visual hierarchy",
 | Input Type | What to Do |
 |---|---|
 | **Figma URL or link** | Follow the **Figma MCP Workflow** below |
-| **Live website URL** | Fetch via `web_fetch`, treat as code input — see URL Input Spec |
+| **Live website URL** | Fetch via `WebFetch`, treat as code input — see URL Input Spec |
 | **GitHub file URL** | Fetch raw source, treat as code input — see URL Input Spec |
 | **GitHub repo URL** | Browse key files, treat as code input — see URL Input Spec |
 | **Vercel / Netlify preview URL** | Same as live website URL |
@@ -119,10 +104,10 @@ Then **explain every term you use** inline (e.g., if you say "visual hierarchy",
 
 URL Input Spec (arbre de décision par type d'URL et REPORT HEADER des entrées URL) : [references/url-inputs.md](references/url-inputs.md).
 
-If nothing shared yet, use ask_user_input:
+If nothing shared yet, ask by AskUserQuestion:
 - question: "What are you sharing for the audit?"
 - type: single_select
-- options: "Figma link / Figma 링크" / "Live URL / 라이브 URL" / "GitHub URL / GitHub 링크" / "Screenshot / 스크린샷" / "Code (HTML/CSS/React) / 코드" / "Written description / 텍스트 설명"
+- options: "Figma link" / "Live URL" / "GitHub URL" / "Screenshot" / "Code (HTML/CSS/React)" / "Written description"
 
 ### Step 1b: Smart Defaults (infer before asking)
 
@@ -143,21 +128,19 @@ Before presenting any widget, infer as much as possible from what was submitted.
 **Wireframe detection — special case:**
 If the input is clearly a wireframe (greyscale, box placeholders, no real content, skeleton-level fidelity), offer the **Wireframe to Spec** mode before running a standard audit:
 - English: *"This looks like a wireframe — would you like a design spec output instead of a standard audit? I can annotate dimensions, spacing, states required, copy placeholders, and component suggestions."*
-- Korean: *"와이어프레임처럼 보입니다 — 표준 감사 대신 디자인 스펙 출력을 원하시나요? 치수, 간격, 필요한 상태, 카피 플레이스홀더, 컴포넌트 제안을 주석으로 작성해 드릴 수 있습니다."*
 If yes → run Wireframe to Spec mode (see Step 4).
 If no → run standard audit at Early concept stage with relaxed severity.
 
 **Infer WCAG level:**
 - Always default to AA. Only ask if the user explicitly mentions AAA, government/legal context, or "enhanced accessibility."
 
-**Only ask questions when inference fails.** If all three can be inferred, skip all widgets and go straight to the audit. State inferred values at the top of the report in the user's detected language:
+**Only ask questions when inference fails.** If all three can be inferred, skip all widgets and go straight to the audit. State inferred values at the top of the report:
 - English: *"Inferred: Full audit · Dev handoff · WCAG AA — let me know if any of these are wrong."*
-- Korean: *"추론된 설정: 전체 감사 · 개발 전달 · WCAG AA — 잘못된 항목이 있으면 알려주세요."*
 
 **If scope is still ambiguous after inference**, ask one combined widget — not three separate ones:
 - question: "A few quick settings before I start:"
 - type: multi_select (let them override any inferred value)
-- options: "Full audit (default) / 전체 감사" / "Quick audit — 5 categories / 빠른 감사" / "Custom categories / 직접 선택" / "Early concept / 초기 개념" / "Dev handoff (default) / 개발 전달" / "Production / 운영 중" / "WCAG AAA (default is AA)"
+- options: "Full audit (default)" / "Quick audit — 5 categories" / "Custom categories" / "Early concept" / "Dev handoff (default)" / "Production" / "WCAG AAA (default is AA)"
 
 **If Quick audit is selected or inferred**, dynamically pick the 5 highest-risk categories based on input type — do NOT use a hardcoded list:
 
@@ -171,21 +154,20 @@ If no → run standard audit at Early concept stage with relaxed severity.
 | Figma file | Color & Contrast, Design Tokens, Accessibility, Spacing & Layout, Consistency |
 | Code file | Accessibility, Design Tokens, States, Color & Contrast, Typography |
 
-State at top of report in the user's detected language:
+State at top of report:
 - English: *"Quick audit — 5 categories selected for your [type]. Run a full audit to check all 19."*
-- Korean: *"빠른 감사 — [유형]에 맞는 5개 카테고리를 선택했습니다. 전체 19개 항목을 확인하려면 전체 감사를 실행하세요."*
 
 **Severity thresholds by stage** (apply silently based on inferred or selected stage):
 
 | Issue Type | Early Concept | Dev Handoff | Production |
 |---|---|---|---|
-| Missing hover/focus states | 🟢 Tip | 🟡 Warning | 🔴 Critical |
-| Placeholder content | 🟢 Tip | 🔴 Critical | 🔴 Critical |
-| Off-grid spacing | 🟢 Tip | 🟡 Warning | 🟡 Warning |
-| WCAG contrast failure | 🟡 Warning | 🔴 Critical | 🔴 Critical |
-| Missing error states | 🟢 Tip | 🟡 Warning | 🔴 Critical |
-| Hardcoded tokens | 🟢 Tip | 🟡 Warning | 🔴 Critical |
-| Icon touch targets | 🟡 Warning | 🔴 Critical | 🔴 Critical |
+| Missing hover/focus states | Tip | Warning | Critical |
+| Placeholder content | Tip | Critical | Critical |
+| Off-grid spacing | Tip | Warning | Warning |
+| WCAG contrast failure | Warning | Critical | Critical |
+| Missing error states | Tip | Warning | Critical |
+| Hardcoded tokens | Tip | Warning | Critical |
+| Icon touch targets | Warning | Critical | Critical |
 
 **WCAG AA thresholds (default):**
 - Normal text: ≥ 4.5:1 · Large text (18px+ or 14px+ bold): ≥ 3:1 · UI components: ≥ 3:1
@@ -207,9 +189,8 @@ Identify what type of UI was submitted and weight categories accordingly. Never 
 | **Dashboard** | Data viz, metrics, tables, filters | Visual Hierarchy, Consistency, Typography, Color, Responsiveness | Motion, i18n |
 | **Single component** | Button, input, badge, avatar alone | Typography, Color, Spacing, Accessibility, States, Corner Radius, Elevation | Navigation, i18n, Responsiveness |
 
-Always state detected type and skipped categories at the top of the report in the user's detected language:
+Always state detected type and skipped categories at the top of the report:
 - English: *"Detected: Form — auditing 14 of 19 categories. Skipped: i18n & RTL, Navigation, Responsiveness, Motion, Design Tokens (no code provided)."*
-- Korean: *"감지된 유형: 폼 — 19개 카테고리 중 14개를 감사합니다. 건너뜀: 국제화 및 RTL, 내비게이션, 반응형, 모션, 디자인 토큰 (코드 없음)."*
 
 ---
 
@@ -225,22 +206,21 @@ Declare confidence based on input type, then **change audit behaviour accordingl
 
 | Input Type | Confidence | Behaviour changes |
 |---|---|---|
-| Figma file via MCP | 🟢 High | Full audit. All deductions apply. Exact values cited. |
-| Code (HTML/CSS/React) | 🟢 High | Full audit. All deductions apply. Quote actual values in fixes. |
-| Screenshot / image | 🟡 Medium | Visual audit only. Reduce deductions by 50% for issues that require exact values (spacing, token usage, exact px). Flag estimated values explicitly. Skip Design Tokens category entirely. |
-| Description only | 🔴 Low | Do not run a scored audit. Instead: ask for visuals, explain what you *can* observe from the description, list likely risk areas. Never assign a score on description alone. |
+| Figma file via MCP | High | Full audit. All deductions apply. Exact values cited. |
+| Code (HTML/CSS/React) | High | Full audit. All deductions apply. Quote actual values in fixes. |
+| Screenshot / image | Medium | Visual audit only. Reduce deductions by 50% for issues that require exact values (spacing, token usage, exact px). Flag estimated values explicitly. Skip Design Tokens category entirely. |
+| Description only | Low | Do not run a scored audit. Instead: ask for visuals, explain what you *can* observe from the description, list likely risk areas. Never assign a score on description alone. |
 
-**At 🟡 Medium confidence (screenshot input):**
+**At Medium confidence (screenshot input):**
 - Flag every estimated value: > "Spacing appears to be ~12px (estimated from visual)"
 - Do not cite exact hex values — describe color relationship instead: > "Text appears low contrast against the background — likely below 4.5:1"
 - Skip categories that are impossible to assess visually: Design Tokens, exact Typography metrics
-- Add a banner at the top of the report in the user's detected language:
-  - English: *⚠️ **Medium confidence audit** — input was a screenshot. Values are estimated from visual inspection. For an exact audit, share the Figma file or component code.*
-  - Korean: *⚠️ **중간 신뢰도 감사** — 스크린샷을 기반으로 했습니다. 값은 시각적 검토에 의해 추정되었습니다. 정확한 감사를 위해 Figma 파일 또는 컴포넌트 코드를 공유해 주세요.*
-- Apply a **−50% deduction modifier** to all 🟡 Warning and 🟢 Tip issues that depend on exact values. Only 🔴 Critical and 🚫 Blocker visual issues (clear contrast failures, missing states visible in screenshot) take full deductions.
-- **🚫 Blockers on screenshots:** Only flag as Blocker if the violation is visually unambiguous (e.g. clearly failing contrast, clearly missing label). Downgrade to 🔴 Critical with a note if confidence is insufficient to confirm a legal violation.
+- Add a banner at the top of the report:
+  - English: ***Medium confidence audit** — input was a screenshot. Values are estimated from visual inspection. For an exact audit, share the Figma file or component code.*
+- Apply a **−50% deduction modifier** to all Warning and Tip issues that depend on exact values. Only Critical and Blocker visual issues (clear contrast failures, missing states visible in screenshot) take full deductions.
+- **Blockers on screenshots:** Only flag as Blocker if the violation is visually unambiguous (e.g. clearly failing contrast, clearly missing label). Downgrade to Critical with a note if confidence is insufficient to confirm a legal violation.
 
-**At 🟢 High confidence (Figma or code):**
+**At High confidence (Figma or code):**
 - Cite exact values in every issue: "padding: 13px — should be 12px or 16px (8pt grid)"
 - Reference specific layer names (Figma) or line numbers (code)
 - Full deductions apply, no modifiers
@@ -254,19 +234,13 @@ Entrée code (HTML, CSS, React, Vue, Tailwind) : Code Audit Scope Selector, Fram
 ---
 ## Step 2: Run the Design Audit
 
-> ⚠️ **OUTPUT FORMAT IS MANDATORY — DO NOT DEVIATE**
-> Every audit MUST end with a scored report using the Strict Output Template in Step 3.
-> This means: a numeric score out of 100, score arithmetic shown explicitly, issues grouped
-> by severity (🚫/🔴/🟡/🟢), an Accessibility Score, and the What Next widget.
-> Do NOT produce a generic UX review, bullet-point critique, or free-form feedback instead.
-> If you are unsure of any value, estimate it and flag with 🟡 Medium confidence — but always
-> produce the scored report. Skipping the score is never acceptable.
+Every audit ends with the scored report of the Strict Output Template (Step 3), never a free-form review instead; an uncertain value is estimated and flagged Medium confidence.
 
 Check each category. Skip clearly inapplicable ones. Mark each issue:
 
-- 🔴 **Critical** — Breaks usability or accessibility. Must fix. **(-8 points each)**
-- 🟡 **Warning** — Weakens the design. Should fix. **(-4 points each)**
-- 🟢 **Tip** — Polish-level improvement. Nice to have. **(-1 point each)**
+- **Critical** — Breaks usability or accessibility. Must fix. **(-8 points each)**
+- **Warning** — Weakens the design. Should fix. **(-4 points each)**
+- **Tip** — Polish-level improvement. Nice to have. **(-1 point each)**
 
 **Scoring formula (always show this explicitly in every report):**
 ```
@@ -275,7 +249,7 @@ Score = 100 − (blockers × 12) − (criticals × 8) − (warnings × 4) − (t
 Show the arithmetic inline so the user can see exactly how the score was reached. Example:
 > Score: 100 − (3 × 8) − (5 × 4) − (2 × 1) = 100 − 24 − 20 − 2 = **54/100**
 
-Never just show the final number. The breakdown makes the score feel earned and tells the user exactly what to fix to move the needle. If 🟡 Medium confidence applies a −50% modifier, show that too:
+Never just show the final number. The breakdown makes the score feel earned and tells the user exactly what to fix to move the needle. If Medium confidence applies a −50% modifier, show that too:
 > Score: 100 − (2 × 8) − (3 × 4 × 0.5) − (1 × 1 × 0.5) = 100 − 16 − 6 − 0.5 = **77/100** *(medium confidence modifier applied to warnings/tips)*
 
 ---
@@ -317,10 +291,10 @@ Start at **100 points**. Deduct for every issue found:
 
 | Severity | Deduction | When to use |
 |---|---|---|
-| 🚫 **Blocker** | **−12 points** | Violates a legal or compliance standard — WCAG AA, GDPR, PECR, consumer protection law. Cannot ship as-is. |
-| 🔴 **Critical** | **−8 points** | Breaks usability or accessibility for a significant user population. Must fix before shipping. |
-| 🟡 **Warning** | **−4 points** | Degrades experience. Should fix. |
-| 🟢 **Tip** | **−1 point** | Polish-level improvement. Nice to have. |
+| **Blocker** | **−12 points** | Violates a legal or compliance standard — WCAG AA, GDPR, PECR, consumer protection law. Cannot ship as-is. |
+| **Critical** | **−8 points** | Breaks usability or accessibility for a significant user population. Must fix before shipping. |
+| **Warning** | **−4 points** | Degrades experience. Should fix. |
+| **Tip** | **−1 point** | Polish-level improvement. Nice to have. |
 
 **Floor is 0** — score never goes negative.
 
@@ -329,21 +303,21 @@ Blockers are not "worse Criticals" — they are a different class of issue. A Bl
 
 ```
 Blocker examples (legal/compliance basis):
-  🚫 Text contrast below WCAG AA 4.5:1 (Cat 2) — WCAG 2.1 SC 1.4.3
-  🚫 Interactive element with no accessible name (Cat 6) — WCAG 2.4.6
-  🚫 Keyboard-inaccessible interactive element (Cat 6) — WCAG 2.1.1
-  🚫 Meaningful image missing alt text (Cat 6) — WCAG 1.1.1
-  🚫 prefers-reduced-motion absent when animations exist (Cat 8) — WCAG 2.3.3
-  🚫 Pre-checked marketing consent checkbox (Cat 18) — GDPR/PECR
-  🚫 Non-essential cookies defaulting to ON (Cat 18) — GDPR/ePrivacy
-  🚫 Skip link missing or broken (Cat 16) — WCAG 2.4.1
-  🚫 Form input with no label (Cat 7) — WCAG 1.3.1
+  Blocker Text contrast below WCAG AA 4.5:1 (Cat 2) — WCAG 2.1 SC 1.4.3
+  Blocker Interactive element with no accessible name (Cat 6) — WCAG 2.4.6
+  Blocker Keyboard-inaccessible interactive element (Cat 6) — WCAG 2.1.1
+  Blocker Meaningful image missing alt text (Cat 6) — WCAG 1.1.1
+  Blocker prefers-reduced-motion absent when animations exist (Cat 8) — WCAG 2.3.3
+  Blocker Pre-checked marketing consent checkbox (Cat 18) — GDPR/PECR
+  Blocker Non-essential cookies defaulting to ON (Cat 18) — GDPR/ePrivacy
+  Blocker Skip link missing or broken (Cat 16) — WCAG 2.4.1
+  Blocker Form input with no label (Cat 7) — WCAG 1.3.1
 
 Critical examples (usability basis, not legal):
-  🔴 Missing touch target size (Cat 6) — best practice, not strict law
-  🔴 Missing error/empty/loading states (Cat 11)
-  🔴 CTA hierarchy inversion on non-consent screens (Cat 18)
-  🔴 Off-brand or broken dark mode (Cat 9)
+  Critical Missing touch target size (Cat 6) — best practice, not strict law
+  Critical Missing error/empty/loading states (Cat 11)
+  Critical CTA hierarchy inversion on non-consent screens (Cat 18)
+  Critical Off-brand or broken dark mode (Cat 9)
 ```
 
 **When in doubt between Blocker and Critical:** If you can cite a specific WCAG success criterion number, GDPR article, or consumer law provision — it's a Blocker. If it's a usability or design quality judgment — it's a Critical.
@@ -356,16 +330,16 @@ When the same problem appears across multiple nodes, **never list it multiple ti
 Rule: If the same root cause affects N nodes → one issue entry, not N entries.
 
 Format:
-  🔴 [Issue name] — affects N nodes
+  Critical [Issue name] — affects N nodes
   Nodes: [id1], [id2], [id3] (+ N more if >5 — list first 5 only)
   Fix: [single fix that resolves all instances]
 
 Examples:
-  ✅ Good: "Off-grid column width (60.17px) — 3 nodes: 456:49851, 456:49873, 456:49895"
-  ❌ Bad:  "Column 5 off-grid" + "Column 10 off-grid" + "Column 11 off-grid" (3 separate entries)
+  Good: "Off-grid column width (60.17px) — 3 nodes: 456:49851, 456:49873, 456:49895"
+  Bad:  "Column 5 off-grid" + "Column 10 off-grid" + "Column 11 off-grid" (3 separate entries)
 
-  ✅ Good: "Input field missing Error state — 10 nodes: 68:27912, 68:27927, 68:27943 (+7 more)"
-  ❌ Bad:  Listing each input as a separate critical issue
+  Good: "Input field missing Error state — 10 nodes: 68:27912, 68:27927, 68:27943 (+7 more)"
+  Bad:  Listing each input as a separate critical issue
 
 Deduplication also applies to scoring:
   A repeated issue (same root cause, N nodes) counts as ONE issue for deduction purposes.
@@ -380,9 +354,9 @@ In addition to the overall score, always surface a separate **Accessibility Scor
 
 - Start at 100, apply the same 4-tier deduction formula to issues in those 5 categories only
 - Cat 15 is included because it now contains WCAG Blocker-level SVG accessibility checks (aria-hidden, role="img", icon-button labels) that are legal violations, not just design opinions
-- 🚫 Blocker issues in these categories use −12 (legal violations — WCAG AA)
+- Blocker issues in these categories use −12 (legal violations — WCAG AA)
 - Display as: **Accessibility Score: X/100**
-- If any 🚫 Blocker issues exist: append *"⚠️ Contains legal compliance failures"*
+- If any Blocker issues exist: append *"Contains legal compliance failures"*
 
 Scoring bands:
 - **90–100** → WCAG AA compliant — production-ready
@@ -391,9 +365,8 @@ Scoring bands:
 - **< 50** → Failing — legal risk, do not ship
 
 **Always show the maths:**
-> Score: 100 − (1 × 🚫 12) − (2 × 🔴 8) − (3 × 🟡 4) − (1 × 🟢 1) = **59/100** ⚠️ Contains legal compliance failures
+> Score: 100 − (1 × Blocker 12) − (2 × Critical 8) − (3 × Warning 4) − (1 × Tip 1) = **59/100** Contains legal compliance failures
 
-**Korean label:** 접근성 점수 *(Cat 2, 6, 7, 15, 16)*
 
 ---
 
@@ -404,21 +377,21 @@ Strict Output Template (obligatoire), Score by Category, Issue Priority Matrix, 
 ---
 ## Step 4: Offer to Fix
 
-After every report and radar chart, present a **"What next?" widget** using the ask_user_input tool:
+After every report and radar chart, ask **"What next?"** by AskUserQuestion:
 
 - question: "What would you like to do next?"
 - type: multi_select
 - options:
-  - "Fix all Critical issues / 심각한 문제 모두 수정"
-  - "Fix a specific issue / 특정 문제 수정"
-  - "Teach me the rules behind my top issues / 핵심 문제 원리 설명"
-  - "Wireframe to Spec / 와이어프레임 스펙 출력"
-  - "Developer handoff report / 개발자 전달 보고서"
-  - "Explain an issue / 문제 설명"
-  - "Re-audit / 재감사"
-  - "Export report / 보고서 내보내기"
-  - "Export to Canva / Canva로 내보내기"
-  - "Show session progress / 세션 진행 상황"
+  - "Fix all Critical issues"
+  - "Fix a specific issue"
+  - "Teach me the rules behind my top issues"
+  - "Wireframe to Spec"
+  - "Developer handoff report"
+  - "Explain an issue"
+  - "Re-audit"
+  - "Export report"
+  - "Export to Canva"
+  - "Show session progress"
 
 Traitement de chaque option du widget :
 
@@ -435,7 +408,7 @@ Traitement de chaque option du widget :
 - `references/figma-mcp.md` — Figma MCP workflow, page structure, component health, safe editing patterns
 - `references/states.md` — Loading, empty, error, success & disabled state patterns + code checks
 - `references/microcopy.md` — Button labels, error messages, placeholder rules, per-role audit guide
-- `references/design-tokens.md` : Category 17 (« Design Tokens & Variables Health »), checklist et audit code direct des tokens
+- `references/tokens.md` : Category 17 (« Design Tokens & Variables Health »), checklist et audit code direct des tokens
 - `references/i18n.md` — Internationalization, RTL layout, locale-aware formatting
 - `references/corner-radius.md` — Nested radius rule, radius scale, size-proportional rounding
 - `references/elevation.md` — Shadow scale, elevation hierarchy, dark mode depth, code shadow audit
@@ -452,7 +425,7 @@ Traitement de chaque option du widget :
 - `references/forms.md` : Category 7, formulaires et contrôles code
 - `references/dark-mode.md` : Category 9, dark mode et contrôles code
 - `references/responsive.md` : Category 10, responsive et contrôles code
-- `references/design-tokens.md` : Category 17, checklist tokens et audit code des tokens
+- `references/tokens.md` : Category 17, checklist tokens et audit code des tokens
 - `references/report-template.md` : Strict Output Template, radar, filtre de sévérité, suivi de ré-audit
 - `references/next-steps.md` : Step 4, boucle de correction, leçons, explication, ré-audit, modes de correction
 - `references/handoff-export.md` : Developer handoff report, Export report, Export to Canva

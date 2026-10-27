@@ -3,19 +3,11 @@ name: animate
 description: Build an animation from scratch, making the decisions in the order that determines whether it feels right — should it animate at all, what purpose, which tool, which properties, which curve and duration, how it interrupts, how it exits. Writes the implementation. Use when asked to animate something, add motion, make a component feel alive, or build a transition. For critiquing existing motion use review-animations; for auditing a whole codebase use improve-animations.
 ---
 
-> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.
+> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid. Ce qui est demandé s'écrit ; on ne s'arrête que pour une action irréversible hors du périmètre demandé ou pour un choix réellement indécidable, soumis d'abord à `framing-critic`.
 
 # Building Animations
 
-## Initial Response
-
-When this skill is first invoked without a specific question, respond only with:
-
-> I'm ready to build animations that feel right, my knowledge comes from Emil Kowalski's animation philosophy.
-
-Do not provide any other information until the user asks a question.
-
-A construction skill. It does ONE thing: turn a request for motion into an implementation that would survive a strict review. It does not audit a codebase (that's `improve-animations`), critique a diff (that's `review-animations`), hunt for places that could animate (that's `find-animation-opportunities`), or build for React Native (that's `animate-expo`).
+A construction skill. It does ONE thing: turn a request for motion into an implementation that would survive a strict review. It does not audit a codebase (that's `improve-animations`), critique a diff (that's `review-animations`), or hunt for places that could animate (that's `find-animation-opportunities`).
 
 ## Operating Posture
 
@@ -26,15 +18,14 @@ Two failure modes, and the first is worse:
 1. **Animating something that shouldn't animate.** The gate below exists to produce zero lines of code sometimes. That's a success, not a dodge.
 2. **Animating the right thing with the wrong ingredients** — `ease-in` on an entrance, `scale(0)`, keyframes on a toast, a duration that makes a dropdown feel sluggish.
 
-Never present motion options as a menu. Make the call, state the reasoning in one line, write the code.
+Never present motion options as a menu. Make the call, state the decision and the criterion it rests on, write the code.
 
 ## Hard Rules
 
 1. **Run the sequence in order.** Steps 1 and 2 gate everything. Don't reach for a curve before you know whether it animates at all.
 2. **No approximated values.** Every curve, duration, and spring config comes from the tables below. Never invent `cubic-bezier(0.4, 0, 0.2, 1)` because it looks familiar.
-3. **Extend the codebase's tokens, don't fork them.** If `--ease-out` or a duration scale already exists, use it. Adding a parallel system is a defect.
-4. **Reduced motion and hover gating ship with the animation**, not as a follow-up.
-5. **Cheapest tool that works.** Don't install a motion library for a fade.
+3. **Reduced motion and hover gating ship with the animation**, not as a follow-up.
+4. **Cheapest tool that works.** Don't install a motion library for a fade.
 
 ## The Build Sequence
 
@@ -79,8 +70,6 @@ Walk down; stop at the first that fits.
 | Springs, layout animations, exit animations, gesture-driven values | **Motion** (`motion.dev`) |
 
 CSS animations beat JS under load — they run off the main thread, while `requestAnimationFrame`-based animation drops frames while the browser loads, scripts, or paints. Use CSS for predetermined motion, JS for dynamic and interruptible motion.
-
-If the task needs a *component* rather than an animation — a toast, a drawer, a command menu, a dropdown — stop and invoke `pick-ui-library`. Hand-rolling those is how you end up with a `<div>` dropdown and no focus management.
 
 ### 4. Pick the properties
 
@@ -196,7 +185,7 @@ Self-check before you finish. Each of these is an automatic block in `review-ani
 
 ## Output
 
-Write the code. Then, in at most a few lines:
+Écris le code, puis prouve-le par le parcours réel du projet (`testing-real-ux`). Then, in at most a few lines:
 
 - **The gate result** — frequency tier and the named purpose. If something in the request was rejected, say which and why.
 - **The ingredients** — tool, properties, curve, duration or spring config, in one line each.

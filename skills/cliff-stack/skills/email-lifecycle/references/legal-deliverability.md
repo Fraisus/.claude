@@ -29,14 +29,14 @@
 - L'open rate ne sert qu'au **timing relatif** et à l'A/B de sujet sur un même segment.
 
 ## Mythes email réfutés (ne pas recommander)
-- ❌ « Open rate = KPI clé » → cassé par MPP.
-- ❌ « Envoyer plus = plus de revenu » → 81 % se désabonnent pour volume excessif ; fatigue → réputation → spam. Segmentation + centre de préférences.
-- ❌ « Listes achetées OK » → illégal UE, CAN-SPAM (~53 k$/email), réputation détruite.
-- ❌ « Pas besoin d'auth en petit volume » → vrai sur le papier, mauvais conseil opérationnel (spam + Microsoft 550).
-- ❌ « Sujets putaclic / faux Re: » → illégal CAN-SPAM, spam.
-- ❌ « Mardi 10h universel » → moyenne d'industrie ; tester par audience (B2B matin, B2C souvent soir).
-- ❌ « no-reply@ » → bloque les réponses, baisse l'engagement (signal négatif), onglet Promotions.
-- ❌ « Emails tout-image jolis » → spam + aveugle en dark mode ; viser ~60/40 texte/image + alt-text.
+- « Open rate = KPI clé » → cassé par MPP.
+- « Envoyer plus = plus de revenu » → 81 % se désabonnent pour volume excessif ; fatigue → réputation → spam. Segmentation + centre de préférences.
+- « Listes achetées OK » → illégal UE, CAN-SPAM (pénalité civile par email en infraction, montant révisé chaque année par la FTC), réputation détruite.
+- « Pas besoin d'auth en petit volume » → vrai sur le papier, mauvais conseil opérationnel (spam + Microsoft 550).
+- « Sujets putaclic / faux Re: » → illégal CAN-SPAM, spam.
+- « Mardi 10h universel » → moyenne d'industrie ; tester par audience (B2B matin, B2C souvent soir).
+- « no-reply@ » → bloque les réponses, baisse l'engagement (signal négatif), onglet Promotions.
+- « Emails tout-image jolis » → spam + aveugle en dark mode ; viser ~60/40 texte/image + alt-text.
 
 ## Sources
 GDPR : igdpr · GDPRWise · TermsFeed · emailtooltester/Suped/Mailjet (double opt-in). Délivrabilité : Gmail FAQ · dmarcian · Red Sift · Mailgun · Security Boulevard · Microsoft sender requirements. MPP/métriques : datainnovation · beehiiv · Twilio · Litmus · Geysera · Hustler Marketing. Fatigue/volume : Mailmend · Omnisend. Sujets trompeurs : Litmus · Validity.

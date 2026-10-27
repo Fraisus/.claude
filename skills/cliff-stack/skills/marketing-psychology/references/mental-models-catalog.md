@@ -313,7 +313,7 @@ Présenter les prix du plus cher au moins cher (vs l'inverse) augmente le consen
 ### Sale-Ending Differentiation (convention opérationnelle)
 Réserver une terminaison aux prix normaux et une autre aux soldes (ex. 95 = plein tarif, 50 = solde) : le client repère les promos d'un coup d'œil, et l'effet "image de solde" du 9 reste crédible parce qu'il n'est pas galvaudé.
 
-### ⚠️ Quand le charm pricing NE marche pas (contre-indications)
+### Quand le charm pricing NE marche pas (contre-indications)
 - **Taxe ajoutée à la caisse** (US) ou **arrondi monétaire** (disparition du centime : Australie, certaines zones euro) : le .99 affiché n'est pas le prix payé → l'effet left-digit s'annule.
 - **Cartes / sans-contact** : la friction du rendu de monnaie (origine historique anti-vol — "ouvrir le tiroir-caisse" ; *baťovská cena*, ~1920) a disparu.
 - **Acheteurs sophistiqués / B2B** : données scanner modernes MIXTES ; même des enfants évaluent correctement le coût réel. L'effet est plus faible qu'on ne croit.

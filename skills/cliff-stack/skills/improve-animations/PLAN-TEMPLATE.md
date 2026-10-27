@@ -60,8 +60,7 @@ imitate (token names, file placement, prop patterns):
 - **Feel check**: run the UI, trigger <interaction>, and confirm:
   - <observable check, e.g. "the dropdown scales from its trigger, not from center">
   - <e.g. "spamming the toggle never restarts the animation from zero">
-  - In DevTools, set playback to 10% (Animations panel) and confirm <detail>.
-  - Toggle `prefers-reduced-motion` (Rendering panel) and confirm movement is dropped but opacity feedback remains.
+  - Par les niveaux et outils de vérification que le projet déclare, confirmer <détail>, et qu'avec `prefers-reduced-motion` le mouvement disparaît mais le retour d'opacité reste.
 - **Done when**: <machine- or eye-checkable completion criteria>.
 ```
 
@@ -70,4 +69,4 @@ imitate (token names, file placement, prop patterns):
 - One plan per finding. If two findings share every file and the same fix pattern (e.g. the same easing token swap across components), they may merge into one plan.
 - Pull every value from [AUDIT.md](AUDIT.md) — never approximate from memory.
 - The feel check is not optional. Motion can be mechanically correct and still feel wrong; give the executor (or the human reviewing the executor's diff) concrete things to watch for in slow motion.
-- After writing plans, create or update `plans/README.md` with: a table of plans (number, title, severity, status), the recommended execution order, and any dependencies between plans.
+- Une fois les plans écrits, mettre à jour l'index des plans du projet s'il en tient un.

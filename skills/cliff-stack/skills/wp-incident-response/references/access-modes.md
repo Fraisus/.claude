@@ -45,8 +45,8 @@ php detect.php --root=/copie/docroot --sql=/copie/dump.sql --offline
 
 - Copier fichiers **et** dump du serveur. Les contrôles système (processus, cron, `/tmp`, dates ctime) sont alors `NEEDS_HUMAN` : ils exigent le serveur.
 - Base seule : `php detect.php --sql=dump.sql` (préfixe déduit du dump, ou `--prefix=`).
-- Dump volumineux : le mode C peut être délégué à un agent d'analyse en lecture seule, à contexte isolé (invariant M4, optionnel).
-- Antivirus local : le dossier de preuves peut déclencher une mise en quarantaine. **Ne jamais créer d'exclusion soi-même** : le signaler à l'utilisateur, qui décide (invariant I3, I8).
+- Dump volumineux : le mode C peut être délégué à un agent d'analyse en lecture seule, à contexte isolé (optionnel).
+- Antivirus local : le dossier de preuves peut déclencher une mise en quarantaine. **Ne jamais créer d'exclusion soi-même** : le signaler à l'utilisateur, qui décide.
 
 ## Périmètre = abonnement / utilisateur système
 

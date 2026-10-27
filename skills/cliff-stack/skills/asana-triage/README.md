@@ -21,7 +21,7 @@ Premium) — aucun gid ni chemin à retrouver/ré-injecter.
 
 ## Prérequis du poste
 - **Windows** (le helper utilise le Windows Credential Manager + `powershell.exe`).
-- **Node** (fetch natif, v18+) et **curl** dans le PATH (Git Bash).
+- **Node** v18+ (fetch natif).
 
 ## Notes
 - Le PAT est full-access (Asana n'a pas de token read-only) ; le pipeline s'impose la lecture seule

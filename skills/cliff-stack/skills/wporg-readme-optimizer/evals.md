@@ -1,6 +1,6 @@
 # Évals — wporg-readme-optimizer
 
-> Scénarios eval-driven (skill-builder). Rejouer with-skill vs without-skill ; le succès = le with-skill corrige l'erreur que le without-skill commet. Baseline mesurée le 2026-06-20 (gain confirmé 3/3).
+> Scénarios eval-driven (skill-builder). Rejouer with-skill vs without-skill ; le succès = le with-skill corrige l'erreur que le without-skill commet.
 
 ## eval-1 — tags (piège « seuls 5 comptent »)
 ```json

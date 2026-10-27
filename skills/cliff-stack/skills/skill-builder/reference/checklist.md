@@ -1,6 +1,6 @@
 # skill-builder — checklist, format d'éval, squelette
 
-> Source : doc officielle Anthropic « Skill authoring best practices » + skill-creator officiel (`github.com/anthropics/skills`). Chiffres vérifiés en source primaire (juin 2026).
+> Source : doc officielle Anthropic « Skill authoring best practices » + skill-creator officiel (`github.com/anthropics/skills`). Chiffres vérifiés en source primaire.
 
 ## Chiffres-clés officiels (ne pas inventer)
 | Élément | Contrainte officielle |
@@ -11,7 +11,7 @@
 | Budget contexte | Métadonnées (name+desc) préchargées à froid ; SKILL.md lu au déclenchement ; reference/scripts lus à la demande (0 token avant). |
 | Références | **un seul niveau** depuis SKILL.md (le nesting → lecture partielle `head`). TOC si fichier >100 lignes. |
 | Évals | **≥3 scénarios**, créés **avant** le skill, avec **baseline sans skill**. |
-| Modèles | tester **Haiku + Sonnet + Opus** si ciblés. |
+| Modèles | tester **sur les modèles que le poste utilise** si ciblés. |
 
 ## Format d'éval (officiel, JSON)
 Pas de runner intégré — créer le sien (ex. petit harnais d'agents with/without).
@@ -36,7 +36,7 @@ Prévoir aussi des cas **should-NOT-trigger** (pour vérifier que le skill ne se
 4. Élaguer les explications inutiles (« Claude sait déjà »).
 5. Améliorer l'architecture info (schémas/refs dans des fichiers séparés).
 6. Tester avec **Claude B** (session fraîche, skill chargé) sur des tâches réelles.
-7. Observer les ratés → revenir à Claude A → langage plus fort (« MUST » > « always »), réorganiser. Répéter.
+7. Observer les ratés → revenir à Claude A → une consigne concrète et vérifiable, sans emphase ; réorganiser. Répéter.
 
 ## Squelette de fichiers
 ```
@@ -66,7 +66,7 @@ Prévoir aussi des cas **should-NOT-trigger** (pour vérifier que le skill ne se
 
 **Tests**
 - [ ] ≥3 évals créées (avant le skill) + baseline sans skill
-- [ ] testé Haiku/Sonnet/Opus (si ciblés)
+- [ ] testé sur les modèles que le poste utilise (si ciblés)
 - [ ] déclenchement ET qualité de sortie validés, en session fraîche
 
 **Sécurité**

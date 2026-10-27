@@ -5,9 +5,9 @@ description: Audits the security of existing WordPress custom code (plugin, them
 
 # wp-security-audit — trouver, prouver, corriger sans casser
 
-> **Réponds toujours en français** (accents complets). Identifiants de code et chemins inchangés. **Aucun secret en clair** dans ce que tu écris, jamais : masque + empreinte (§Secrets).
+> **Aucun secret en clair** dans ce que tu écris, jamais : masque + empreinte (§Secrets).
 
-Un audit utile ne liste pas des motifs inquiétants : il **prouve** ce qui est exploitable, **écarte** ce qui ne l'est pas, et propose des correctifs qui **ne cassent rien chez ceux qui appellent le code**. Les trois échecs mesurés sans ce skill : gravités « critique » sans aucune requête exécutée, secret recopié en clair dans le rapport, et correctif de garde de cron qui répond 403 à toutes les crontabs clients déjà posées.
+Un audit utile ne liste pas des motifs inquiétants : il **prouve** ce qui est exploitable, **écarte** ce qui ne l'est pas, et propose des correctifs qui **ne cassent rien chez ceux qui appellent le code**.
 
 ## Frontières (ne pas doublonner)
 - **wp-plugin-check** : gate officiel Plugin Check d'un plugin distribuable. Réutiliser son inventaire `../wp-plugin-check/scripts/scan-security-sinks.sh` (exige `rg` exécutable ; dans Git Bash `rg` n'est souvent qu'une fonction du shell interactif, rejouer alors ses motifs avec l'outil Grep).
@@ -35,13 +35,13 @@ Suivre la donnée, pas la proximité : un nonce, un `current_user_can`, un `prep
 - Sans preuve exécutable (API externe, production inaccessible) : **Piste non vérifiée**, avec la mesure qui trancherait.
 
 ### 5. Trier, chaîner, classer, rendre compte
-Pour chaque candidat : l'écrire d'abord en une phrase (revendication, cause, déclencheur, impact, attaquant) ; rejeter les rationalisations (« clairement critique », « le scanner l'a vu ») ; écarter ce qui exige déjà le droit visé (admin `unfiltered_html`). Puis chercher les **chaînes** (lecture de fichier + secret de `wp-config.php`) et les **variantes** d'un Confirmé dans le reste du code et dans les copies (`reference/classes-exploitees.md` §4).
+Pour chaque candidat, le constat du rapport porte revendication, cause, déclencheur, impact, attaquant et preuve ; rejeter les rationalisations (« clairement critique », « le scanner l'a vu ») ; écarter ce qui exige déjà le droit visé (admin `unfiltered_html`). Puis chercher les **chaînes** (lecture de fichier + secret de `wp-config.php`) et les **variantes** d'un Confirmé dans le reste du code et dans les copies (`reference/classes-exploitees.md` §4).
 Confirmé / Piste non vérifiée / Durcissement (méthode de la matrice partagée, §3). Gravité **uniquement** pour les Confirmés, par impact × atteignabilité (anonyme ? rôle requis ?). Pas de score inventé, pas de « sécurisé » global. Chaque Confirmé : `fichier:ligne`, flux, prérequis, impact, **preuve exécutée** (commande et résultat), correctif. Un chemin tracé de bout en bout mais non exécuté reste une Piste, avec la mesure qui la trancherait : c'est le seuil de la matrice partagée, le même pour wp-plugin-check. Lister explicitement les leurres écartés et le périmètre non revu.
 
 ### 6. Corriger (seulement sur demande)
 1. Corriger la cause au niveau partagé (le helper qui colle l'URL, pas chaque appelant).
 2. Rejouer la preuve : le déclenchement échoue désormais, le chemin nominal marche toujours.
-3. **Critique indépendant sur le diff** (correctif de sécurité sur du code recopié entre projets : critère de délégation rempli) : `cliff-stack:independent-critic`, avec le diff, la commande de preuve et le critère « la faille est fermée, et aucun appelant, contrat HTTP ni copie dans un autre projet ne casse ». Tout code écrit après cette passe repart en critique sur son delta.
+3. **Critique indépendant sur le diff**, dans les cas du CLAUDE.md global : `cliff-stack:independent-critic`, avec le diff, la commande de preuve et le critère « la faille est fermée, et aucun appelant, contrat HTTP ni copie dans un autre projet ne casse ».
 4. Supprimer un fichier vulnérable seulement après avoir prouvé l'absence d'appelant sur tout le périmètre (référence §9), puis vérifier le 404.
 
 ## Secrets
@@ -56,4 +56,4 @@ Jamais la valeur, nulle part (rapport, question, commit, nom de fichier). Forme 
 - **Leurres** : `unserialize` avec `allowed_classes => false` sur une option admin, `sanitize_key` + allowlist, nonce imprimé via `esc_js` : les écarter nommément.
 
 ## Anti-patterns
-Gravité sans preuve exécutée • secret recopié, même « pour mémoire » • leurre compté comme faille • correctif qui change un contrat HTTP appelé par un tiers • suppression d'un fichier sans recherche d'appelant hors du dossier courant • test destructif sur un contenu réel • « sécurisé » sur un périmètre partiel • correctif livré sans critique du delta.
+Gravité sans preuve exécutée • secret recopié, même « pour mémoire » • leurre compté comme faille • correctif qui change un contrat HTTP appelé par un tiers • suppression d'un fichier sans recherche d'appelant hors du dossier courant • test destructif sur un contenu réel • « sécurisé » sur un périmètre partiel.

@@ -10,10 +10,14 @@
 //   assigned [--involved]      -> tickets non terminés assignés (et follower si --involved), TOUS workspaces, paginés
 //   task <gid>                 -> détail d'une tâche
 //   stories <gid>              -> commentaires + stories
+//   subtasks <gid>             -> sous-tâches directes (paginé)
 //   attachments <gid>          -> pièces jointes (download_url inclus)
+//   download <gid> <dossier>   -> télécharge les pièces jointes dans un dossier existant et vide
+//                                 (download_url est une URL signée : le token n'y est jamais envoyé)
 //   comment <gid> <texte...>   -> poste un commentaire (le texte n'est pas un secret)
 
 import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -125,6 +129,30 @@ try {
       const r = await getAll(`/attachments?parent=${positional[0]}`, 'name,resource_subtype,download_url,permanent_url,host');
       if (r.error) die(r.error); out(r.data); break;
     }
+    case 'subtasks': {
+      if (!positional[0]) die('usage: subtasks <gid>');
+      const r = await getAll(`/tasks/${positional[0]}/subtasks`, 'name,completed,assignee.name,due_on,permalink_url,num_subtasks');
+      if (r.error) die(r.error); out(r.data); break;
+    }
+    case 'download': {
+      const [gid, dir] = positional;
+      if (!gid || !dir) die('usage: download <gid> <dossier>');
+      if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) die('dossier absent : ' + dir);
+      if (fs.readdirSync(dir).length) die('dossier non vide (un dossier neuf par ticket) : ' + dir);
+      const r = await getAll(`/attachments?parent=${gid}`, 'name,download_url');
+      if (r.error) die(r.error);
+      const files = [];
+      for (const [i, a] of r.data.entries()) {
+        if (!a.download_url) { files.push({ name: a.name, skipped: 'pas de download_url (lien externe)' }); continue; }
+        const res = await fetch(a.download_url); // URL signée, sans en-tête Authorization
+        if (!res.ok) die(`téléchargement de "${a.name}" : HTTP ${res.status}`);
+        const safe = String(i + 1).padStart(2, '0') + '-' + path.basename(a.name || 'piece').replace(/[^\w.\-]+/g, '_');
+        const buf = Buffer.from(await res.arrayBuffer());
+        fs.writeFileSync(path.join(dir, safe), buf);
+        files.push({ name: a.name, file: safe, bytes: buf.length });
+      }
+      out({ dir, files }); break;
+    }
     case 'comment': {
       // tout ce qui suit le gid = le texte (les '--' éventuels du texte sont préservés)
       const gid = argv[1];
@@ -135,7 +163,7 @@ try {
       out({ status, result: { gid: body.data.gid, created_by: body.data.created_by && body.data.created_by.name } }); break;
     }
     default:
-      console.error('usage: me | assigned [--involved] | task <gid> | stories <gid> | attachments <gid> | comment <gid> <texte...>');
+      console.error('usage: me | assigned [--involved] | task <gid> | stories <gid> | subtasks <gid> | attachments <gid> | download <gid> <dossier> | comment <gid> <texte...>');
       process.exit(2);
   }
 } catch (e) {

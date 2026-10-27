@@ -15,7 +15,7 @@ if ($secret === '' || $sig === '' || !hash_equals(hash_hmac('sha256', $raw, $sec
 }
 ```
 JS/TS : préférer **`fs.webhook`** (vérif native du SDK) à un HMAC maison.
-Le webhook est le **SEUL** endroit qui écrit le cache `entitlements`. Jamais de remplissage manuel.
+Le webhook est le seul endroit qui écrit le cache local des droits. Jamais de remplissage manuel.
 
 ## 2. Customer portal (actions sensibles via lien hébergé signé)
 ```ts
@@ -24,9 +24,8 @@ const portal = await fs.api.user.retrieveHostedCustomerPortal(fsUserId);
 ```
 `fsUserId` vient **toujours de la session serveur**, jamais d'un paramètre client (anti-IDOR). Annulation/reprise/changement de carte : soit via portail, soit inline (`subscription.cancel`, voir §4).
 
-## 3. Entitlements = cache de droits (Freemius = source de vérité)
-- Table locale `entitlements` remplie **uniquement par webhook**. Lecture rapide des droits sans appel API à chaque requête.
-- Colonne `provider` = anti-lock-in (un autre adapter remplit la même table).
+## 3. Cache local des droits (Freemius = source de vérité)
+- Le stockage local des droits (table, option, colonnes : découvrir celui du projet) se remplit **uniquement par webhook**. Lecture rapide des droits sans appel API à chaque requête.
 - Factures, paiements, cartes : **jamais stockés** ; récupérés à la volée (`user.retrievePayments`, `retrieveInvoice` → Blob PDF).
 - `fs.entitlement` (service SDK) aide à valider un droit/licence côté serveur.
 
@@ -34,20 +33,20 @@ const portal = await fs.api.user.retrieveHostedCustomerPortal(fsUserId);
 ```ts
 await fs.api.subscription.cancel(subscriptionId, feedback?, reasonIds?); // DELETE — inline
 ```
-Choisir inline vs portail selon l'UX voulue, mais documenter la `capability` (`inline` vs `portal`) dans l'adapter. Coupon de rétention : `subscription.applyRenewalCoupon(...)` + `product.retrieveSubscriptionCancellationCoupon()`.
+Choisir inline vs portail selon l'UX voulue, et le dire là où le projet décrit ses capacités de facturation. Coupon de rétention sur un abonnement existant : `subscription.applyRenewalCoupon(...)` avec le coupon que rend `product.retrieveSubscriptionCancellationCoupon()` ; il porte sur le renouvellement.
 
 ## 5. Checkout / achat
 - JS in-app : `fs.checkout` / `fs.purchase` (SDK) ou le **Checkout JS SDK** (`@freemius/freemius-checkout-js`, Context7 `/freemius/freemius-checkout-js`) pour un bouton d'achat.
 - Token de checkout serveur : REST `/api/users/create-checkout-token`.
 - Upgrade depuis une licence : `license.retrieveCheckoutUpgradeAuthorization(licenseId)` → `settings.authorization`.
 
-## 6. Ports & Adapters (anti-vendor-lock-in) — convention projet
-- L'UI ne connaît qu'un **port** agnostique + un **domaine** normalisé ; jamais `if (provider === 'freemius')`. Elle lit une **`capabilities` map** (`inline` / `portal` / `external` / `unsupported`) pour décider quoi afficher.
-- L'adapter Freemius **traduit** les champs snake_case réels (cf. `sdk-surface.md`) vers le domaine. Ce qui est propre à Freemius va dans un champ `raw`, jamais dans le cœur typé.
-- L'adapter vit **côté serveur uniquement** (détient les secrets). Mapping non confirmé empiriquement (sandbox) ⇒ `TODO(sandbox)`, pas une shape devinée.
+## 6. Couche d'intégration
+- Découvrir celle du projet (port, adaptateur, service, ou appel direct) et s'y brancher ; une couche nouvelle suit l'architecture du projet, pas un patron importé.
+- Le code qui parle à Freemius **traduit** les champs snake_case réels (cf. `sdk-surface.md`) vers les noms du projet.
+- Il vit **côté serveur uniquement** (détient les secrets). Un mapping non confirmé par un achat sandbox se dit non confirmé, jamais une shape devinée.
 
 ## 7. WordPress SDK (PHP, côté plugin/thème vendu)
 Pour le produit WordPress lui-même (licensing, mise à jour, opt-in, `fs_*`) : `Freemius/wordpress-sdk` (Context7 `/freemius/wordpress-sdk`). Distinct du SDK serveur `@freemius/sdk` qui interroge l'API depuis ton backend.
 
 ## 8. Sandbox d'abord (gratuit, sans vente)
-Compte dev Freemius gratuit → produit test → API Token + Product ID dans le dashboard → `FREEMIUS_SANDBOX=true` → achat sandbox (CB de test) → vérifier que le webhook remplit `entitlements` → confirmer empiriquement les shapes avant de retirer les `TODO(sandbox)`.
+Compte dev Freemius gratuit → produit test → API Token + Product ID dans le dashboard → `FREEMIUS_SANDBOX=true` → achat sandbox (CB de test) → vérifier que le webhook remplit le cache local des droits → confirmer empiriquement les shapes.

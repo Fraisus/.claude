@@ -75,9 +75,9 @@ After the discovery interview, generate a small set of visual direction probes *
 
 - The work is **net-new** or directionally ambiguous enough that visual exploration will clarify the brief.
 - The requested fidelity is **mid-fi, high-fi, or production-ready**. Skip for sketch-only planning.
-- The current harness gives you native image generation (Codex's `image_gen`, an equivalent MCP tool, or similar). Don't ask the user to install APIs or tooling.
+- Les sondes se dessinent dans un canevas Claude Design, un artboard par état, jamais en image générée.
 
-When those conditions are met, this step is mandatory. If image generation isn't natively available, do not ask the user to install APIs or tooling. State in one line that the image step is skipped because the harness lacks native image generation, then proceed. The one-line announcement is required, not optional; it forces a conscious decision instead of letting the step quietly evaporate.
+When those conditions are met, this step is mandatory.
 
 Use probes to explore visual lanes, not to replace the brief.
 
@@ -103,11 +103,9 @@ The probes should differ in primary visual direction (hierarchy, topology, densi
 
 ### Important limits
 
-- Do **not** skip discovery because image generation is available.
+- Do **not** skip discovery because probes are possible.
 - Do **not** treat generated imagery as final UX specification, final copy, or final accessibility behavior.
 - Do **not** use this step for minor refinements of existing work. It's for shaping a new surface or clarifying a big directional choice.
-
-If image generation isn't natively available, announce the skip in one line and proceed to the design brief.
 
 ## Phase 2: Design Brief
 

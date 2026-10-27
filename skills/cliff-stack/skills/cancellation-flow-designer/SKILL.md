@@ -5,25 +5,23 @@ description: "Designs the subscription CANCELLATION / retention flow for a freem
 
 # cancellation-flow-designer — flux d'annulation « raison → offre matchée »
 
-> **Langue : réponds toujours en français** (accents complets). Termes techniques (save rate, dunning, pause…) inchangés.
-
 Conçoit le flux d'annulation d'abonnement qui **retient au moment du churn volontaire** : sonder la raison, présenter UNE offre adaptée, confirmer. Les plateformes de facturation fournissent au mieux le sondage de raison (Freemius le fait nativement), rarement l'offre matchée — d'où ce skill (la stratégie) + une couche maison (l'implémentation).
 
-## RÈGLE NON NÉGOCIABLE #1 — garde-fous légaux (non négociables, sourcés)
+## Garde-fous légaux (sourcés)
 
-Un flux d'annulation à offres frôle les **dark patterns** et tombe sous ROSCA (US) et le **DSA (UE, en vigueur depuis fév. 2024)**. À IMPOSER, sans exception :
+Un flux d'annulation à offres frôle les **dark patterns** et tombe sous ROSCA (US) et le **DSA (UE, en vigueur depuis fév. 2024)**. Ces quatre points s'imposent :
 1. **L'annulation doit être aussi facile que la souscription** (principe DSA + ROSCA). Le bouton « Annuler quand même » reste **visible et accessible à chaque étape**.
 2. **Une seule offre par raison**, jamais une chaîne d'écrans obligatoires pour atteindre l'annulation.
 3. **Zéro dark pattern** : pas de faux compte à rebours/urgence, pas de guilt-tripping agressif, pas de case pré-cochée, pas de friction artificielle, pas de bouton « Annuler » masqué/dégradé visuellement.
 4. **L'offre de rétention ne bloque ni ne retarde** l'accès au bouton d'annulation final.
-> Datation (à ne pas confondre) : la **FTC « Click-to-Cancel » Rule a été vacatée le 8 juil. 2025** (8e Circuit) → ne PAS s'appuyer dessus comme si elle s'appliquait. Mais **ROSCA (US) + DSA (UE)** imposent déjà ces exigences. Traiter la barre comme **de fait obligatoire**. → Faire auditer le flux par `[[design-auditor]]` (dark patterns / a11y / GDPR).
+> La **FTC « Click-to-Cancel » Rule a été annulée le 8 juil. 2025** (8e Circuit) : ne pas s'appuyer dessus comme si elle s'appliquait. Mais **ROSCA (US) + DSA (UE)** imposent déjà ces exigences. Traiter la barre comme **de fait obligatoire**. → Faire auditer le flux par `[[design-auditor]]` (dark patterns / a11y / GDPR).
 
 ## Frontière dure — ce skill DÉCIDE, il ne code pas (déléguer)
 
 - **Câblage coupon/pause/downgrade, API d'annulation, webhooks** → la plateforme de facturation du projet ; si c'est Freemius, `[[freemius]]`.
 - **Audit dark-pattern / a11y / conformité GDPR du flux** → `[[design-auditor]]`.
 - **Emails de win-back APRÈS le départ** → `[[email-lifecycle]]`.
-- **Récupération de paiements échoués (churn INVOLONTAIRE, dunning)** → la plateforme de facturation du projet (si Freemius : `[[freemius]]`, mécanique J+1/J+3/J+5 native). ⚠️ Ne pas confondre : ce skill = churn **volontaire** (l'utilisateur clique « annuler »).
+- **Récupération de paiements échoués (churn INVOLONTAIRE, dunning)** → la plateforme de facturation du projet (si Freemius : `[[freemius]]`, mécanique J+1/J+3/J+5 native). Ne pas confondre : ce skill = churn **volontaire** (l'utilisateur clique « annuler »).
 - **Niveau de prix du downgrade / du coupon** → `[[pricing-strategist]]`.
 
 ## La structure recommandée (confirmée Paddle Retain + Churnkey)
@@ -44,7 +42,7 @@ Un flux d'annulation à offres frôle les **dark patterns** et tombe sous ROSCA 
 
 - **Pause** : supérieure en **qualité de rétention** (zéro marge sacrifiée, données gardées, réactivation 1 clic) mais **moins acceptée** (~22%) que le discount (~62%, données Churnkey). → privilégier la pause pour les raisons « temporaire », pas la survendre comme l'offre la plus convertissante.
 - **Coupon = DERNIER palier, one-time, plafonné** (modèle Amazon : 1 offre de rétention / abonnement / 12 mois). Raison : le discount est l'offre la plus acceptée donc la plus coûteuse en marge ET la plus addictive — le mettre en premier **entraîne les clients à annuler pour obtenir une remise**.
-- **Save-rate réaliste** : un flux structuré sauve de l'ordre de **25-35% des tentatives d'annulation** (Churnkey ~34% auto-déclaré, Paddle Retain 25-30%). ⚠️ **Chiffres éditeurs, biais d'auto-sélection.** **NE JAMAIS écrire « 10% → 34% »** : le « 10% baseline » n'a aucune source primaire. Présenter une fourchette, jamais un avant/après fabriqué.
+- **Save-rate réaliste** : un flux structuré sauve de l'ordre de **25-35% des tentatives d'annulation** (Churnkey ~34% auto-déclaré, Paddle Retain 25-30%). **Chiffres éditeurs, biais d'auto-sélection.** Ne jamais écrire « 10% → 34% » : le « 10% baseline » n'a aucune source primaire. Présenter une fourchette, jamais un avant/après fabriqué.
 
 ## Implémentation : identifier d'abord la plateforme du projet
 
@@ -53,7 +51,7 @@ Lire dans le projet quelle plateforme facture (SDK, dépendances, config) avant 
 ### Si la plateforme est Freemius (natif vs à bâtir)
 
 - **Natif** : Cancellation Survey dans le Customer Portal (raison prédéfinie + « Autre »), exposée via events/webhooks/API/email. Plus une « License Retention Guidance » (dialog « Retain vs cancel ») — mais c'est une guidance, **pas une offre**.
-- **À bâtir (couche maison)** : la logique « raison → offre matchée ». Capter la raison (webhook/feedback), présenter l'offre (pause/downgrade/coupon via API Freemius) dans une UI custom **AVANT** de laisser l'API d'annulation s'exécuter. Coupon de sauvetage = configuré **« First payment only »**… ⚠️ vérifier le mécanisme exact pour un abonnement EXISTANT (le « first payment only » s'applique au 1ᵉʳ paiement — pour une remise sur renouvellement en rétention, valider côté `[[freemius]]`). → Cette couche rejoint l'architecture anti-lock-in du projet (UI compte custom + gateway).
+- **À bâtir (couche maison)** : la logique « raison → offre matchée ». Capter la raison (webhook/feedback), présenter l'offre (pause/downgrade/coupon via API Freemius) dans une UI custom **AVANT** de laisser l'API d'annulation s'exécuter. Sur un abonnement existant, la remise de rétention porte sur le renouvellement (« First payment only » ne vaut que pour un achat neuf) ; câblage côté `[[freemius]]`. Cette couche suit l'architecture de facturation du projet, à découvrir.
 
 ## Analytics (mesurer le save-rate honnêtement)
 
@@ -63,7 +61,7 @@ Lire dans le projet quelle plateforme facture (SDK, dépendances, config) avant 
 
 ## Garde-fous (refus)
 
-- **Refuser** tout flux qui viole la RÈGLE #1 (annulation enterrée, dark pattern, offre bloquante) — non négociable, faire auditer par `design-auditor`.
+- **Refuser** tout flux qui viole les garde-fous légaux (annulation enterrée, dark pattern, offre bloquante), faire auditer par `design-auditor`.
 - **Refuser** le coupon en première offre à tous, ou un coupon récurrent/non plafonné.
 - **Ne pas affirmer** « 10% → 34% » ni « 3M sessions » (la source dit « tens of thousands »).
 - **Ne pas coder** le câblage de la plateforme de facturation ici → déléguer (`[[freemius]]` si c'est elle).

@@ -29,7 +29,7 @@
 - **Négatifs** : liste partagée, mise à jour continue (« free », « jobs », « DIY », « tutorial », « download crack »…).
 
 ## Meta
-- **Advantage+** cible l'algo (on guide par signaux + créa). ⚠️ **Advantage+ Sales/Shopping = e-commerce produit only** → un SaaS/service utilise des **campagnes standard**.
+- **Advantage+** cible l'algo (on guide par signaux + créa). **Advantage+ Sales/Shopping = e-commerce produit only** → un SaaS/service utilise des **campagnes standard**.
 - ~50 $/jour min pour sortir de la learning phase (50 conv/7 j).
 
 ## Sources

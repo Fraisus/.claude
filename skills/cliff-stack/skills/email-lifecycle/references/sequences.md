@@ -13,7 +13,7 @@ Structure branchée « a fait l'action cœur / pas fait » :
 - **E4-E7 (J4-J14)** : approfondir l'usage, montrer les cas d'usage avancés, introduire la valeur premium.
 - Aha moment plugin = première mise en production réussie (premier bloc/réglage rendu au front, premier formulaire publié… selon le produit).
 
-> ⚠️ **Frontière transactionnel ↔ marketing DANS l'onboarding.** Les emails « comment utiliser ton plugin » sont transactionnels (base = contrat/service, envoyables sans opt-in marketing). Dès qu'un email **pitche le Pro/l'achat** (typiquement le dernier « intro valeur premium »), il devient **marketing** → réservé aux contacts ayant coché l'opt-in marketing. Pratique : garder E1→E5 en service avec une **invitation discrète à l'opt-in marketing** au milieu, puis réserver l'email d'intro Pro + toute la séquence upgrade aux opt-in. C'est là que se loge le risque GDPR.
+> **Frontière transactionnel ↔ marketing DANS l'onboarding.** Les emails « comment utiliser ton plugin » sont transactionnels (base = contrat/service, envoyables sans opt-in marketing). Dès qu'un email **pitche le Pro/l'achat** (typiquement le dernier « intro valeur premium »), il devient **marketing** → réservé aux contacts ayant coché l'opt-in marketing. Pratique : garder E1→E5 en service avec une **invitation discrète à l'opt-in marketing** au milieu, puis réserver l'email d'intro Pro + toute la séquence upgrade aux opt-in. C'est là que se loge le risque GDPR.
 
 ## Upgrade free→paid (event-triggered — cœur du freemium)
 Déclencheurs : limite atteinte · feature premium gated touchée · usage intensif détecté.

@@ -26,10 +26,7 @@
 ## Deux registres pour un plugin/thème
 
 ### (a) Page repo wordpress.org (readme)
-- But : **découverte + crédibilité**, pas vente agressive.
-- Contenu : description claire, screenshots, FAQ, changelog, note + nb d'avis + installs actives (preuve foule native).
-- Contraintes repo : pas de pricing tape-à-l'œil, pas de CTA marketing intrusif. Reste sobre.
-- **Renvoie vers le site propre** pour la version pro / la conversion.
+Relève de `wporg-readme-optimizer` ; elle renvoie vers le site propre pour la version pro.
 
 ### (b) Site propre — la vraie page de vente
 - Applique tout l'arsenal ci-dessus.
@@ -59,18 +56,6 @@ PREUVE: [témoignages réels — placeholders [à brancher] ; études de cas chi
 OBJECTIONS / FAQ: [prix, compat, support, migration, lock-in]
 PRICING: [→ pricing-strategist] + preuve collée + garantie 30 j + « Le plus populaire »
 CTA FINAL + GARANTIE
-```
-
-## Template — readme wordpress.org (squelette)
-```
-== [Nom] ==
-Tagline claire (bénéfice).
-Description: ce que ça fait, pour qui.
-Screenshots / GIF.
-== Fonctionnalités ==  (FAB sobre)
-== FAQ ==
-== Pro / Premium ==  → lien vers le site propre (pas de pricing détaillé ici)
-Note + avis + installs = preuve native du repo.
 ```
 
 ## Sources

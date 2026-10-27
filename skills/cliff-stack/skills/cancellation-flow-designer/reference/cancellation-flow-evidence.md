@@ -1,6 +1,6 @@
 # Cancellation flows — preuves sourcées, chiffres, garde-fous légaux
 
-> Vérifié 2026-06-20. Distingue **[source primaire]**, **[chiffre éditeur — biais]**, **[tendance]**, **[à proscrire]**. Tous les chiffres « éditeur » viennent d'acteurs (Churnkey/Paddle) qui vendent l'outil → biais d'auto-sélection à signaler.
+> Distingue **[source primaire]**, **[chiffre éditeur — biais]**, **[tendance]**, **[à proscrire]**. Tous les chiffres « éditeur » viennent d'acteurs (Churnkey/Paddle) qui vendent l'outil → biais d'auto-sélection à signaler.
 
 ## Sommaire
 - [1. Structure du flow](#1-structure-du-flow)
@@ -32,7 +32,7 @@
 
 **UE :**
 - **DSA** (pleinement applicable depuis fév. 2024) : interdit les dark patterns, **y compris rendre l'annulation difficile**.
-- **Digital Fairness Act** en préparation (consultation 2024-2025) — vise les processus d'annulation difficiles. À surveiller.
+- **Digital Fairness Act** en préparation : vise les processus d'annulation difficiles.
 
 **Ligne OK vs INTERDIT :**
 - ✅ OK : proposer UNE alternative par raison ; sondage de raison ; offre claire.

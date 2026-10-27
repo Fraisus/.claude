@@ -4,7 +4,7 @@
  * Principe : tout ce qu'aucune référence de confiance n'explique est signalé ; la malveillance
  * se juge sur les capacités (entrée non fiable qui atteint un puits), jamais sur une signature.
  * Ne charge, n'inclut ni n'exécute AUCUN fichier du site : jetons PHP, SQL direct ou dump .sql.
- * PHP 7.4 à 8.3, sans dépendance. Aide : php detect.php --help
+ * Versions PHP supportées par WordPress, sans dépendance. Aide : php detect.php --help
  *
  * Listes de référence embarquées et leur source (aucune liste de produits tiers) :
  * - fichiers racine, types et statuts de contenu, options, tables, hooks de mise à jour, drop-ins :

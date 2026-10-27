@@ -8,23 +8,258 @@
   "skills": [
     {
       "skill": "animate",
-      "path": "skills/animate"
+      "path": "skills/animate",
+      "transforms": [
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": ", hunt for places that could animate \\(that's `find-animation-opportunities`\\), or build for React Native \\(that's `animate-expo`\\)\\.",
+          "replacement": ", or hunt for places that could animate (that's `find-animation-opportunities`).",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "state the reasoning in one line",
+          "replacement": "state the decision and the criterion it rests on",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "3\\. \\*\\*Extend the codebase's tokens, don't fork them\\.\\*\\*[^\\n]*\\n4\\. ",
+          "replacement": "3. ",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "\\n5\\. \\*\\*Cheapest tool that works\\.\\*\\*",
+          "replacement": "\n4. **Cheapest tool that works.**",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "\\n\\nIf the task needs a \\*component\\* rather than an animation[^\\n]*",
+          "replacement": "",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "\\nWrite the code\\. Then, in at most a few lines:",
+          "replacement": "\nÉcris le code, puis prouve-le par le parcours réel du projet (`testing-real-ux`). Then, in at most a few lines:",
+          "min": 1
+        }
+      ]
     },
     {
       "skill": "review-animations",
-      "path": "skills/review-animations"
+      "path": "skills/review-animations",
+      "transforms": [
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "disable-model-invocation: true\\n",
+          "replacement": "",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "(?m)^description: Reviews animation[^\\n]*$",
+          "replacement": "description: Reviews animation and motion code against a high craft bar derived from Emil Kowalski's design engineering philosophy. Use when asked to review, critique or grade an animation or a motion diff, or to judge easing, duration, origin, interruptibility, performance and reduced-motion handling. Déclencheurs « revois cette animation », « critique ce motion », « cette transition est-elle bonne ». NE PAS utiliser pour construire une animation (→ animate) ni pour auditer tout un dépôt (→ improve-animations).",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": " Default to flagging\\. Approval is earned, not assumed\\.",
+          "replacement": " Juge sur les dix standards ci-dessous.",
+          "min": 1
+        }
+      ]
     },
     {
       "skill": "improve-animations",
-      "path": "skills/improve-animations"
+      "path": "skills/improve-animations",
+      "transforms": [
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "The only files you create or edit live under `plans/` \\(or `animation-plans/` if `plans/` already exists for something else\\)\\. If asked to \\\"just fix it\\\", decline and point to `improve-animations execute <plan>` or to running the plan with any agent\\.",
+          "replacement": "Seuls les plans s'écrivent, là où le projet range ses plans.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "For anything beyond a small repo, fan out read-only subagents — one per category \\(or per app area for large monorepos\\)\\.",
+          "replacement": "Au-delà d'un petit dépôt, répartir l'audit entre sous-agents en lecture seule, par catégorie ou par zone de l'application, dans les plafonds de `hooks/budget-agents.json` ; au-delà de deux agents, charger `equipe`.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "### Phase 3 — Vet, prioritize, confirm",
+          "replacement": "### Phase 3 — Vet, prioritize",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Then \\*\\*stop and wait for the user to select\\*\\* which findings become plans\\. If running non-interactively, default to the top 3–5 by leverage\\.",
+          "replacement": "Puis écrire les plans des 3 à 5 constats au meilleur levier, ou de ceux que l'utilisateur a désignés.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "written into `plans/` as `NNN-short-slug\\.md`",
+          "replacement": "written where the project keeps its plans as `NNN-short-slug.md`",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Finish by creating or updating `plans/README\\.md`: [^\\n]*",
+          "replacement": "Finir en mettant à jour l'index des plans du projet s'il en tient un : ordre d'exécution recommandé, dépendances entre plans, colonne d'état.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "recon → audit all categories → vet → confirm → plans",
+          "replacement": "recon → audit all categories → vet → plans",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Dispatch an executor subagent to implement the plan in an isolated worktree, then review its diff with the `review-animations` bar and render a verdict",
+          "replacement": "Lancer un sous-agent exécutant qui applique le plan dans l'arbre de travail et le prouve par les commandes du projet, puis juger son diff à l'aune de `review-animations`",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Re-check `plans/` against the current code",
+          "replacement": "Re-check the project's plans against the current code",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "PLAN-TEMPLATE.md"
+          ],
+          "pattern": "  - In DevTools, set playback to 10% \\(Animations panel\\) and confirm <detail>\\.\\n  - Toggle `prefers-reduced-motion` \\(Rendering panel\\) and confirm movement is dropped but opacity feedback remains\\.\\n",
+          "replacement": "  - Par les niveaux et outils de vérification que le projet déclare, confirmer <détail>, et qu'avec `prefers-reduced-motion` le mouvement disparaît mais le retour d'opacité reste.\n",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "PLAN-TEMPLATE.md"
+          ],
+          "pattern": "- After writing plans, create or update `plans/README\\.md` with: [^\\n]*",
+          "replacement": "- Une fois les plans écrits, mettre à jour l'index des plans du projet s'il en tient un.",
+          "min": 1
+        }
+      ]
     },
     {
       "skill": "find-animation-opportunities",
-      "path": "skills/find-animation-opportunities"
+      "path": "skills/find-animation-opportunities",
+      "transforms": [
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "the sluggish, over-animated interfaces this repo exists to prevent",
+          "replacement": "sluggish, over-animated interfaces",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "If asked to build a suggestion, hand it off \\(e\\.g\\. `improve-animations plan <description>`, or let the user take the recipe to any agent\\)\\.",
+          "replacement": "Quand la construction est demandée, passer à `animate`.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "pulled from this repo's shared vocabulary \\(",
+          "replacement": "pulled from the project's own tokens, discovered first (otherwise these curves: ",
+          "min": 1
+        }
+      ]
     },
     {
       "skill": "animation-vocabulary",
-      "path": "skills/animation-vocabulary"
+      "path": "skills/animation-vocabulary",
+      "transforms": [
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "2\\. \\*\\*Quote the glossary verbatim\\.\\*\\*[^\\n]*",
+          "replacement": "2. **Garde le terme anglais du glossaire** et donne sa définition dans la langue de l'utilisateur, fidèle au glossaire.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "_A curated snapshot mirroring the project's `/vocabulary` page[^\\n]*_\\n\\n",
+          "replacement": "",
+          "min": 1
+        }
+      ]
     },
     {
       "skill": "break-ui",
@@ -46,6 +281,51 @@
           ],
           "pattern": "It does not redesign the component \\(that's `prototype`\\), critique its taste \\(that's `emil-design-eng`\\)",
           "replacement": "It does not redesign the component or critique its taste (that's `impeccable`)",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "If browser tooling is available, screenshot both states at each width and compare\\. If it isn't, reason from the CSS and say which findings you verified visually and which you inferred\\.",
+          "replacement": "Lire les débordements dans le DOM, à chaque largeur et dans les deux états (`scrollWidth` contre `clientWidth`, éléments coupés ou sortis de leur conteneur), par les commandes du projet ; une capture seulement si l'aspect est la question. Sans navigateur, raisonner depuis le CSS et dire quels constats sont mesurés et lesquels sont déduits.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Each of these appears in the screenshot\\.",
+          "replacement": "Chacune se lit dans le DOM.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Present the findings in the format below, leave the toggle running, and stop\\. The user flips the toggle, looks, and decides\\.",
+          "replacement": "Présenter les constats au format ci-dessous, puis arrêter et effacer ce qui a été lancé (serveur, navigateur) ; la bascule reste dans le composant pour que l'utilisateur la retourne.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Keep the worst-case fixture afterward unless the user says otherwise\\.[^\\n]*",
+          "replacement": "Une fois les correctifs prouvés, retirer la fixture du pire cas et la bascule, sauf si l'utilisateur demande de les garder (réservées alors au développement).",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "Close with where the toggle is \\(URL or file path\\), the states it has, and: \\\"Say `fix all` or `fix 1, 3` and I'll apply them\\.\\\"",
+          "replacement": "Close with where the toggle is (file path) and the states it has.",
           "min": 1
         }
       ]
@@ -71,8 +351,55 @@
           "pattern": "or build for React Native \\(that's `animate-expo`\\)",
           "replacement": "or build for React Native",
           "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "(?m)(^description: [^\\n]*For motion itself use animate\\.)$",
+          "replacement": "$1 Déclencheurs « ça marche dans Chrome mais pas sur mon téléphone », « rendre l'appli native sur mobile », « bug du 100vh ». NE PAS utiliser pour concevoir une animation (→ animate), la juger (→ review-animations) ni pour React Native.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "## Operating Posture\\n\\nYou are a senior design engineer who has shipped[^\\n]*\\n\\n",
+          "replacement": "",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "- Connect the phone over USB, run the dev server on `0\\.0\\.0\\.0`, open it by the machine's LAN IP\\.",
+          "replacement": "- Serveur de développement sur 127.0.0.1, port tiré par le système ; sur un appareil réel, l'ouvrir par le moyen que le projet déclare.",
+          "min": 1
+        },
+        {
+          "op": "replace",
+          "files": [
+            "SKILL.md"
+          ],
+          "pattern": "\\nApply the fixes\\. Then, in at most a few lines:",
+          "replacement": "\nRapporter la cause et le correctif de chaque symptôme ; corriger seulement si c'est demandé. Then, in at most a few lines:",
+          "min": 1
         }
       ]
+    }
+  ],
+  "transforms": [
+    {
+      "op": "replace",
+      "files": [
+        "SKILL.md"
+      ],
+      "pattern": "## Initial Response\\n\\nWhen this skill is first invoked without a specific question, respond only with:\\n\\n> I'm ready[^\\n]*\\n\\nDo not provide any other information until the user asks a question\\.\\n\\n",
+      "replacement": "",
+      "min": 1
     }
   ]
 }

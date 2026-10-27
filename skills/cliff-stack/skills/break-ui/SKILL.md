@@ -3,17 +3,9 @@ name: break-ui
 description: Try to break a piece of UI by feeding it worst-case data — long names, unbreakable emails, one-letter names, missing fields, huge counts, zero items, long labels, non-Latin text, emoji, extreme numbers — then render it behind a "Demo data / Worst case" toggle and report everything that broke, with the fix for each. Use when the user asks to stress-test, break, or find edge cases in a component or screen, or to "try the worst case". For visual design critique use design-auditor or impeccable; for motion use review-animations.
 ---
 
-> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.
+> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid. Ce qui est demandé s'écrit ; on ne s'arrête que pour une action irréversible hors du périmètre demandé ou pour un choix réellement indécidable, soumis d'abord à `framing-critic`.
 
 # Breaking UI
-
-## Initial Response
-
-When this skill is first invoked without a specific question, respond only with:
-
-> I'm ready to throw the worst realistic data at your UI and show you what breaks, my standards come from Emil Kowalski's design engineering philosophy.
-
-Do not provide any other information until the user asks a question.
 
 An adversarial skill. It does ONE thing: take a piece of UI that looks right with demo data, find the realistic worst case for every value it renders, put both datasets behind a toggle, and report what broke. It does not redesign the component or critique its taste (that's `impeccable`), or review its motion (that's `review-animations`).
 
@@ -88,11 +80,11 @@ View the worst case and look for each failure signature below. Check it:
 - with **browser zoom at 200%** (or root font size raised), because text grows and boxes don't;
 - in **dark mode** and **RTL** (`dir="rtl"` on a wrapper) if the product supports either.
 
-If browser tooling is available, screenshot both states at each width and compare. If it isn't, reason from the CSS and say which findings you verified visually and which you inferred.
+Lire les débordements dans le DOM, à chaque largeur et dans les deux états (`scrollWidth` contre `clientWidth`, éléments coupés ou sortis de leur conteneur), par les commandes du projet ; une capture seulement si l'aspect est la question. Sans navigateur, raisonner depuis le CSS et dire quels constats sont mesurés et lesquels sont déduits.
 
 #### Failure signatures
 
-Each of these appears in the screenshot. The cause in the right column is almost always it.
+Chacune se lit dans le DOM. The cause in the right column is almost always it.
 
 | What you see | Cause | Fix |
 | --- | --- | --- |
@@ -130,13 +122,13 @@ Every long string forces this choice. Make it per field, not globally:
 
 ### Phase 5 — Report and stop
 
-Present the findings in the format below, leave the toggle running, and stop. The user flips the toggle, looks, and decides.
+Présenter les constats au format ci-dessous, puis arrêter et effacer ce qui a été lancé (serveur, navigateur) ; la bascule reste dans le composant pour que l'utilisateur la retourne.
 
 ### Phase 6 — Fix on request
 
 When the user says which to fix, apply those fixes in the component, using the project's existing conventions and tokens. Then flip the toggle through every state again (Demo too: a fix for the worst case must not regress the demo) and confirm each fixed break is gone.
 
-Keep the worst-case fixture afterward unless the user says otherwise. It's the regression test for the next time someone touches the component. The toggle stays dev-only either way.
+Une fois les correctifs prouvés, retirer la fixture du pire cas et la bascule, sauf si l'utilisateur demande de les garder (réservées alors au développement).
 
 ## Required Output Format
 
@@ -161,7 +153,7 @@ Breaks with more than one right answer: truncate vs wrap for a field, what an em
 
 List the worst cases the component already handles. This shows the test was real and tells the user what not to touch.
 
-Close with where the toggle is (URL or file path), the states it has, and: "Say `fix all` or `fix 1, 3` and I'll apply them."
+Close with where the toggle is (file path) and the states it has.
 
 ## Invocation Variants
 

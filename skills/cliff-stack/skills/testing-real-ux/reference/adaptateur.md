@@ -62,7 +62,7 @@ Une vue secondaire (confirmation, panneau) : `const conf = await page({ contient
 ```json
 { "ok": true, "parcours": "...", "cible": "cdp", "navigateur": "chrome",
   "etapes": [{ "nom": "...", "ok": true, "ms": 932 }],
-  "captures": ["<sortie>/page-1.png"], "trace": "<sortie>/trace.zip",
+  "captures": [], "trace": "<sortie>/trace.zip",
   "premier_plan_pris": [], "processus_arretes_de_force": [], "erreur": null, "duree_ms": 6509, "sortie": "..." }
 ```
 `premier_plan_pris` non vide : un processus de l'essai a pris la fenêtre au premier plan de l'utilisateur, le passage échoue. `processus_arretes_de_force` non vide : la commande est partie en laissant des processus, arrêtés par le script ; son lanceur doit les arrêter lui-même.

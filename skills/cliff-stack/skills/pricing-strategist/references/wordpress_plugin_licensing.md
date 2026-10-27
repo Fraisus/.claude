@@ -32,7 +32,7 @@ With **auto-renew**, the renewal needs no proactive customer action → a renewa
 ## 4. Raising prices: grandfather vs grace period
 Principle **[robust]**: raise prices for **new** customers, **grandfather existing** auto-renew subscriptions. Grandfathering is the most common SaaS price-change method (~**46%** of companies). Slack 2021: +8% avg price, 90-day notice, one-cycle grandfathering → minimal churn.
 - **Hidden cost** to flag: grandfathering perpetually keeps low-engagement customers on old prices + multi-version reporting complexity. Some advise a **grace period (6–12 months)** instead of perpetual grandfathering.
-- ⚠️ Elasticity reality: SaaS price elasticity coefficients ≈ **−1.5 to −2.5** → a +10% price can cut **new-customer acquisition** by 15–25%. The "negligible churn" only applies to the **grandfathered existing base**, not to new prospects.
+- Elasticity reality: SaaS price elasticity coefficients ≈ **−1.5 to −2.5** → a +10% price can cut **new-customer acquisition** by 15–25%. The "negligible churn" only applies to the **grandfathered existing base**, not to new prospects.
 
 ## 5. Low-commitment entry point (monthly/trial)
 A low-commitment entry (monthly plan or trial) can act as a psychological anchor / evaluability point. One editor (RatingWidget) saw conversions drop after removing the monthly plan — *but* this is an anecdote (**n = 19 → 10**, ~2 weeks, a "service-ware" SaaS-as-plugin), **not a reliable metric**. Cite as an example, never as "removing monthly costs 47% of conversions."
@@ -48,4 +48,4 @@ A low-commitment entry (monthly plan or trial) can act as a psychological anchor
 
 **Do NOT cite (fabricated/unsourced):**
 - ❌ "+10% price = +10% revenue for 1–2% churn across 14,000 SaaS." Not a real ProfitWell stat — a distortion. Use "+1% pricing ≈ +11% operating profit" instead.
-- ⚠️ The "−47% RatingWidget" figure: real but n=19→10, anecdotal — never present as a metric.
+- The "−47% RatingWidget" figure: real but n=19→10, anecdotal — never present as a metric.

@@ -18,7 +18,7 @@ Descriptions : varier pain / benefit / proof / action.
 ## Meta / Reddit
 - **Démo vidéo** : montrer le produit en action (le screen réel, le GIF de l'action) > stock photo.
 - **Social proof réel** intégré à la créa (note, avis, logo).
-- Volume créatif (les benchmarks de volume ont doublé en 2026) — mais diversité d'angle > quantité brute.
+- Volume créatif : la diversité d'angle prime sur la quantité brute.
 
 ## Cohérence message
 La créa doit matcher la **landing** (même promesse, même angle) sinon le Quality Score chute et le CVR s'effondre. Aligner ad ↔ [[copywriting-landing]].

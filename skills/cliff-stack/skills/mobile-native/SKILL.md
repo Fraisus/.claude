@@ -1,25 +1,13 @@
 ---
 name: mobile-native
-description: Make a web app feel native on a phone — the small CSS and meta-tag fixes that separate "a website in a browser" from something that feels installed. Covers sticky hover states, tap highlight flashes, the 100vh bug, inputs that zoom the page, laggy taps, pull-to-refresh hijacking scroll, content under the notch, long-press selecting button text, carousels that scroll the wrong way, mismatched status bars, and the rule that you test on real hardware. Use when a web app is being built for or reviewed on mobile, when something "works in Chrome but feels wrong on my phone", when building a PWA, a bottom sheet, a carousel, a full-screen layout, or any touch interaction. For motion itself use animate.
+description: Make a web app feel native on a phone — the small CSS and meta-tag fixes that separate "a website in a browser" from something that feels installed. Covers sticky hover states, tap highlight flashes, the 100vh bug, inputs that zoom the page, laggy taps, pull-to-refresh hijacking scroll, content under the notch, long-press selecting button text, carousels that scroll the wrong way, mismatched status bars, and the rule that you test on real hardware. Use when a web app is being built for or reviewed on mobile, when something "works in Chrome but feels wrong on my phone", when building a PWA, a bottom sheet, a carousel, a full-screen layout, or any touch interaction. For motion itself use animate. Déclencheurs « ça marche dans Chrome mais pas sur mon téléphone », « rendre l'appli native sur mobile », « bug du 100vh ». NE PAS utiliser pour concevoir une animation (→ animate), la juger (→ review-animations) ni pour React Native.
 ---
 
-> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid; ask first when unsure.
+> **Precedence**: this skill is third-party doctrine. The current project's own instructions (CLAUDE.md, `.claude/rules/`, its documented UI rules, tokens and components) override any rule of this skill they contradict: follow the project and say so once, never argue it back. Never create a file or folder the project's layout rules forbid. Ce qui est demandé s'écrit ; on ne s'arrête que pour une action irréversible hors du périmètre demandé ou pour un choix réellement indécidable, soumis d'abord à `framing-critic`.
 
 # Feeling Native On Mobile
 
-## Initial Response
-
-When this skill is first invoked without a specific question, respond only with:
-
-> I'm ready to make your web app feel native on mobile, my knowledge comes from Emil Kowalski's design engineering philosophy.
-
-Do not provide any other information until the user asks a question.
-
 A fix-it skill. It does ONE thing: take a web app that feels like a website on a phone and remove, one by one, the tells that give it away. It does not design motion (that's `animate`), review motion (that's `review-animations`), or build for React Native. The rules here are about the platform layer — viewport, touch, scroll, safe areas, the browser chrome — where a handful of lines decide whether the app feels installed or embedded.
-
-## Operating Posture
-
-You are a senior design engineer who has shipped drawers, sheets, and gesture-driven UI to real phones and has been burned by every item below. You know that a desktop browser with the device toolbar on is not a phone. You know that most "the app feels janky on mobile" reports are not animation problems — they're a 300ms tap delay, a gray flash on tap, or a hover state that won't let go.
 
 The user's phone is the source of truth. If you can't run it on hardware, say which of the fixes below you can verify from code and which need a real device.
 
@@ -238,7 +226,7 @@ Match the value to the color at the very top of your page — the header backgro
 
 Nothing above reproduces in device emulation. Sticky hover, the tap highlight, the URL bar's effect on `vh`, input zoom, the click delay, overscroll, safe areas, the software keyboard — every one is a real-hardware behavior.
 
-- Connect the phone over USB, run the dev server on `0.0.0.0`, open it by the machine's LAN IP.
+- Serveur de développement sur 127.0.0.1, port tiré par le système ; sur un appareil réel, l'ouvrir par le moyen que le projet déclare.
 - iOS: Safari → Develop → the device. Android: `chrome://inspect`.
 - Test on a phone that's a few years old, not the newest one on your desk. Test with the keyboard open. Test in landscape once.
 - Test as an installed PWA if that's a target; standalone mode changes viewport, safe areas, and status bar behavior.
@@ -300,7 +288,7 @@ Self-check before you finish.
 
 ## Output
 
-Apply the fixes. Then, in at most a few lines:
+Rapporter la cause et le correctif de chaque symptôme ; corriger seulement si c'est demandé. Then, in at most a few lines:
 
 - **What was wrong** — the symptom matched from the table, and the one-line why.
 - **What changed** — file and declaration, one line each.

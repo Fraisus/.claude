@@ -14,11 +14,11 @@ Règles dures (consensus 2026) :
 Montrer le hero 5 s à quelqu'un hors contexte → il doit pouvoir dire : *ce que c'est, pour qui, pourquoi c'est mieux*. Sinon, réécrire.
 
 ### Avant / après (réels)
-- ❌ « Project management software for teams » (catégorie)
+- « Project management software for teams » (catégorie)
   ✅ « Manage goals, track progress, and hit deadlines — without endless meetings »
-- ❌ « WordPress block builder with responsive controls » (feature)
+- « WordPress block builder with responsive controls » (feature)
   ✅ « Faites changer la mise en page de n'importe quel bloc selon l'écran — sans une ligne de CSS »
-- ❌ « Architecting legal solutions for tomorrow » (clever/vague → fort rebond)
+- « Architecting legal solutions for tomorrow » (clever/vague → fort rebond)
   ✅ « Avocats d'affaires qui rappellent sous 2 heures » (spécifique → rebond chute)
 
 ### Sous-titre

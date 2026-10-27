@@ -1,6 +1,6 @@
 # API d'éditeur Gutenberg pour l'upsell in-product — vérité terrain
 
-> Vérifié sur developer.wordpress.org, 2026-06-20. **[API officielle]** = confirmé doc ; **[pattern communautaire]** = répandu mais pas une API ; **[à éviter]** = risque guideline ou n'existe pas.
+> Source : developer.wordpress.org. **[API officielle]** = confirmé doc ; **[pattern communautaire]** = répandu mais pas une API ; **[à éviter]** = risque guideline ou n'existe pas.
 
 ## Sommaire
 - [1. Faire apparaître un teaser dans l'inserter](#1-faire-apparaître-un-teaser-dans-linserter)
@@ -25,7 +25,7 @@ Usage upsell : enregistrer une variation teaser dont le rendu `edit` montre un p
 - `PluginDocumentSettingPanel` — panneau dans les réglages du document.
 - `PluginPrePublishPanel` / `PluginPostPublishPanel` — au moment de publier.
 - `PluginBlockSettingsMenuItem`, `PluginMoreMenuItem`.
-⚠️ Canonique 2024+ = package **`@wordpress/editor`** (l'import depuis `@wordpress/edit-post` est l'ancienne voie, en dépréciation). Vérifier au build via Context7.
+Canonique 2024+ = package **`@wordpress/editor`** (l'import depuis `@wordpress/edit-post` est l'ancienne voie, en dépréciation). Vérifier au build via Context7.
 
 ## 4. Notice / Button — props réelles
 - **`Button`** **[API officielle]** — `import { Button } from '@wordpress/components';`. `variant` ∈ `'primary' | 'secondary' | 'tertiary' | 'link'`. CTA upgrade → `variant="primary"`.
@@ -40,7 +40,7 @@ Usage upsell : enregistrer une variation teaser dont le rendu `edit` montre un p
 ## 6. Guidelines WordPress.org — interdit vs toléré
 - **Block Directory** (soumission mono-bloc) : **« No form of payment is permitted for the use of a Block Plugin »** → tout paywall = exclusion. Et « must not display alerts, dashboard notifications, or similar obtrusive messages unrelated to the block ».
 - **Plugin Directory** (repo principal) : freemium autorisé. C'est là qu'un plugin freemium se soumet.
-- **Guideline 5 (Trialware)**, règle principale : « Plugins may not contain functionality that is restricted or locked, only to be made available by payment or upgrade. » Puis : « Functionality may not be disabled after a trial period or quota is met. » ; « We recommend the use of add-on plugins, hosted outside of WordPress.org, in order to exclude the premium code. » ; « Attempting to upsell the user on ad-hoc products and features is acceptable, provided it falls within bounds of guideline 11. » (texte relu le 2026-09-23). → Contrôle désactivé + « Pro » conforme **seulement si le code premium est absent du build gratuit** ; un code présent mais verrouillé par licence tombe sous la règle principale.
+- **Guideline 5 (Trialware)**, règle principale : « Plugins may not contain functionality that is restricted or locked, only to be made available by payment or upgrade. » Puis : « Functionality may not be disabled after a trial period or quota is met. » ; « We recommend the use of add-on plugins, hosted outside of WordPress.org, in order to exclude the premium code. » ; « Attempting to upsell the user on ad-hoc products and features is acceptable, provided it falls within bounds of guideline 11. » → Contrôle désactivé + « Pro » conforme **seulement si le code premium est absent du build gratuit** ; un code présent mais verrouillé par licence tombe sous la règle principale.
 - **Guideline 11 (Hijacking admin)** : upgrade prompts/notices « must be limited in scope and used sparingly, be that contextually or only on the plugin's setting page » ; notices site-wide « must be dismissible or self-dismiss » ; pub dashboard « should be avoided ».
 → **Toléré** : upsell contextuel au point d'usage ou sur la page de réglages. **À éviter** : nags globaux répétés, non-dismissibles, hors-sujet, pub dashboard.
 

@@ -12,9 +12,9 @@ When the user shares any non-Figma URL, apply this decision tree before auditing
 *Includes Vercel previews (`*.vercel.app`), Netlify previews (`*.netlify.app`), staging URLs*
 
 ```
-1. Fetch the URL using web_fetch to retrieve rendered HTML/CSS
+1. Fetch the URL using WebFetch to retrieve rendered HTML/CSS
 2. Treat fetched content as code input — run Step 1.6 framework detection
-3. Set confidence: 🟡 Medium
+3. Set confidence: Medium
    Limitations:
    - Cannot see non-rendered states (hover, focus, error, loading)
    - Cannot audit authenticated pages without credentials
@@ -42,8 +42,8 @@ When the user shares any non-Figma URL, apply this decision tree before auditing
 1. Convert to raw URL: replace /blob/ with /raw/ or use raw.githubusercontent.com
    Example: github.com/user/repo/blob/main/src/Button.tsx
          → raw.githubusercontent.com/user/repo/main/src/Button.tsx
-2. Fetch the raw file content via web_fetch
-3. Treat as direct code input — full confidence 🟢 High
+2. Fetch the raw file content via WebFetch
+3. Treat as direct code input — full confidence High
 4. Run Step 1.6 framework detection on the file content
 5. Note in REPORT HEADER: "GitHub file: [filename] · [repo]"
 
@@ -65,7 +65,7 @@ If the URL points to a directory (not a file):
    d. package.json — detect framework/dependencies
 
 3. Fetch the 2–3 most relevant component/style files
-4. Set confidence: 🟡 Medium (partial codebase view)
+4. Set confidence: Medium (partial codebase view)
 5. Note in REPORT HEADER: "GitHub repo: [repo name] · [N] files audited"
 
 Present scope selector before auditing:
@@ -89,8 +89,8 @@ StackBlitz:  stackblitz.com/edit/[id]
 2. Also attempt to fetch the source files if accessible:
    CodeSandbox API: codesandbox.io/api/v1/sandboxes/[id]
    StackBlitz: check for embedded source in the page
-3. If source available → treat as code input (🟢 High confidence)
-4. If preview only → treat as screenshot/live URL (🟡 Medium confidence)
+3. If source available → treat as code input (High confidence)
+4. If preview only → treat as screenshot/live URL (Medium confidence)
 5. Note in REPORT HEADER: "CodeSandbox/StackBlitz — [source/preview only]"
 ```
 
@@ -101,7 +101,7 @@ CodePen: codepen.io/[user]/pen/[id]
 
 1. Fetch the debug URL for clean HTML: codepen.io/[user]/debug/[id]
    Or fetch the embed: cdpn.io/pen/debug/[id]
-2. Treat rendered output as live URL input (🟡 Medium confidence)
+2. Treat rendered output as live URL input (Medium confidence)
 3. CSS/JS source is often visible in page source — extract if available
 4. Note in REPORT HEADER: "CodePen — rendered preview audited"
 ```
@@ -119,7 +119,7 @@ or page title contains "Storybook"
    ?path=/story/button--primary → auditing Button component, Primary variant
 3. Treat rendered HTML as live URL input for visual checks
 4. If source iframe is accessible, extract component HTML for code checks
-5. Set confidence: 🟡 Medium
+5. Set confidence: Medium
 6. Note in REPORT HEADER: "Storybook — [component name] · [variant]"
 
 Multi-component offer:
@@ -134,12 +134,7 @@ Multi-component offer:
 English:
 **Input:** [URL type] — [url or repo/filename]
 **Type:** [Live URL / GitHub / CodeSandbox / Storybook]
-**Confidence:** 🟡 Medium (or 🟢 High for GitHub file)
+**Confidence:** Medium (or High for GitHub file)
 **Limitations:** [what can't be assessed — list the specific gaps]
 
-Korean:
-**입력:** [URL 유형] — [url 또는 저장소/파일명]
-**유형:** [라이브 URL / GitHub / CodeSandbox / Storybook]
-**신뢰도:** 🟡 보통 (GitHub 파일의 경우 🟢 높음)
-**제한사항:** [평가할 수 없는 항목 — 구체적인 제한 목록]
 ```

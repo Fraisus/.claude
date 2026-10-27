@@ -1,16 +1,11 @@
 ---
 name: pricing-strategist
-description: "Use when designing or revisiting product pricing — selecting a pricing model (subscription seat-based, usage-based, value-based, freemium, or hybrid), running Van Westendorp Price Sensitivity Meter analysis on WTP survey data, or designing Good/Better/Best packaging tiers. Recommends a model and a price range with trade-offs, never a single number. For Commercial leads, Product Marketing, and CMOs at the pricing-design moment — not deal-by-deal discounting, not brand positioning."
-version: 2.8.0
-author: claude-code-skills
-license: MIT
+description: "Use when designing or revisiting product pricing: selecting a pricing model (subscription seat-based, usage-based, value-based, freemium, hybrid), running Van Westendorp Price Sensitivity Meter analysis on WTP survey data, designing Good/Better/Best packaging tiers, or pricing a WordPress plugin or theme (annual licence vs lifetime, sites per tier, renewal discount, grandfathering). Recommends a model and a price range with trade-offs, never a single number. Triggers: « quel prix pour mon plugin », « fixer les prix », « modèle de prix », « paliers », « freemium ou payant », « licence à vie ou annuelle », « combien de sites par plan », « Van Westendorp », « pricing ». NE PAS : remise au cas par cas ni positionnement de marque ; biais de présentation des prix (charm, decoy) → marketing-psychology ; câblage des plans dans la plateforme de facturation → freemius si c'est elle ; copy de la page de prix → copywriting-landing."
+license: MIT (claude-code-skills)
 tags: [commercial, pricing, packaging, wtp, van-westendorp, value-based-pricing, saas-pricing]
-compatible_tools: [claude-code, codex-cli, cursor, antigravity, opencode, gemini-cli]
 ---
 
 # pricing-strategist
-
-> **Langue : réponds toujours en français** (orthographe et accents complets). Les termes techniques (Van Westendorp, WTP, freemium…) peuvent rester en anglais.
 
 ## Purpose
 
@@ -37,25 +32,25 @@ The skill recommends **a model and a range**. The human picks the number, owns t
 - Writing the pricing-page copy itself → `copywriting-landing`
 - The in-editor free→pro upsell placement → `in-product-upgrade-prompts`
 
-## Workflow
+## Workflow (ordre conseillé)
 
 ### Step 1 — Assess customer context
 
-Fill `assets/pricing_brief_template.md` (≈ 20 min). Capture: industry, deal size avg, customer count, value drivers, adoption curve, consumption pattern (seat / usage / value / hybrid), competitor models.
+Use `assets/pricing_brief_template.md` as a checklist of the inputs that matter: industry, deal size avg, customer count, value drivers, adoption curve, consumption pattern (seat / usage / value / hybrid), competitor models.
 
 ### Step 2 — Pick the pricing model
 
-Run `scripts/pricing_model_picker.py --input brief.json --profile saas --output markdown`. Output ranks 5 models by fit-score 0-100 with trade-offs. Decision logic is deterministic: low usage variance + high seat-attach → subscription wins; power-law usage + variable customer value → usage-based wins.
+Run `python scripts/pricing_model_picker.py --input brief.json --profile saas --output markdown`. Output ranks 5 models by fit-score 0-100 with trade-offs. Decision logic is deterministic: low usage variance + high seat-attach → subscription wins; power-law usage + variable customer value → usage-based wins.
 
 ### Step 3 — Validate WTP with Van Westendorp PSM
 
-If you have survey data (≥ 4 questions per respondent: too cheap / bargain / getting expensive / too expensive), run `scripts/wtp_analyzer.py --input survey.json --output markdown`. Output: 4 intersection points (OPP, IDP, PMC, PME) and the Range of Acceptable Prices.
+If you have survey data (≥ 4 questions per respondent: too cheap / bargain / getting expensive / too expensive), run `python scripts/wtp_analyzer.py --input survey.json --output markdown`. Output: 4 intersection points (OPP, IDP, PMC, PME) and the Range of Acceptable Prices.
 
 PSM gives a **range**, not the price. See `references/van_westendorp_methodology.md` for common misinterpretations.
 
 ### Step 4 — Design packaging
 
-Run `scripts/packaging_designer.py --input features.json --profile saas --output markdown`. Output: 3-tier Good/Better/Best assignment with anti-pattern flags (decoy tier, feature dump, no upgrade trigger, Bronze loss leader, Enterprise no-anchor).
+Run `python scripts/packaging_designer.py --input features.json --profile saas --output markdown`. Output: 3-tier Good/Better/Best assignment with anti-pattern flags (decoy tier, feature dump, no upgrade trigger, Bronze loss leader, Enterprise no-anchor).
 
 ### Step 5 — Decide
 
@@ -73,7 +68,7 @@ All scripts: stdlib only. `--help` and `--sample` work on all three.
 
 ```bash
 # Emits a scored 5-model pricing-fit recommendation (subscription / usage / value / freemium / hybrid) for the built-in example
-cd commercial/skills/pricing-strategist && python3 scripts/pricing_model_picker.py --sample
+cd <SKILL_DIR> && python scripts/pricing_model_picker.py --sample
 ```
 
 ## References
@@ -109,9 +104,9 @@ cd commercial/skills/pricing-strategist && python3 scripts/pricing_model_picker.
 - **copywriting-landing** — writes the pricing-page message. Pricing-strategist sets the numbers and packaging the page then sells.
 - **in-product-upgrade-prompts** — the in-editor upsell moment for a free→pro plugin. Consumes the tier design as input.
 
-## Forcing-question library (Matt Pocock grill discipline)
+## Forcing-question library
 
-Walked one at a time by `/cs:grill-commercial` or the orchestrator. Recommended answer + canon citation per question. Never bundled.
+Recommended answer + canon citation per question; ask only those the brief leaves open.
 
 1. **"Is your customer paying for outcomes, seats, or usage?"**
    Recommended: outcomes (value-based) if you can measure them; usage if marginal cost is variable; seats only if usage is roughly flat per user.
@@ -137,4 +132,4 @@ Walked one at a time by `/cs:grill-commercial` or the orchestrator. Recommended 
    Recommended: every Better and Best tier needs a single non-negotiable upgrade trigger.
    Canon: Ramanujam (*Monetizing Innovation*) — Mistake #4: tiers with no clear differentiator make 70% of customers pick the cheapest.
 
-Walk depth-first. Lock 1-3 before opening 4-6. After all 6 are answered, invoke `pricing_model_picker.py` → `wtp_analyzer.py` → `packaging_designer.py` in sequence.
+Questions 1-3 shape the model, 4-6 the packaging; the scripts run in the order above once their inputs exist.

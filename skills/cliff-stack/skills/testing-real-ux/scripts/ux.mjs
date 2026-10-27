@@ -1,7 +1,8 @@
 // Runs one user journey (a « parcours ») on the real application with Playwright: real input events (isTrusted) sent by
 // Chromium's DevTools protocol, never the OS mouse, keyboard or foreground. The project declares how to open its app in
 // <project>/.claude/ux-e2e.json (reference/adaptateur.md); this script never names a project.
-//   node ux.mjs <parcours.mjs> [--projet <dir>] [--adaptateur <file>] [--sans-trace] [-- <extra args for the app command>]
+//   node ux.mjs <parcours.mjs> [--projet <dir>] [--adaptateur <file>] [--sans-trace] [--captures] [-- <extra args for the app command>]
+// --captures: one screenshot of every page at the end, only when the visual aspect is the question; none by default.
 // Prints one JSON report on stdout; exit code 0 only when every step passed and the foreground was never taken.
 import { spawn, execFile, execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
@@ -21,7 +22,8 @@ const propres = sep < 0 ? argv : argv.slice(0, sep);
 const pourApp = sep < 0 ? [] : argv.slice(sep + 1);
 const option = (nom) => { const i = propres.indexOf(nom); return i >= 0 ? propres[i + 1] : null; };
 const parcoursArg = propres.find((a, i) => !a.startsWith("--") && !["--projet", "--adaptateur"].includes(propres[i - 1]));
-if (!parcoursArg) { console.error("usage : node ux.mjs <parcours.mjs> [--projet <dir>] [--adaptateur <fichier>] [--sans-trace] [-- <args>]"); process.exit(2); }
+if (!parcoursArg) { console.error("usage : node ux.mjs <parcours.mjs> [--projet <dir>] [--adaptateur <fichier>] [--sans-trace] [--captures] [-- <args>]"); process.exit(2); }
+const CAPTURES = propres.includes("--captures");
 const PROJET = path.resolve(option("--projet") || process.cwd());
 const ADAPTATEUR = path.resolve(PROJET, option("--adaptateur") || path.join(".claude", "ux-e2e.json"));
 if (!fs.existsSync(ADAPTATEUR)) { console.error(`adaptateur absent : ${ADAPTATEUR} (format : reference/adaptateur.md)`); process.exit(2); }
@@ -66,7 +68,8 @@ async function lancerNavigateur(chromium, headless) {
 // Windows reuses process ids: a process is ours only if it descends from this script or from a root it launched (its
 // commands, the owner of the announced DevTools port) and was born after its parent. The sampler (sonde.ps1) sees every
 // process alive 100 ms or more and the history keeps the dead, so a launcher or an intermediate that already left still
-// links its children; a process is stopped only while its birth time is still the one recorded, this script never
+// links its children; a process is stopped only while its birth time is still the one recorded: this script never stops
+// a process whose birth it cannot match.
 const ENV_ORIGINE = { ...process.env };
 const racines = new Set([process.pid]);
 // birth times are FILETIME strings (beyond 2^53: never a Number), compared as BigInt, always from the same sampler
@@ -247,7 +250,7 @@ try {
 } finally {
   if (navigateur) {
     let i = 0;
-    for (const p of navigateur.contexts().flatMap((c) => c.pages())) {
+    if (CAPTURES) for (const p of navigateur.contexts().flatMap((c) => c.pages())) {
       const f = path.join(SORTIE, `page-${++i}.png`);
       if (await p.screenshot({ path: f }).then(() => true, () => false)) rapport.captures.push(f);
     }

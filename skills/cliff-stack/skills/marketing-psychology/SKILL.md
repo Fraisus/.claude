@@ -1,19 +1,12 @@
 ---
 name: "marketing-psychology"
-description: "When the user wants to apply psychological principles, mental models, or behavioral science to marketing. Also use when the user mentions 'psychology,' 'mental models,' 'cognitive bias,' 'persuasion,' 'behavioral science,' 'why people buy,' 'decision-making,' or 'consumer behavior.' This skill provides 70+ mental models organized for marketing application. NOT pricing-model/tier DESIGN or WTP/Van Westendorp analysis (use pricing-strategist) — it only supplies the behavioral framing layer (charm/decoy/anchoring) once tiers exist. NOT writing/restructuring landing or email copy (use copywriting-landing/email-lifecycle) — it diagnoses which biases are missing, it does not produce the page copy."
-license: MIT
-metadata:
-  version: 1.1.0
-  author: Alireza Rezvani
-  category: marketing
-  updated: 2026-03-06
+description: "When the user wants to apply psychological principles, mental models, or behavioral science to marketing. Also use when the user mentions 'psychology,' 'mental models,' 'cognitive bias,' 'persuasion,' 'behavioral science,' 'why people buy,' 'decision-making,' or 'consumer behavior'; en français : « psychologie », « biais cognitifs », « persuasion », « pourquoi les gens achètent », « modèles mentaux ». This skill provides 70+ mental models organized for marketing application. NOT pricing-model/tier DESIGN or WTP/Van Westendorp analysis (use pricing-strategist) — it only supplies the behavioral framing layer (charm/decoy/anchoring) once tiers exist. NOT writing/restructuring landing or email copy (use copywriting-landing/email-lifecycle) — it diagnoses which biases are missing, it does not produce the page copy."
+license: MIT (Alireza Rezvani)
 ---
 
 # Marketing Psychology
 
-> **Langue : réponds toujours en français** (orthographe et accents complets). Les noms de biais/modèles mentaux peuvent rester en anglais.
-
-You are an expert in applied behavioral science for marketing. Your job is to identify which psychological principles apply to a specific marketing challenge and show how to use them — not just name-drop biases.
+Identify which psychological principles apply to a specific marketing challenge and show how to use them, not just name-drop biases.
 
 ## Before Starting
 
@@ -58,7 +51,7 @@ The full catalog lives in [references/mental-models-catalog.md](references/menta
 - **Paradox of Choice** — Too many options = no decision. Limit to 3 tiers.
 
 **For pricing:**
-- **Charm Pricing** — $49 feels meaningfully cheaper than $50 (left-digit effect). ⚠️ S'annule si taxe/arrondi à la caisse, marché B2B ou acheteur sophistiqué — A/B tester.
+- **Charm Pricing** — $49 feels meaningfully cheaper than $50 (left-digit effect). S'annule si taxe/arrondi à la caisse, marché B2B ou acheteur sophistiqué — A/B tester.
 - **Prestige (round price)** — $100 signale qualité ; le charm crie "promo". Aligner la terminaison sur le positionnement (value vs premium).
 - **Decoy Effect** — Add a dominated option to make your target tier look like the obvious choice.
 - **Rule of 100** — Under $100: show % discount. Over $100: show $ discount.
@@ -75,7 +68,7 @@ The full catalog lives in [references/mental-models-catalog.md](references/menta
 | Situation | Models to Apply |
 |-----------|----------------|
 | Landing page not converting | Loss Aversion, Social Proof, Anchoring, Hick's Law |
-| Pricing page optimization | Charm Pricing (⚠️ vs Prestige selon positionnement), Decoy Effect, Good-Better-Best, Anchoring, Descending-Order |
+| Pricing page optimization | Charm Pricing (vs Prestige selon positionnement), Decoy Effect, Good-Better-Best, Anchoring, Descending-Order |
 | Email sequence engagement | Reciprocity, Zeigarnik Effect, Goal-Gradient, Commitment |
 | Reducing churn | Endowment Effect, Sunk Cost, Switching Costs, Status-Quo Bias |
 | Onboarding activation | IKEA Effect, Goal-Gradient, Fogg Model, Default Effect |
@@ -98,7 +91,7 @@ When applying psychology to a specific challenge, ask:
 - **Pricing page shows all features equally** → No anchoring or decoy. Restructure tiers with a recommended option.
 - **CTA uses weak language** → "Submit" or "Get started" vs "Start my free trial" (endowment framing).
 - **Too many form fields** → Hick's Law: more choices = more friction. Reduce or use progressive disclosure.
-- **No urgency element** → If legitimate scarcity exists, surface it. Countdown timers, limited spots, seasonal offers.
+- **No urgency element** → Surface urgency only if it is real and verifiable (a dated offer that truly ends, a real stock limit); never a fake countdown or invented scarcity.
 
 ## Output Artifacts
 
@@ -112,10 +105,8 @@ When applying psychology to a specific challenge, ask:
 
 ## Communication
 
-All output passes quality verification:
-- Self-verify: source attribution, assumption audit, confidence scoring
-- Output format: Bottom Line → What (with confidence) → Why → How to Act
-- Results only. Every finding tagged: 🟢 verified, 🟡 medium, 🔴 assumed.
+- Output format: Bottom Line → What → Why → How to Act, with source attribution.
+- Results only. Chaque constat porte son niveau de preuve en mot : fort, moyen ou faible.
 
 ## Related Skills
 

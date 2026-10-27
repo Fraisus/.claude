@@ -53,7 +53,7 @@ Après les portes :
 
 ## Variations
 - Défaut signalé : (1) à (8).
-- Fonction nouvelle ou refonte : (4) à (8) ; (1) à (3) seulement si elle corrige aussi un défaut.
+- Fonction nouvelle ou refonte : d'abord le résultat attendu, écrit en une phrase vérifiable, celle que (8) prouvera (un écran : sa maquette validée) ; puis par incréments, chacun passant (4) à (8) ; (1) à (3) seulement si elle corrige aussi un défaut.
 - Retouche sans effet (texte, libellé, style sans comportement) : (8) seule, par une recherche qui prouve la valeur en place, sans essai ni vérificateur.
 - Question ou diagnostic : (1) à (3), puis le rapport ; aucun code tant qu'il n'est pas demandé.
 - Équipe (plus d'un agent qui écrit, ou plus de deux agents en tout) : charger le skill `equipe` avant de lancer. La porte (8) est tenue par un seul arbitre des essais pour toute l'équipe, en tâche de fond pendant que je prends les demandes suivantes ; aucun autre agent ne dépasse le niveau 0. Un défaut trouvé sur un lot repart chez un codeur avec le rapport, puis repasse chez le vérificateur ; au troisième échec, stop et retour à l'utilisateur. Je dis à l'utilisateur ce qui a été trouvé et corrigé ; ce qui sort du lot (écart ancien, idée) va à la file des écarts du projet.
