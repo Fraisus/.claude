@@ -21,8 +21,8 @@ Le type d'artefact Design System charge ses propres références (`format.md`, `
 
 ## tokens.json
 
-- Chaque famille sauf `type` est une LISTE `{"tokens": [{"name", "value", "usage"}]}`. Une carte nom vers valeur (DTCG, W3C) est lue comme vide et disparaît à la première édition sur la page. `check-tokens.mjs` le détecte.
-- `color` porte `themes: [{id, name}]` et une liste plate ; `value` est une chaîne (tous les thèmes) ou un objet par id de thème. Un thème absent hérite du premier. Un id s'écrit en minuscules, chiffres et tirets (`[a-z0-9-]`), clés des valeurs comprises : les scripts refusent toute autre forme.
+- Chaque clé de premier niveau sauf `type` et les métadonnées (`meta`, `name`, `version`, `$schema`, `description`) est une famille, une LISTE `{"tokens": [{"name", "value", "usage"}]}`. Une carte nom vers valeur (DTCG, W3C, plate ou imbriquée) est lue comme vide et disparaît à la première édition sur la page. `check-tokens.mjs` et `compile-tokens.mjs` la refusent.
+- `color` porte `themes: [{id, name}]` et une liste plate ; `value` est une chaîne (tous les thèmes) ou un objet par id de thème. Un thème absent de l'objet hérite du premier. Chaque thème a un id, en minuscules, chiffres et tirets (`[a-z0-9-]`) ; chaque clé d'une valeur par thème (couleur, ombre) est l'un de ces ids, à la lettre près. Les scripts refusent toute autre forme : la valeur serait perdue et celle du premier thème prise à sa place.
 - Valeurs de couleur : hex, `rgb()`, `hsl()`, `oklch()`… à arguments numériques, ou un alias `"{autre-token}"`. Refusés : `var()`, `color-mix()`, `url()`, noms de couleur.
 - Un seul espace de noms `--name` pour toutes les familles hors `type` : un doublon disparaît. Noms : `^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$`.
 - `type` : `{fonts, families, groups}` ; la vue Typographie lit tailles, graisses et interlignes dans `groups[].styles` seulement. Une pile de `families` sans fonction ni point-virgule.

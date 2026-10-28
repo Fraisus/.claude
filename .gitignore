@@ -81,6 +81,8 @@
 # -> guard-secrets-read inactif. Régression réelle déjà rencontrée.
 !/hooks/guard-secrets-read.ps1
 !/skills/cliff-stack/hooks/scripts/guard-secrets-read.ps1
+# Même piège : les jetons de design (design tokens) du skill ui-kit ne sont pas des secrets.
+!/skills/cliff-stack/skills/ui-kit/**
 
 # 4) Ré-exclure explicitement les zones sensibles connues (défense en profondeur)
 /secrets/

@@ -96,7 +96,7 @@ Tous en ESM Node sans dépendance, aide en tête de fichier (`--help` ou `-h` l'
 - **Espaces insécables au texte seulement.** Un remplacement global les pose aussi dans `viewBox`, `d`, `points` ou une classe, et le SVG ne se dessine plus. Les appliquer aux nœuds texte.
 - **Une image lazy reste vide dans une sonde en iframe cachée.** Rendre avec `--eager` ou faire défiler avant de conclure qu'une image manque.
 - **Feuille Google Fonts : le libellé du sous-ensemble précède sa face.** Découper la feuille sur `@font-face` et chercher `latin` dans le morceau rend la face précédente (`latin-ext`), qui n'a pas les lettres de base. `font-faces.mjs` lit le bon couple.
-- **Une carte nom vers valeur (DTCG) est du JSON valide que la page ne lit pas.** Chaque famille est une liste `{name, value, usage}` ; `check-tokens.mjs` et `compile-tokens.mjs` refusent une carte à toute profondeur, et un identifiant de thème hors `[a-z0-9-]`, dont les valeurs seraient perdues.
+- **Une carte nom vers valeur (DTCG) est du JSON valide que la page ne lit pas.** Chaque clé de premier niveau hors `type` et des métadonnées (`meta`, `name`, `version`, `$schema`, `description`) est une famille qui porte une liste `tokens` de `{name, value, usage}` ; `check-tokens.mjs` et `compile-tokens.mjs` refusent en code 1 toute autre forme, plate ou imbriquée. Ils refusent aussi un thème sans identifiant `[a-z0-9-]` et une valeur de couleur ou d'ombre par thème dont une clé n'est pas un identifiant déclaré (`Dark` pour `dark`) : sinon la valeur est perdue et le premier thème mesuré à sa place.
 
 ## Ce que ce skill ne fait pas
 
