@@ -94,6 +94,8 @@ Generate **2 to 4** distinct direction probes based on the discovery answers, es
 
 The probes should differ in primary visual direction (hierarchy, topology, density, typographic voice, or color strategy), not just palette tweaks.
 
+For a reading page (guide, documentation, article, changelog), shape the probes as [read-page.md](read-page.md) describes: they vary the reading structure and the frame, never the reading column.
+
 ### How to use the probes
 
 - Treat them as **direction tests**, not final designs.
@@ -150,6 +152,8 @@ What copy, labels, empty state messages, error messages, and microcopy are neede
 
 **9. Recommended References**
 Based on the brief, list which impeccable reference files would be most valuable during implementation (e.g., layout.md for complex layouts, animate.md for animated features, interaction-design.md for form-heavy features, typeset.md for typography-driven pages, colorize.md for color-led brands).
+
+For a reading page (guide, documentation, article, changelog), always list [read-page.md](read-page.md) next to the register reference.
 
 **10. Open Questions**
 Anything genuinely unresolved. Don't list "open questions" you've already recommended a default for; assert the default and move on. If you'd write `Recommend: X` next to a question, just decide X.

@@ -99,6 +99,10 @@
           "pattern": "the saturated AI default of 2026\\.",
           "replacement": "the current saturated AI default.",
           "min": 1
+        },
+        {
+          "op": "patch",
+          "file": "impeccable/reference-read-page.patch"
         }
       ]
     }
