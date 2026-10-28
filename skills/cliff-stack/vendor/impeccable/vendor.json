@@ -45,7 +45,7 @@
             "SKILL.md"
           ],
           "field": "description",
-          "text": " Not for formal accessibility/GDPR/dark-pattern audit reports — use design-auditor."
+          "text": " Not for formal accessibility/GDPR/dark-pattern audit reports — use design-auditor. Not for building a brand's complete UI kit or Design System artifact from an audit: use ui-kit."
         },
         {
           "op": "patch",

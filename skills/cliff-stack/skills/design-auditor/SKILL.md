@@ -47,7 +47,7 @@ Charger une référence au moment où l'étape ou la catégorie correspondante d
 | Cat 14 Elevation & Shadows | [references/elevation.md](references/elevation.md) |
 | Cat 15 Iconography | [references/iconography.md](references/iconography.md) |
 | Cat 16 Navigation Patterns | [references/navigation.md](references/navigation.md) |
-| Cat 17 Design Tokens & Variables Health | [references/tokens.md](references/tokens.md) |
+| Cat 17 Design Tokens & Variables Health | [references/design-tokens.md](references/design-tokens.md) |
 | Cat 18 Ethical Design, dark patterns, RGPD / conformité | [references/ethics.md](references/ethics.md) |
 | Cat 19 Nielsen's Usability Heuristics | [references/heuristics.md](references/heuristics.md) |
 | Step 3, rendu : Strict Output Template, Score by Category, Issue Priority Matrix, radar, Severity Filter, suivi de ré-audit | [references/report-template.md](references/report-template.md) |
@@ -408,7 +408,7 @@ Traitement de chaque option du widget :
 - `references/figma-mcp.md` — Figma MCP workflow, page structure, component health, safe editing patterns
 - `references/states.md` — Loading, empty, error, success & disabled state patterns + code checks
 - `references/microcopy.md` — Button labels, error messages, placeholder rules, per-role audit guide
-- `references/tokens.md` : Category 17 (« Design Tokens & Variables Health »), checklist et audit code direct des tokens
+- `references/design-tokens.md` : Category 17 (« Design Tokens & Variables Health »), checklist et audit code direct des tokens
 - `references/i18n.md` — Internationalization, RTL layout, locale-aware formatting
 - `references/corner-radius.md` — Nested radius rule, radius scale, size-proportional rounding
 - `references/elevation.md` — Shadow scale, elevation hierarchy, dark mode depth, code shadow audit
@@ -425,7 +425,7 @@ Traitement de chaque option du widget :
 - `references/forms.md` : Category 7, formulaires et contrôles code
 - `references/dark-mode.md` : Category 9, dark mode et contrôles code
 - `references/responsive.md` : Category 10, responsive et contrôles code
-- `references/tokens.md` : Category 17, checklist tokens et audit code des tokens
+- `references/design-tokens.md` : Category 17, checklist tokens et audit code des tokens
 - `references/report-template.md` : Strict Output Template, radar, filtre de sévérité, suivi de ré-audit
 - `references/next-steps.md` : Step 4, boucle de correction, leçons, explication, ré-audit, modes de correction
 - `references/handoff-export.md` : Developer handoff report, Export report, Export to Canva
