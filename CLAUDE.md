@@ -2,7 +2,7 @@
 
 ## Langue
 Toujours répondre en français (orthographe complète, accents respectés).
-- Contenu produit (textes UI, copy, descriptions, modales) sans marqueurs « IA » : pas de tirets cadratin ni demi-cadratin en ponctuation (virgule, point, deux-points, parenthèses à la place), pas d'émojis ni d'icônes décoratives, pas de gras emphatique gratuit. Ponctuation simple, phrases qui se lisent. Trait d'union des mots composés admis.
+- Contenu produit (textes UI, copy, descriptions, modales) sans marqueurs « IA » : pas de tirets cadratin ni demi-cadratin en ponctuation (virgule, point, deux-points, parenthèses à la place), pas d'émojis ni d'icônes décoratives, pas de gras emphatique gratuit. Ponctuation simple, phrases qui se lisent. Trait d'union des mots composés admis. Aucun mot orphelin : un texte qui, à la largeur de son conteneur, laisse un mot seul en dernière ligne se raccourcit pour tenir sur une ligne, à défaut s'allonge en deux lignes pleines ; jamais de retour à la ligne forcé ni de césure ; `text-wrap: pretty` (prose) et `balance` (titres) ne sont qu'un filet, le rendu réel se vérifie à la porte (8).
 
 ## Sécurité Claude Code (ne pas désactiver)
 Poste en autonomie maximale : mode `auto`, barrière par les hooks `PreToolUse` du plugin cliff-stack et `permissions.deny` en filet ; les hooks et les `deny` valent dans tous les modes, les `allow` ne protègent rien. Montage et ce qui interrompt encore : `skills/cliff-stack/hooks/README.md`.
