@@ -188,18 +188,20 @@ $process_presets = function ( string $scope, string $path, array $list, array $s
 				$unchanged[] = "settings.$scope$path.$slug";
 				continue;
 			}
+			// A rung is its value: renaming a preset leaves the rung in place.
+			$value_moved = wp_json_encode( $before[ $value_key ] ?? null ) !== wp_json_encode( $after[ $value_key ] ?? null );
 			// Outside modifiable_presets a preset is a rung: the value picks the nearest one or adds one, the rung never moves.
-			if ( ! in_array( $path, $known['modifiable_presets'], true ) ) {
+			if ( $value_moved && ! in_array( $path, $known['modifiable_presets'], true ) ) {
 				$refused[] = array( 'path' => "settings.$scope$path.$slug", 'reason' => 'changes a rung of ' . $path . ': pick the nearest preset, or add one (allow_add=1) when no neighbour fits', 'before' => $before[ $value_key ] ?? null, 'after' => $after[ $value_key ] ?? null );
 				continue;
 			}
-			if ( ! $allow['modify'] ) {
+			if ( $value_moved && ! $allow['modify'] ) {
 				$refused[] = array( 'path' => "settings.$scope$path.$slug", 'reason' => 'changes an existing preset: pick another preset, or pass allow_modify=1 for a kit decision', 'before' => $before[ $value_key ] ?? null, 'after' => $after[ $value_key ] ?? null );
 				continue;
 			}
 			$lists[ $o ][ $i ] = $after;
 			$touched[ $o ]     = true;
-			$changes[]         = array( 'change' => 'MODIFY PRESET', 'path' => "settings.$scope$path.$slug", 'origin' => $o, 'before' => $before[ $value_key ] ?? $before, 'after' => $after[ $value_key ] ?? $after );
+			$changes[]         = array( 'change' => $value_moved ? 'MODIFY PRESET' : 'RENAME PRESET', 'path' => "settings.$scope$path.$slug", 'origin' => $o, 'before' => $before[ $value_key ] ?? $before, 'after' => $after[ $value_key ] ?? $after );
 			continue;
 		}
 		$reasons = array();
