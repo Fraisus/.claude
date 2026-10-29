@@ -18,6 +18,8 @@
  *                   resolve a preset whose value is var(--x) defined by the theme or an extension
  *   inline_css      inline styles attached to those handles (same purpose)
  *   block_styles    registered block style variations: block name -> [variation names]
+ *   preset_families WP_Theme_JSON::PRESETS_METADATA reduced to what wp-anchor.mjs reads: CSS family ->
+ *                   settings path, value key, setting that hides the default origin from the editor
  */
 if ( ! function_exists( 'wp_get_global_settings' ) ) {
 	fwrite( STDERR, "wp-settings.php: run through WP-CLI (wp eval-file), WordPress not loaded\n" );
@@ -26,8 +28,22 @@ if ( ! function_exists( 'wp_get_global_settings' ) ) {
 
 $wpsa_out_file = isset( $args[0] ) ? (string) $args[0] : '';
 
-$wpsa_user_id   = class_exists( 'WP_Theme_JSON_Resolver' ) ? WP_Theme_JSON_Resolver::get_user_global_styles_post_id() : 0;
+// get_user_global_styles_post_id() would CREATE the post when missing: read without creating.
+$wpsa_user_cpt  = WP_Theme_JSON_Resolver::get_user_data_from_wp_global_styles( wp_get_theme(), false );
+$wpsa_user_id   = (int) ( $wpsa_user_cpt['ID'] ?? 0 );
 $wpsa_user_post = $wpsa_user_id ? get_post( $wpsa_user_id ) : null;
+
+// Preset families as core declares them, for wp-anchor.mjs: CSS family => settings path, value key, default toggle.
+$wpsa_families = array();
+foreach ( WP_Theme_JSON::PRESETS_METADATA as $wpsa_meta ) {
+	if ( ! empty( $wpsa_meta['css_vars'] ) && preg_match( '/^--wp--preset--([a-z0-9-]+)--\$slug$/', $wpsa_meta['css_vars'], $wpsa_m ) ) {
+		$wpsa_families[ $wpsa_m[1] ] = array(
+			'path'           => $wpsa_meta['path'],
+			'value_key'      => $wpsa_meta['value_key'] ?? 'size',
+			'default_toggle' => is_array( $wpsa_meta['prevent_override'] ?? null ) ? $wpsa_meta['prevent_override'] : null,
+		);
+	}
+}
 
 $wpsa_theme_raw = class_exists( 'WP_Theme_JSON_Resolver' ) ? WP_Theme_JSON_Resolver::get_theme_data()->get_raw_data() : array();
 
@@ -117,6 +133,7 @@ $wpsa_data = array(
 	'stylesheets'    => array_values( $wpsa_sheets ),
 	'inline_css'     => $wpsa_inline,
 	'block_styles'   => $wpsa_block_styles,
+	'preset_families' => $wpsa_families,
 );
 
 $wpsa_json = wp_json_encode( $wpsa_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );

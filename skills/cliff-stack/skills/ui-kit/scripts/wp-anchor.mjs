@@ -74,21 +74,13 @@ const PRESET_FAMILY = {
   shadow: 'shadow',
   dimension: 'width',
 };
-// settings path of each served family, for names, origins and the theme layer comparison
-const SETTINGS_PATH = {
-  color: ['color', 'palette', 'color'],
-  'font-size': ['typography', 'fontSizes', 'size'],
-  'font-family': ['typography', 'fontFamilies', 'fontFamily'],
-  spacing: ['spacing', 'spacingSizes', 'size'],
-  'border-radius': ['border', 'radiusSizes', 'size'],
-  shadow: ['shadow', 'presets', 'shadow'],
-  dimension: ['dimensions', 'dimensionSizes', 'size'],
-};
+// first match wins: a font size or weight name also contains "font"
 const NAME_RULES = [
   [/shadow|elevation/i, 'shadow'],
   [/radius|radii|rounded|corner/i, 'radius'],
-  [/(^|-)font(-family)?(-|$)|typeface|family/i, 'font-family'],
   [/font-size|(^|-)fs(-|$)|(^|-)(text|type)-/i, 'font-size'],
+  [/font-(weight|style|stretch|variant)|line-height|letter-spacing|leading|tracking/i, null],
+  [/(^|-)font(-family)?(-|$)|typeface|family/i, 'font-family'],
   [/space|spacing|gap|gutter|section|inset|padding|margin|stack/i, 'spacing'],
   [/layout|container|content|wide|prose|measure|max-width|(^|-)width/i, 'width'],
 ];
@@ -422,7 +414,7 @@ function fontShorthandSize(v) {
 /* ---------- kit ---------- */
 
 function classifyByName(name) {
-  for (const [re, fam] of NAME_RULES) if (re.test(name)) return fam;
+  for (const [re, fam] of NAME_RULES) if (re.test(String(name))) return fam;
   return null;
 }
 
@@ -524,7 +516,7 @@ export function readSite(site, extraCss = []) {
   const blockScoped = new Map();
   for (const d of decls) {
     const m = /^--wp--preset--([a-z-]+?)--(.+)$/.exec(d.name);
-    if (!m || !(m[1] in PRESET_FAMILY)) continue;
+    if (!m || !(m[1] in PRESET_FAMILY) || !site.preset_families[m[1]]) continue;
     if (!isRootSelector(d.selector)) {
       const key = d.selector;
       if (!blockScoped.has(key)) blockScoped.set(key, new Set());
@@ -534,10 +526,11 @@ export function readSite(site, extraCss = []) {
     if (presets.some((p) => p.cssFamily === m[1] && p.slug === m[2])) continue;
     presets.push({ cssFamily: m[1], family: PRESET_FAMILY[m[1]], slug: m[2], value: d.value });
   }
-  // names and origins from the merged settings; theme layer value for the comparison
+  // names and origins from the merged settings; theme layer value for the comparison; a default-origin preset
+  // the theme hides from the editor (its default* setting false) is served but not offered
   for (const p of presets) {
-    const [group, key, field] = SETTINGS_PATH[p.cssFamily];
-    const byOrigin = getPath(site.settings, [group, key]) ?? {};
+    const { path, value_key: field, default_toggle: toggle } = site.preset_families[p.cssFamily];
+    const byOrigin = getPath(site.settings, path) ?? {};
     for (const origin of ['custom', 'theme', 'default']) {
       const hit = (byOrigin[origin] ?? []).find((x) => kebab(x.slug) === p.slug);
       if (hit && !p.origin) {
@@ -545,7 +538,8 @@ export function readSite(site, extraCss = []) {
         p.label = hit.name;
       }
     }
-    const themeList = getPath(site.theme_settings, [group, key]);
+    p.offered = !(p.origin === 'default' && toggle && getPath(site.settings, toggle) === false);
+    const themeList = getPath(site.theme_settings, path);
     const inTheme = (Array.isArray(themeList) ? themeList : themeList?.theme ?? []).find((x) => kebab(x.slug) === p.slug);
     const served = [...(byOrigin.custom ?? []), ...(byOrigin.theme ?? [])].find((x) => kebab(x.slug) === p.slug);
     if (inTheme && served && JSON.stringify(inTheme[field]) !== JSON.stringify(served[field])) p.themeValue = inTheme[field];
@@ -555,7 +549,7 @@ export function readSite(site, extraCss = []) {
   for (const [k, slug] of [['contentSize', 'contentSize'], ['wideSize', 'wideSize']]) {
     if (!layout[k]) continue;
     const themeV = site.theme_settings?.layout?.[k];
-    presets.push({ cssFamily: 'layout', family: 'width', slug, label: k === 'contentSize' ? 'largeur du contenu' : 'largeur large', value: String(layout[k]), origin: 'layout', themeValue: themeV && themeV !== layout[k] ? themeV : undefined });
+    presets.push({ cssFamily: 'layout', family: 'width', slug, label: k === 'contentSize' ? 'largeur du contenu' : 'largeur large', value: String(layout[k]), origin: 'layout', offered: true, themeValue: themeV && themeV !== layout[k] ? themeV : undefined });
   }
   return { presets, vars, blockScoped, missing };
 }
@@ -584,8 +578,8 @@ const fmt = (n) => `${Math.round(n * 100) / 100}px`;
 const rangeText = (r) => (r.fluid ? `${fmt(r.lo)} à ${fmt(r.hi)}` : fmt(r.lo));
 
 function compareToken(tok, presets, ctx) {
-  const cands = presets.filter((p) => p.family === tok.family).map((p) => presetCandidate(p, ctx)).filter((p) => !p.error);
-  if (!cands.length) return { verdict: 'sans ancrage', why: `aucun preset servi de la famille ${FAMILY_LABEL[tok.family]}` };
+  const cands = presets.filter((p) => p.family === tok.family && p.offered).map((p) => presetCandidate(p, ctx)).filter((p) => !p.error);
+  if (!cands.length) return { verdict: 'sans ancrage', why: `aucun preset offert de la famille ${FAMILY_LABEL[tok.family]}` };
   if (tok.family === 'color') {
     const lab = oklab(tok.value);
     if (!lab) return { verdict: 'non évaluable', why: `couleur illisible ${tok.value}` };
@@ -667,7 +661,8 @@ export function anchor(kitTokens, site, opts = {}) {
   return {
     ctx,
     rows,
-    unusedPresets: presets.filter((p) => !used.has(`${p.cssFamily}/${p.slug}`)),
+    unusedPresets: presets.filter((p) => p.offered && !used.has(`${p.cssFamily}/${p.slug}`)),
+    hiddenPresets: presets.filter((p) => !p.offered),
     dbOverrides: presets.filter((p) => p.themeValue !== undefined || p.overridden),
     blockScoped,
     presetErrors: presets.filter((p) => p.error),
@@ -708,6 +703,10 @@ function textReport(res, meta, kitFile) {
   if (outside.length) out.push(outside.map((r) => r.tok.name).join(', '));
   out.push('', `== Presets du site sans jeton (${res.unusedPresets.length})`);
   for (const p of res.unusedPresets) out.push(`${pName(p)} = ${p.error ? `non évaluable : ${p.error}` : pValue(p)}`);
+  if (res.hiddenPresets.length) {
+    out.push('', `== Presets servis mais masqués dans l'éditeur (${res.hiddenPresets.length}) : jamais proposés à l'ancrage, l'auteur ne peut pas les choisir`);
+    out.push(res.hiddenPresets.map((p) => `${pName(p)} = ${p.error ? 'non évaluable' : pValue(p)}`).join(', '));
+  }
   out.push('', `== Valeur servie différente de la couche du thème (${res.dbOverrides.length}) : la base fait foi`);
   for (const p of res.dbOverrides) out.push(`${pName(p)} : thème ${JSON.stringify(p.themeValue ?? '(redéclaré en admin)')}, servi ${p.value}`);
   if (res.blockScoped.size) {
@@ -729,6 +728,7 @@ function jsonReport(res, meta) {
     range: { minWidth: res.ctx.minW, maxWidth: res.ctx.maxW, rem: res.ctx.rem, tol: res.ctx.tol, tolColor: res.ctx.tolColor },
     tokens: res.rows.map((r) => ({ name: r.tok.name, family: r.tok.family, value: r.tok.value, verdict: r.verdict, matches: r.matches?.map(p), nearest: r.nearest ? p(r.nearest) : undefined, detail: r.detail ?? r.why })),
     presetsWithoutToken: res.unusedPresets.map(p),
+    servedNotOffered: res.hiddenPresets.map(p),
     servedDiffersFromTheme: res.dbOverrides.map((x) => ({ ...p(x), theme: x.themeValue })),
     blockScoped: Object.fromEntries([...res.blockScoped].map(([k, v]) => [k, [...v]])),
   };
@@ -743,15 +743,21 @@ function selftest() {
     settings: {
       layout: { contentSize: '800px', wideSize: '1200px' },
       color: { palette: { theme: [{ slug: 'base', name: 'Base', color: '#FFFFFF' }, { slug: 'ink', name: 'Ink', color: '#111111' }], custom: [{ slug: 'ink', name: 'Ink', color: '#101010' }] } },
-      spacing: { spacingSizes: { theme: [{ slug: 's1', name: 'S1', size: 'var(--x-s1)' }, { slug: 's2', name: 'S2', size: '24px' }] } },
+      spacing: { defaultSpacingSizes: false, spacingSizes: { default: [{ slug: 'dx', name: 'DX', size: '20px' }], theme: [{ slug: 's1', name: 'S1', size: 'var(--x-s1)' }, { slug: 's2', name: 'S2', size: '24px' }] } },
       typography: { fontSizes: { theme: [{ slug: 'body', name: 'Body', size: '7px' }] }, fontFamilies: { theme: [{ slug: 'sans', name: 'Sans', fontFamily: '"Alpha Sans", sans-serif' }] } },
     },
     theme_settings: { color: { palette: [{ slug: 'base', color: '#FFFFFF' }, { slug: 'ink', color: '#111111' }] }, layout: { contentSize: '760px', wideSize: '1200px' } },
-    variables_css: ':root{--wp--preset--color--base: #FFFFFF;--wp--preset--color--ink: #101010;--wp--preset--font-size--body: clamp(6px, 0.375rem + ((1vw - 3.2px) * 0.098), 7px);--wp--preset--font-family--sans: "Alpha Sans", sans-serif;--wp--preset--spacing--s1: var(--x-s1);--wp--preset--spacing--s2: 24px;--wp--preset--spacing--s3: var(--x-undefined);}.wp-block-x{--wp--preset--color--base: #000}',
+    variables_css: ':root{--wp--preset--color--base: #FFFFFF;--wp--preset--color--ink: #101010;--wp--preset--font-size--body: clamp(6px, 0.375rem + ((1vw - 3.2px) * 0.098), 7px);--wp--preset--font-family--sans: "Alpha Sans", sans-serif;--wp--preset--spacing--s1: var(--x-s1);--wp--preset--spacing--s2: 24px;--wp--preset--spacing--s3: var(--x-undefined);--wp--preset--spacing--dx: 20px;}.wp-block-x{--wp--preset--color--base: #000}',
     inline_css: '.other{--x-s1: 999px}:root{--x-s1: clamp(16px, 2vw, 32px)}',
     stylesheets: [],
+    preset_families: {
+      color: { path: ['color', 'palette'], value_key: 'color', default_toggle: ['color', 'defaultPalette'] },
+      'font-size': { path: ['typography', 'fontSizes'], value_key: 'size', default_toggle: ['typography', 'defaultFontSizes'] },
+      'font-family': { path: ['typography', 'fontFamilies'], value_key: 'fontFamily', default_toggle: null },
+      spacing: { path: ['spacing', 'spacingSizes'], value_key: 'size', default_toggle: ['spacing', 'defaultSpacingSizes'] },
+    },
   };
-  const kit = ':root{--bg:#ffffff;--absent:#123456;--ink-like:#111111;--gap-a:24px;--gap-b:20px;--gap-c:24.8px;--gap-d:400px;--font-sans:"Alpha Sans", system-ui;--text-body:400 7px/1.5 var(--font-sans);--z-modal:400;--width-content:800px}';
+  const kit = ':root{--bg:#ffffff;--absent:#123456;--ink-like:#111111;--gap-a:24px;--gap-b:20px;--gap-c:24.8px;--gap-d:400px;--font-sans:"Alpha Sans", system-ui;--text-body:400 7px/1.5 var(--font-sans);--z-modal:400;--width-content:800px;--font-size-xl:7px;--font-weight-bold:700}';
   const res = anchor(readKit(kit), readSite(site), { settings: site.settings });
   const get = (n) => res.rows.find((r) => r.tok.name === n);
   const checks = [
@@ -759,7 +765,10 @@ function selftest() {
     ['couleur absente sans ancrage', get('--absent').verdict === 'sans ancrage'],
     ['quasi-noir proche du preset réglé en base', get('--ink-like').verdict === 'proche' && get('--ink-like').matches[0].origin === 'custom'],
     ['24px exact sur s2', get('--gap-a').verdict === 'exact' && get('--gap-a').matches[0].slug === 's2'],
-    ['20px dans la plage var() de s1', get('--gap-b').verdict === 'plage' && get('--gap-b').matches[0].slug === 's1'],
+    ['20px dans la plage var() de s1, pas sur le preset default masqué dx', get('--gap-b').verdict === 'plage' && get('--gap-b').matches[0].slug === 's1'],
+    ['preset default masqué listé à part', res.hiddenPresets.some((p) => p.slug === 'dx') && !res.unusedPresets.some((p) => p.slug === 'dx')],
+    ['--font-size-* classé taille', get('--font-size-xl').tok.family === 'font-size' && get('--font-size-xl').verdict === 'borne'],
+    ['--font-weight-* hors familles', get('--font-weight-bold').verdict === 'hors familles'],
     ['24.8px proche (3,2 %)', get('--gap-c').verdict === 'proche'],
     ['400px sans ancrage', get('--gap-d').verdict === 'sans ancrage'],
     ['police exacte', get('--font-sans').verdict === 'exact'],
@@ -808,6 +817,7 @@ function main(argv) {
     calibrate();
     const site = JSON.parse(fs.readFileSync(siteFile, 'utf8'));
     if (!site.settings || site.variables_css === undefined) throw new Error(`${siteFile} n'est pas une sortie de wp-settings.php (settings et variables_css attendus)`);
+    if (!site.preset_families) throw new Error(`${siteFile} vient d'une version antérieure de wp-settings.php (preset_families absent) : le régénérer`);
     const res = anchor(readKit(fs.readFileSync(kitFile, 'utf8'), kitFile), readSite(site, css), { ...opts, settings: site.settings });
     if (asJson) console.log(JSON.stringify(jsonReport(res, site.meta ?? {}), null, 2));
     else console.log(textReport(res, site.meta ?? {}, kitFile));
