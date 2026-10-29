@@ -1,6 +1,6 @@
 ---
 name: ui-kit
-description: "Construit le kit UI/UX complet d'une marque depuis ses sources réelles : audit du site existant par une équipe d'agents, plan de jetons en trois niveaux soumis à framing-critic, échelles OKLCH et contrastes mesurés par script, composants avec aperçus vivants, gabarits de page prouvés par une maquette, publication en artefact Design System et table d'ancrage vers l'architecture du projet. Fournit les scripts : couleur et contraste WCAG, échelles 50 à 950, contrôle et compilation de tokens.json, faces Google Fonts, rendu local des artboards. Use when on demande « crée un kit UI », « design system de la marque », « charte et composants », « refonte UI kit », « kit UI/UX », « tokens et composants de la marque », « bibliothèque de composants pour la refonte ». NE PAS utiliser pour la maquette, le polish ou la critique d'un écran (impeccable), pour un rapport d'audit formel d'accessibilité, de dark patterns ou RGPD (design-auditor), ni pour fabriquer un skill (skill-builder)."
+description: "Construit le kit UI/UX complet d'une marque depuis ses sources réelles : audit du site existant par une équipe d'agents, plan de jetons en trois niveaux soumis à framing-critic, échelles OKLCH et contrastes mesurés par script, composants avec aperçus vivants, gabarits de page prouvés par une maquette, publication en artefact Design System et table d'ancrage vers l'architecture du projet. Fournit les scripts : couleur et contraste WCAG, échelles 50 à 950, contrôle et compilation de tokens.json, faces Google Fonts, rendu local des artboards, presets WordPress servis (sur demande). Use when on demande « crée un kit UI », « design system de la marque », « charte et composants », « refonte UI kit », « kit UI/UX », « tokens et composants de la marque », « bibliothèque de composants pour la refonte ». NE PAS utiliser pour la maquette, le polish ou la critique d'un écran (impeccable), pour un rapport d'audit formel d'accessibilité, de dark patterns ou RGPD (design-auditor), ni pour fabriquer un skill (skill-builder)."
 ---
 
 # ui-kit : construire le kit UI/UX d'une marque
@@ -72,9 +72,11 @@ Un gabarit se prouve par une maquette dans un canevas Design branché sur le sys
 
 Publier l'artefact Design System (fichiers, README en règles d'usage, couverture en dernier) : `reference/design-system-format.md`. Puis la table d'ancrage : chaque rôle, chaque échelle et chaque composant vers le mécanisme natif du projet qui le portera, avec les points d'extension nommés : `reference/anchoring.md`. Aucune ligne de code dans le dépôt sans demande.
 
+Projet WordPress à thème bloc, et seulement quand l'ancrage dans le site est demandé : la section « Thème bloc WordPress » de `reference/anchoring.md` dit à quoi chaque famille de jetons s'ancre et ce qui n'a pas d'ancrage ; `scripts/wp-settings.php` lit les réglages servis (WP-CLI, lecture seule) et `scripts/wp-anchor.mjs` les compare au kit. La comparaison ne choisit rien : chaque écart va dans les décisions de l'utilisateur.
+
 ## Scripts (exécuter, ne pas lire)
 
-Tous en ESM Node sans dépendance, aide en tête de fichier (`--help` ou `-h` l'imprime), entrées en arguments. Chemins depuis ce dossier : `scripts/`. `cli.mjs` (aide) et `tokens-shape.mjs` (forme de `tokens.json`, lue par le contrôle et la compilation) sont des modules partagés, pas des commandes.
+Tous en ESM Node sans dépendance sauf `wp-settings.php` (PHP lancé par `wp eval-file`), aide en tête de fichier (`--help` ou `-h` l'imprime), entrées en arguments. Chemins depuis ce dossier : `scripts/`. `cli.mjs` (aide) et `tokens-shape.mjs` (forme de `tokens.json`, lue par le contrôle et la compilation) sont des modules partagés, pas des commandes.
 
 | Script | Rôle | Étalonnage |
 |---|---|---|
@@ -84,6 +86,8 @@ Tous en ESM Node sans dépendance, aide en tête de fichier (`--help` ou `-h` l'
 | `compile-tokens.mjs` | `tokens.json` vers `tokens.css`, disposition de la page ; refuse la forme que le contrôle refuse | toutes les variables d'un `tokens.css` compilé par la page s'y retrouvent |
 | `font-faces.mjs` | faces d'un sous-ensemble d'une feuille Google Fonts, téléchargement, entrées `type.fonts` | une feuille css2 réelle : la face `latin` est celle qui suit le commentaire `/* latin */` |
 | `render-local.mjs` | artboards `.dc.html` vers HTML local pour la vérification hors canevas | signale artboard trop haut, insécable dans un attribut, images lazy, blobs non résolus |
+| `wp-settings.php` | sur demande, projet WordPress : réglages, styles et feuille de variables SERVIS, par `wp eval-file`, lecture seule | sa sortie porte `settings` et `variables_css`, sinon `wp-anchor.mjs` la refuse |
+| `wp-anchor.mjs` | sur demande : chaque jeton du kit (`tokens.json` ou `tokens.css`) contre les presets servis, presets sans jeton, écarts base contre thème ; ne modifie rien | `--selftest` : blanc exact, couleur absente sans ancrage, borne d'un `clamp()`, `var()` résolue et non définie |
 
 ## Pièges vécus
 
@@ -96,6 +100,7 @@ Tous en ESM Node sans dépendance, aide en tête de fichier (`--help` ou `-h` l'
 - **Espaces insécables au texte seulement.** Un remplacement global les pose aussi dans `viewBox`, `d`, `points` ou une classe, et le SVG ne se dessine plus. Les appliquer aux nœuds texte.
 - **Une image lazy reste vide dans une sonde en iframe cachée.** Rendre avec `--eager` ou faire défiler avant de conclure qu'une image manque.
 - **Feuille Google Fonts : le libellé du sous-ensemble précède sa face.** Découper la feuille sur `@font-face` et chercher `latin` dans le morceau rend la face précédente (`latin-ext`), qui n'a pas les lettres de base. `font-faces.mjs` lit le bon couple.
+- **Un preset d'espacement fluide ne vaut pas un nombre.** Sur un thème bloc WordPress, les presets d'espacement, de rayon ou de taille servent souvent un `clamp()` : une valeur fixe de kit ne tombe jamais exactement dessus, et la comparer à la valeur lue à une seule largeur conclut « aucun preset » à tort. Comparer en bornes min et max sur la plage d'écrans (`wp-anchor.mjs` rend `borne` ou `plage` avec la largeur où la valeur est atteinte).
 - **Une carte nom vers valeur (DTCG) est du JSON valide que la page ne lit pas.** Chaque clé de premier niveau hors `type` et des métadonnées (`meta`, `name`, `version`, `$schema`, `description`) est une famille qui porte une liste `tokens` de `{name, value, usage}` ; `check-tokens.mjs` et `compile-tokens.mjs` refusent en code 1 toute autre forme, plate ou imbriquée. Ils refusent aussi un thème sans identifiant `[a-z0-9-]` et une valeur de couleur ou d'ombre par thème dont une clé n'est pas un identifiant déclaré (`Dark` pour `dark`) : sinon la valeur est perdue et le premier thème mesuré à sa place.
 
 ## Ce que ce skill ne fait pas
