@@ -103,6 +103,29 @@ for (const [key, stack] of Object.entries(t.type?.families ?? {})) {
   if (/[;{}<>\\()]/.test(stack)) errors.push(`famille de police « ${key} » : caractère interdit (fonction, accolade, point-virgule)`);
 }
 
+// Values (format.md « tokens.json grammar ») : a formula the page cannot read drops the token or the style.
+// Measured 29/10/2026 : 34 clamp()/calc()/color-mix() values passed the shape checks and would all have vanished.
+const LENGTH = /^(-?\d*\.?\d+(px|rem|em|%)|0|-?\d*\.?\d+)$/;
+const COLOR_VALUE = /^(#[0-9a-f]{3,8}|(rgb|rgba|hsl|hsla|oklch|oklab|lab|lch|color)\([^()]*\)|\{[A-Za-z0-9_.-]+\})$/;
+const PLAIN_VALUE = /^[A-Za-z0-9 #%(),./+_-]{1,200}$/;
+const perTheme = (v) => Object.entries(typeof v === 'string' ? { '': v } : v ?? {});
+for (const s of (Array.isArray(groups) ? groups : []).flatMap((g) => g.styles ?? [])) {
+  if (s.fontSize !== undefined && !LENGTH.test(String(s.fontSize))) errors.push(`style « ${s.name} » : fontSize « ${s.fontSize} » n'est pas une longueur (px, rem, em, %, nombre) : la page retire le style`);
+  if (s.letterSpacing !== undefined && !LENGTH.test(String(s.letterSpacing))) errors.push(`style « ${s.name} » : letterSpacing « ${s.letterSpacing} » n'est pas une longueur`);
+  if (s.lineHeight !== undefined && !(LENGTH.test(String(s.lineHeight)) && (typeof s.lineHeight !== 'number' || s.lineHeight < 10))) errors.push(`style « ${s.name} » : lineHeight « ${s.lineHeight} » n'est ni une longueur ni un nombre sous 10`);
+}
+for (const [k, v] of families) {
+  for (const tok of Array.isArray(v.tokens) ? v.tokens : []) {
+    for (const [theme, value] of perTheme(tok.value)) {
+      const where = `« ${tok.name} »${theme ? ` (thème ${theme})` : ''} : « ${value} »`;
+      if (k === 'color') { if (!COLOR_VALUE.test(String(value))) errors.push(`couleur ${where} : hex, fonction de couleur à arguments numériques ou alias {token} seulement, jamais var(), color-mix() ni nom de couleur : la page retire le token`); }
+      else if (k === 'spacing' || k === 'radius') { if (!LENGTH.test(String(value))) errors.push(`${k} ${where} n'est pas une longueur (clamp, calc et var ne se lisent pas) : la page retire le token`); }
+      else if (k === 'shadow') { if (/var\(|url\(|color-mix\(/.test(String(value)) || String(value).length > 400) errors.push(`ombre ${where} : longueurs et couleurs hex ou fonction seulement, 400 caractères au plus`); }
+      else if (!PLAIN_VALUE.test(String(value)) || /var\(|url\(/.test(String(value))) errors.push(`${k} ${where} : valeur CSS simple attendue (ni var(), ni url(), 200 caractères au plus)`);
+    }
+  }
+}
+
 // Colors
 const colorTokens = Array.isArray(t.color?.tokens) ? t.color.tokens : [];
 const byName = new Map(colorTokens.map((x) => [x.name, x]));
