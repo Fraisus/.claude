@@ -54,3 +54,4 @@ Objectif : toute feature WP est codée avec le maximum de natif WP et idiomatiqu
 
 ## Anti-patterns à refuser
 - Raw React / lib UI tierce dans l'éditeur • regex sur HTML • slug/preset/chemin en dur quand découvrable • attribut custom non déclaré serveur sur bloc SSR • `register_block_type` sans `block.json` • sortie non échappée.
+- Du CSS en base pour obtenir ce qu'aucun réglage n'offre : « CSS additionnel » des Styles globaux, `styles.css` d'un bloc, classe CSS additionnelle stylée à la main. C'est du code hors de la hiérarchie ci-dessus, invisible à tout contrôle « que des presets » ; un outil n'écrit jamais ces clés, même sur option. Le besoin remonte en écart : preset, support ou variation à déclarer.
