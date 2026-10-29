@@ -62,7 +62,7 @@
       "~/.claude"
     ]
   },
-  "model": "opus",
+  "model": "fable",
   "enableAllProjectMcpServers": true,
   "enabledPlugins": {},
   "language": "french",
