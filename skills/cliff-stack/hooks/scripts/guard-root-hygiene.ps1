@@ -75,8 +75,9 @@ function Reject([string]$reason) {
     exit 2
 }
 
-# Whitelist des NOUVEAUX fichiers autorisés à la racine
-$rootAllow = @('claude.md')
+# Whitelist des NOUVEAUX fichiers autorisés à la racine. `.claude` en fait partie : c'est lui
+# qui porte root-allow.txt, sans quoi un projet neuf ne peut jamais déclarer sa première exception.
+$rootAllow = @('claude.md', '.claude')
 $allowFile = Join-Path $projectRootNorm '.claude\root-allow.txt'
 if (Test-Path $allowFile) {
     foreach ($line in (Get-Content $allowFile -ErrorAction SilentlyContinue)) {
