@@ -60,6 +60,8 @@
 # et sauf l'état de synchronisation claude.ai (etag, tour de sync, copies .staging) : réécrit à chaque session
 /plugins/synced/
 /skills/synced/
+# et sauf la file d'usage des plugins : réécrite par le runtime, propre à la machine
+/plugins/store/
 
 # 3) Garde-fous : ré-exclure tout secret même s'il se glisse dans une zone whitelistée
 **/*.key
