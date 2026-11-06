@@ -4,7 +4,7 @@ Le poste tourne en autonomie maximale. Ce fichier décrit le montage ; les deux 
 
 ## Montage
 - `permissions.defaultMode: "auto"` dans `~/.claude/settings.json`.
-- Barrière par les hooks `PreToolUse` câblés dans `hooks.json` de ce dossier : guard-write-scope, guard-secrets-read, guard-git-destructive, guard-root-hygiene sur le shell ; guard-budget-agents sur Agent et Workflow.
+- Barrière par les hooks `PreToolUse` câblés dans `hooks.json` de ce dossier : guard-write-scope, guard-secrets-read, guard-git-destructive, guard-root-hygiene sur le shell ; guard-cause-before-code sur toute écriture de code, avec son rappel à la saisie et son contrôle à la fin du tour ; guard-budget-agents sur Agent et Workflow.
 - `permissions.deny` en filet.
 
 ## Ce qui protège vraiment
