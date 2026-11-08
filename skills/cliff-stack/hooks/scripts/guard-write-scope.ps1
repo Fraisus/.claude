@@ -245,7 +245,7 @@ $destructivePatterns = @(
     # Builtins cmd.exe / alias PowerShell natifs de Remove-Item (utilisables sans \bRemove-Item\b) + robocopy purgeant
     '\bdel\s+', '\berase\s+', '\brd\s+', '(?i)\brobocopy\b.*\s/(mir|purge)\b',
     # Redirection shell vers FICHIER (pas stdout/stderr/dev-null) — accepte path quoté
-    '(?<![0-9&])>{1,2}\s+(?!/dev/null|&\d|/dev/stderr|/dev/stdout)(?=["''A-Za-z\./~$])',
+    '(?<![0-9&])>{1,2}\s+(?!/dev/null|&\d|/dev/stderr|/dev/stdout)(?=["''A-Za-z\./~$\\])',
     # PowerShell
     '\bRemove-Item\b', '\bDelete-Item\b', '\bOut-File\b', '\bSet-Content\b',
     '\bAdd-Content\b', '\bClear-Content\b', '\bNew-Item\b', '\bCopy-Item\b',

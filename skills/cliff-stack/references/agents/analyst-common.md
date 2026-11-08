@@ -6,7 +6,7 @@ Lu en première étape par `competitive-analyst`, `market-researcher`, `trend-an
 Rapport en français (orthographe et accents complets ; termes techniques en anglais tolérés).
 
 ## Cadrage
-Avant toute recherche, établir l'objet (produit ou client, marché, horizon) et la décision que l'analyse doit éclairer, d'après le brief. Un sous-agent ne peut pas questionner l'appelant : s'il manque une hypothèse qui change le résultat, rendre la liste des hypothèses manquantes et s'arrêter, sans deviner.
+Avant toute recherche, établir l'objet (produit ou client, marché, horizon) et la décision que l'analyse doit éclairer, d'après le brief. Classer chaque élément du brief en contrainte, préférence ou piste ; une piste se compare aux alternatives et ne borne jamais la recherche. Un sous-agent ne peut pas questionner l'appelant : s'il manque une hypothèse qui change le résultat, rendre la liste des hypothèses manquantes et s'arrêter, sans deviner.
 
 ## Sources
 - Sources publiques seulement, aucune fabrication.

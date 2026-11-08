@@ -4,6 +4,10 @@
 # stop : pas d'annonce de résultat sans « Ailleurs : ... » et une recherche lancée ; sur un défaut qui revient, pas sans
 # independent-critic après la dernière écriture. Le hook impose l'ordre et l'écrit, il ne juge pas la justesse : c'est le
 # critique et l'utilisateur qui la jugent. Une panne du script ne bloque jamais (exit 0).
+# Les déclarations se lisent dans le texte du tour ET dans les appels shell du tour (commande et description) : certains
+# hôtes n'écrivent pas au journal le texte qui accompagne un appel d'outil (mesuré le 08/11/2026 dans l'extension VS Code :
+# des textes portant « Cause : » absents du journal, leurs appels d'outils présents). Un `echo` des lignes reste visible de
+# l'utilisateur et toujours enregistré.
 
 param([string]$Mode = 'pre')
 $ErrorActionPreference = 'Stop'
@@ -51,6 +55,16 @@ function WritesCode($name, $inp) {
     return $false
 }
 
+# what the turn said: its text blocks, and its shell calls' command and description (a host may not record the text)
+function SaidOf($blocks) {
+    $parts = foreach ($b in @($blocks)) {
+        if ($b.type -eq 'text') { $b.text }
+        # an echoed line starts where its text starts: « echo "Cause : … » reads as « Cause : … »
+        elseif ($b.type -eq 'tool_use' -and $b.name -in 'Bash', 'PowerShell') { "$($b.input.description)`n" + [regex]::Replace("$($b.input.command)", '(?m)^\s*(echo|printf|Write-Output)\s+[''"]?', '') }
+    }
+    return ($parts -join "`n")
+}
+
 # the turn, read from the transcript's end back to the last thing the user wrote: its texts and tool calls, oldest first
 function TurnOf($path) {
     $stream = [System.IO.File]::Open($path, 'Open', 'Read', 'ReadWrite')
@@ -90,7 +104,7 @@ try {
     if ($Mode -eq 'prompt') {
         $said = [string]$in.prompt
         if ($said -notmatch $DEFECT -and $said -notmatch $AGAIN) { exit 0 }
-        $note = 'Défaut possible signalé. Portes (1) à (3) avant toute écriture : le reproduire dans l''état que décrit l''utilisateur, jamais seulement sur un état plus simple ; localiser la cause et son niveau d''après ses usages (grep). Le code ne s''écrit qu''après les lignes « Cause : fichier:ligne » et « Niveau : ... » dans le texte du tour, ou « Demande : ... » pour un comportement demandé. Cause non établie : le dire et s''arrêter, jamais un correctif de ce qu''on mesure à la place.'
+        $note = 'Si ce message signale un défaut observé : portes (1) à (3) avant toute écriture : le reproduire dans l''état que décrit l''utilisateur, jamais seulement sur un état plus simple ; localiser la cause et son niveau d''après ses usages (grep). Le code ne s''écrit qu''après les lignes « Cause : fichier:ligne » et « Niveau : ... » dans le texte du tour, ou « Demande : ... » pour un comportement demandé. Cause non établie : le dire et s''arrêter, jamais un correctif de ce qu''on mesure à la place.'
         if ($said -match $AGAIN) { $note += ' Un correctif précédent n''a pas suffi : son diagnostic est faux ou incomplet, remonter d''un niveau et le requestionner avant tout code.' }
         Write-Output $note
         exit 0
@@ -103,9 +117,9 @@ try {
         if ($in.tool_name -eq 'Agent' -or -not (WritesCode $in.tool_name $in.tool_input)) { exit 0 }
         $turn = TurnOf $path
         if (-not $turn.prompt -or ($turn.prompt -notmatch $DEFECT -and $turn.prompt -notmatch $AGAIN)) { exit 0 }
-        $text = (@($turn.blocks) | Where-Object { $_.type -eq 'text' } | ForEach-Object { $_.text }) -join "`n"
+        $text = SaidOf $turn.blocks
         if ($text -match $ASKED -or ($text -match $CAUSE -and $text -match $LEVEL)) { exit 0 }
-        [Console]::Error.WriteLine('Portes (1) à (3) : défaut signalé, aucune écriture de code avant d''avoir écrit dans le texte du tour « Cause : fichier:ligne, preuve » et « Niveau : composant, page, config, framework, d''après ses usages », ou « Demande : ... » pour un comportement que l''utilisateur a demandé. Cause non établie : le dire à l''utilisateur et s''arrêter.')
+        [Console]::Error.WriteLine('Portes (1) à (3) : défaut signalé, aucune écriture de code avant d''avoir écrit dans le texte du tour « Cause : fichier:ligne, preuve » et « Niveau : composant, page, config, framework, d''après ses usages », ou « Demande : ... » pour un comportement que l''utilisateur a demandé. Le texte déjà écrit n''est pas au journal : l''écrire aussi par un echo du shell, chaque ligne en tête de ligne. Cause non établie : le dire à l''utilisateur et s''arrêter.')
         exit 2
     }
 
@@ -124,7 +138,7 @@ try {
             if ($b.name -eq 'Agent' -and "$($b.input.subagent_type)" -match $CRITIC_AGENT) { $critic = $k }
         }
         if ($wrote -lt 0 -or $text -notmatch $CLAIM) { exit 0 }
-        $all = (@($turn.blocks) | Where-Object { $_.type -eq 'text' } | ForEach-Object { $_.text }) -join "`n"
+        $all = SaidOf $turn.blocks
         if (-not $searched -or $all -notmatch $ELSEWHERE) {
             [Console]::Error.WriteLine('Porte (5) : même question ailleurs. Chercher le même motif dans le code, puis écrire « Ailleurs : la recherche, n occurrences, ce qui en est fait » avant d''annoncer un résultat.')
             exit 2

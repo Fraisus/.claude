@@ -1,10 +1,10 @@
 export const meta = {
   name: 'research-arbitrate',
-  description: 'Recherche multi-sources VÉRIFIÉE et ARBITRÉE sur une question liée à un projet : balaye jusqu\'à 5 voies de sources (Context7 quand le sujet est une lib, dépôts/guides officiels, sources officielles du sujet, sources communautaires, code/contexte du projet courant), croise les affirmations, fait challenger les affirmations pivot fragiles (une lentille choisie selon leur nature), puis un arbitre tranche selon une vue globale en signalant ce qui reste incertain. Sortie = rapport tranché et cité (ne modifie rien dans le repo).',
+  description: 'Recherche multi-sources VÉRIFIÉE et ARBITRÉE sur une question liée à un projet : requalifie la question (pistes du demandeur tenues hors de la recherche, comparées à l\'arbitrage), balaye jusqu\'à 5 voies de sources (Context7 quand le sujet est une lib, dépôts/guides officiels, sources officielles du sujet, sources communautaires, code/contexte du projet courant), croise les affirmations, fait challenger les affirmations pivot fragiles (une lentille choisie selon leur nature), puis un arbitre tranche selon une vue globale en signalant ce qui reste incertain. Sortie = rapport tranché et cité (ne modifie rien dans le repo).',
   whenToUse: 'Question de réflexion à enjeu où il faut croiser doc officielle, communauté et vérité terrain du projet, puis trancher — pas une simple lookup factuelle (le Gate refuse alors). Lancer par scriptPath vers ce fichier : la garde guard-budget-agents bloque un lancement par name seul.',
   phases: [
     { title: 'Gate', detail: 'la recherche multi-sources est-elle justifiée ?' },
-    { title: 'Cadrage', detail: 'sous-questions + voies de sources pertinentes' },
+    { title: 'Cadrage', detail: 'requalification (besoin, contraintes, préférences, pistes) + sous-questions + voies' },
     { title: 'Sweep', detail: '4 ou 5 voies de sources en parallèle, affirmations sourcées' },
     { title: 'Croisement', detail: 'dédup + accords/contradictions + lentille par affirmation' },
     { title: 'Challenge', detail: 'réfuter les affirmations pivot fragiles, dans le budget restant' },
@@ -48,8 +48,12 @@ const GATE = {
 }
 const SCOPE = {
   type: 'object',
-  required: ['subQuestions', 'context7Relevant'],
+  required: ['neutralQuestion', 'constraints', 'preferences', 'leads', 'subQuestions', 'context7Relevant', 'hints'],
   properties: {
+    neutralQuestion: { type: 'string', description: 'la question sur le seul besoin, sans piste ; l\'objet même de la question y reste' },
+    constraints: { type: 'array', items: { type: 'string' } },
+    preferences: { type: 'array', items: { type: 'string' } },
+    leads: { type: 'array', items: { type: 'string' }, description: 'moyens suggérés sans être imposés' },
     subQuestions: { type: 'array', items: { type: 'string' } },
     // Les 4 voies officialRepos/officialDocs/community/project sont TOUJOURS interrogées
     // (le but est de croiser). La voie context7 n'est lancée que si le sujet porte sur une
@@ -57,6 +61,7 @@ const SCOPE = {
     context7Relevant: { type: 'boolean', description: 'true si la question porte sur une lib, un framework, un SDK, une API ou un outil CLI documentable dans Context7 ; false sinon (méthode, stratégie, marché, doctrine, question propre au projet).' },
     hints: {
       type: 'object',
+      required: ['project'],
       properties: {
         context7: { type: 'string', description: 'lib/sujet probable à résoudre dans Context7' },
         officialRepos: { type: 'string', description: 'éditeur/orga GitHub probable' },
@@ -122,9 +127,10 @@ const CHALLENGE = {
 }
 const VERDICT = {
   type: 'object',
-  required: ['answer', 'reasoning', 'confidence', 'uncertainties'],
+  required: ['answer', 'leadsAssessment', 'reasoning', 'confidence', 'uncertainties'],
   properties: {
     answer: { type: 'string', description: 'la réponse finale tranchée' },
+    leadsAssessment: { type: 'array', items: { type: 'string' }, description: 'par piste : retenue, dépassée (par quoi) ou non évaluée' },
     reasoning: { type: 'string', description: 'comment l\'arbitrage a pesé les sources (au cas par cas : selon la question, vérité terrain projet OU officiel OU communauté prime — JUSTIFIER le choix)' },
     confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
     uncertainties: { type: 'array', items: { type: 'string' }, description: 'ce qui reste non résolu / à vérifier empiriquement' },
@@ -152,14 +158,28 @@ const scope = await agent(
   `Cadre cette question de recherche.
 Question : ${question}
 Contexte projet : ${projectHint}
-1) Décompose en sous-questions atomiques. 2) context7Relevant : true seulement si la question porte sur une lib, un framework, un SDK, une API ou un outil CLI documentable dans Context7. 3) Pour chaque voie (context7 si pertinente, officialRepos, officialDocs, community, project), donne un INDICE de recherche (où/quoi chercher). Pour 'project', identifie précisément les chemins/fichiers/version réelle à inspecter.`,
+0) Requalifie-la : sépare besoin, contraintes (impératives), préférences (négociables) et pistes (ce qu'elle suggère sans l'imposer, une préférence qui nomme un moyen précis comprise ; dans le doute, une piste). Écris neutralQuestion sur le seul besoin ; la suite part d'elle, jamais des pistes, et l'indice 'project' reprend du contexte projet les chemins, sans ses pistes.
+1) Décompose neutralQuestion en sous-questions atomiques. 2) context7Relevant : true seulement si neutralQuestion porte sur une lib, un framework, un SDK, une API ou un outil CLI documentable dans Context7. 3) Pour chaque voie (context7 si pertinente, officialRepos, officialDocs, community, project), donne un INDICE de recherche (où/quoi chercher), sans y remettre une piste. Pour 'project', identifie précisément les chemins/fichiers/version réelle à inspecter.`,
   { phase: 'Cadrage', schema: SCOPE, effort: 'medium' }
 )
+// La recherche et le challenge partent du besoin requalifié ; les pistes n'entrent qu'à l'arbitrage.
+// Sans requalification, chercher la question brute enverrait ses pistes aux voies : arrêt, comme au Gate.
+const researched = typeof scope?.neutralQuestion === 'string' ? scope.neutralQuestion.trim() : ''
+if (!researched) {
+  log('ABORT — requalification absente : la question brute n\'est pas cherchée, relancer.')
+  return { aborted: true, reason: 'requalification absente' }
+}
+const leads = scope.leads ?? []
+const terms = [
+  scope?.constraints?.length ? `Contraintes impératives : ${scope.constraints.join(' | ')}` : '',
+  scope?.preferences?.length ? `Préférences négociables : ${scope.preferences.join(' | ')}` : '',
+].filter(Boolean).join('\n')
+log(`Cadrage: requalifiée, ${leads.length} piste(s) mise(s) de côté jusqu'à l'arbitrage`)
 // Les 4 voies générales sont TOUJOURS lancées : une voie sans résultat le RAPPORTE via
 // notFound, elle n'est jamais coupée d'avance. Seule context7 dépend du sujet (une question
 // sans lib n'y trouve rien) ; en cas de doute (cadrage absent), elle est lancée.
 const voies = [...(scope?.context7Relevant === false ? [] : ['context7']), 'officialRepos', 'officialDocs', 'community', 'project']
-const hints = scope?.hints ?? {}
+const hints = Object.fromEntries(Object.entries(scope?.hints ?? {}).map(([k, v]) => [k, typeof v === 'string' ? v.trim() : '']))
 log(`Cadrage: ${scope?.subQuestions?.length ?? 0} sous-questions, ${voies.length} voies interrogées${voies.includes('context7') ? '' : ' (context7 sautée : sujet hors lib)'}`)
 
 // ── Phase Sweep : 4 ou 5 voies, en parallèle (barrière : on croise APRÈS tout) ─
@@ -180,7 +200,7 @@ const VOIE_PROMPT = {
   officialDocs: `Voie DOC OFFICIELLE DU SUJET : la documentation officielle (site éditeur, spec). Affirmations sourcées (URLs). Chiffres/limites/signatures exacts si pertinents. ${FETCH_ECONOMY}`,
   community: `Voie COMMUNAUTÉ : sources communautaires sérieuses (Stack Overflow, blogs techniques reconnus, issues GitHub, discussions). Affirmations sourcées + signale leur fiabilité (officiel-adjacent vs opinion isolée). ${FETCH_ECONOMY}`,
   project: `Voie PROJET (vérité terrain) : inspecte le CODE et le contexte du projet courant (Grep/Glob/Read, package.json, versions réellement installées dans node_modules, conventions). Affirmations sourcées en fichier:ligne. C'est la réalité du terrain, prioritaire sur les généralités quand la question porte sur "ici".
-Indices projet : ${projectHint}`,
+${hints.project ? '' : 'Indices projet : non précisés, découvre le contexte projet pertinent.'}`,
 }
 // Routage par RÔLE générique : la voie 'project' (fouille du code/terrain) va à
 // l'agent Explore, taillé pour balayer une codebase et localiser sans tout lire.
@@ -197,7 +217,7 @@ const VOIE_MODEL = { context7: 'sonnet', officialRepos: 'sonnet', officialDocs: 
 const findings = (await parallel(
   voies.map((v) => () =>
     agent(
-      `${VOIE_PROMPT[v]}\n\nQuestion globale : ${question}\nSous-questions : ${(scope?.subQuestions ?? []).join(' | ')}${hints[v] ? `\nIndice de recherche pour cette voie : ${hints[v]}` : ''}\nRends des claims atomiques, chacune avec sa source TRAÇABLE et un niveau de confiance. Si cette voie ne donne rien, remplis notFound (ne jamais conclure "rien" sans avoir cherché). Jamais d'affirmation "de mémoire" sans source.`,
+      `${VOIE_PROMPT[v]}\n\nQuestion globale : ${researched}${terms ? `\n${terms}` : ''}\nSous-questions : ${(scope?.subQuestions ?? []).join(' | ')}${hints[v] ? `\nIndice de recherche pour cette voie : ${hints[v]}` : ''}\nRends des claims atomiques, chacune avec sa source TRAÇABLE et un niveau de confiance. Si cette voie ne donne rien, remplis notFound (ne jamais conclure "rien" sans avoir cherché). Jamais d'affirmation "de mémoire" sans source.`,
       { phase: 'Sweep', label: `sweep:${v}`, schema: FINDINGS, effort: 'high', ...(AGENT_TYPE[v] ? { agentType: AGENT_TYPE[v] } : {}), ...(VOIE_MODEL[v] ? { model: VOIE_MODEL[v] } : {}) }
     )
   )
@@ -251,7 +271,7 @@ const challenged = (await parallel(
         `Challenger, lentille ${LENSES[lensFor(c, k)]}. Tente de RÉFUTER cette affirmation par le signal le plus direct accessible à ta lentille.
 Affirmation : "${c.claim}"
 Sources qui la portent : ${c.sources}
-Critère : l'affirmation est-elle vraie telle qu'énoncée, dans le cadre de cette question : ${question}
+Critère : l'affirmation est-elle vraie telle qu'énoncée, dans le cadre de cette question : ${researched}${terms ? `\n${terms}` : ''}
 Périmètre : la justesse de l'affirmation, sans seuil de gravité. Une nuance qui ne la rend pas fausse n'est pas une réfutation. survives=false seulement avec une preuve (contre-source, contre-exemple, version réelle). Remplis exercised avec ce que tu as réellement consulté ou exécuté.`,
         { phase: 'Challenge', label: `challenge:${i + 1}:${lensFor(c, k)}`, schema: CHALLENGE, effort: 'high' }
       ).then((r) => (r ? { ...r, claim: c.claim } : null))
@@ -273,7 +293,9 @@ log(`Challenge: ${claimVerdicts.filter((v) => v.fragile).length}/${claimVerdicts
 phase('Arbitrage')
 const verdict = await agent(
   `Tu es l'ARBITRE. Tranche la réponse finale selon une vue GLOBALE.
-Question : ${question}
+Question (besoin requalifié) : ${researched}${terms ? `\n${terms}` : ''}
+Question telle que posée : ${question}
+PISTES du demandeur, tenues hors de la recherche : ${leads.join(' | ') || '—'}
 
 ACCORDS entre voies : ${(cross?.agreements ?? []).join(' | ') || '—'}
 CONTRADICTIONS : ${(cross?.contradictions ?? []).map((c) => `${c.topic}: ${c.positions}`).join(' | ') || '—'}
@@ -284,12 +306,13 @@ NON CHALLENGÉES faute de budget d'agents (fragiles d'origine, à traiter comme 
 Toutes les affirmations sourcées :
 ${allClaims.map((c) => `- [${c.voie}] ${c.claim} (src: ${c.source})`).join('\n')}
 
-Règles d'arbitrage : pèse les sources AU CAS PAR CAS selon la nature de la question — si elle porte sur "comment c'est fait dans CE projet" ou sur une version réellement installée, la vérité terrain PROJET prime ; si c'est une question factuelle d'API/spec, l'OFFICIEL prime ; la communauté éclaire mais ne tranche pas seule. JUSTIFIE le poids donné. Écarte les affirmations FRAGILES sauf si une source forte les rétablit. Donne la réponse tranchée, ta confiance, et liste honnêtement ce qui reste INCERTAIN (à vérifier empiriquement).`,
+Règles d'arbitrage : pèse les sources AU CAS PAR CAS selon la nature de la question — si elle porte sur "comment c'est fait dans CE projet" ou sur une version réellement installée, la vérité terrain PROJET prime ; si c'est une question factuelle d'API/spec, l'OFFICIEL prime ; la communauté éclaire mais ne tranche pas seule. JUSTIFIE le poids donné. Écarte les affirmations FRAGILES sauf si une source forte les rétablit. Compare chaque PISTE aux solutions trouvées sur les mêmes preuves, sans la favoriser ; non couverte, elle se dit non évaluée (leadsAssessment). Donne la réponse tranchée, ta confiance, et liste honnêtement ce qui reste INCERTAIN (à vérifier empiriquement).`,
   { phase: 'Arbitrage', schema: VERDICT, effort: 'high' }
 )
 
 return {
   question,
+  requalification: { neutralQuestion: researched, constraints: scope?.constraints ?? [], preferences: scope?.preferences ?? [], leads },
   voiesUtilisees: voies,
   nbClaims: allClaims.length,
   contradictions: cross?.contradictions ?? [],
