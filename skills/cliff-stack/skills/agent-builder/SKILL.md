@@ -59,7 +59,7 @@ Ne jamais figer dans le prompt d'un agent un fait périssable comme certain (sin
 - Préférer instruire l'agent à *découvrir au runtime* plutôt qu'à *réciter* (cohérent avec « nothing hardcoded » §4).
 
 ### 7. Finding contract — pour les agents qui PRODUISENT des findings (anti-faux-positif)
-**Conditionnel** : si l'agent remonte des findings/diagnostics/bugs (auditeur, critique, regression-tester, zone analytique), son prompt DOIT imposer ce schéma de sortie par finding — sinon (agent purement exécutant), sauter cette section.
+**Conditionnel** : si l'agent remonte des findings/diagnostics/bugs (auditeur, critique, vérificateur de bout en bout, zone analytique), son prompt DOIT imposer ce schéma de sortie par finding — sinon (agent purement exécutant), sauter cette section.
 Cause des faux positifs : conclure d'une **absence locale** sans exécuter le test qui tranche. Le contract déplace le fardeau de preuve DANS l'agent :
 ```
 Chaque finding remonté DOIT porter :
@@ -76,7 +76,7 @@ Un champ vide = signal visible, pas un trou.
 Pourquoi pas un hook : un hook PreToolUse est un filtre syntaxique (chaînes/commandes), il ne peut pas juger « ce finding est-il prouvé ? » (sémantique). Le bon niveau = les instructions de l'agent, qui raisonnent.
 
 ### 8. PASSE ADVERSE OBLIGATOIRE — faire INVALIDER l'agent par `independent-critic` (cœur de l'outil)
-Agent global ou de plugin (sert dans tous les projets, code partagé) : critère de délégation rempli. Agent projet (`.claude/agents/`) : seulement si un critère du CLAUDE.md global s'applique. Un seul appel à l'agent `independent-critic` (subagent_type `cliff-stack:independent-critic`, protocole chez lui), avec pour artefact le fichier agent écrit et pour critère les axes ci-dessous, sans le raisonnement de conception (gabarit : `reference/checklist.md` §5) :
+Agent global ou de plugin (sert dans tous les projets, code partagé) : critère de délégation rempli. Agent projet (`.claude/agents/`) : seulement si un des cas de lancement de la description d'`independent-critic` s'applique. Un seul appel à l'agent `independent-critic` (subagent_type `cliff-stack:independent-critic`, protocole chez lui), avec pour artefact le fichier agent écrit et pour critère les axes ci-dessous, sans le raisonnement de conception (gabarit : `reference/checklist.md` §5) :
 - **Déclenchement** : 3-4 requêtes-utilisateur réalistes ; pour chacune, la `description` délègue-t-elle à CET agent ? Exhiber ≥1 **faux négatif** ou **faux positif**, ou prouver honnêtement qu'il n'y en a pas.
 - **Chevauchement** : vs les agents de §1 ; chiffrer l'overlap, nommer le plus proche.
 - **Tools/model** : prouver un sur-privilège (tool inutile) / sous-privilège (workflow infaisable), et l'adéquation du `model`.

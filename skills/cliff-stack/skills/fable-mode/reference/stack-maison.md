@@ -39,7 +39,7 @@ But : router vers le bon skill/agent SANS coder de nom en dur (les noms peuvent 
 | Tickets Asana assignés | skill asana triage |
 | Documentation pour un utilisateur non développeur | skill handbook |
 | Recherche multi-sources vérifiée et arbitrée | workflow research-arbitrate (`~/.claude/workflows/`) ou deep-research selon l'ampleur |
-| Réfuter une affirmation sur un artefact (diff, commande, URL), sur les critères du CLAUDE.md global seulement | agent critique indépendant |
+| Réfuter une affirmation sur un artefact (diff, commande, URL), sur les cas de lancement de sa description seulement | agent critique indépendant |
 | Boucle générateur→critique→vérifieur en worktree | workflow generator-critic-verifier (`~/.claude/workflows/`) |
 | Créer/MAJ un skill | skill builder de skills |
 | Créer/MAJ un agent | skill builder d'agents |

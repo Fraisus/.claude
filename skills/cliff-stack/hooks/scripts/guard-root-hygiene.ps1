@@ -162,11 +162,13 @@ $cmd = $payload.tool_input.command
 if (-not $cmd) { exit 0 }
 
 # Ce qui n'est pas du shell est retiré AVANT d'y chercher des redirections : corps des
-# heredocs et code passé en ligne (python -c, php -r, node -e…). Sinon un `=>`, un `<>`
+# heredocs Bash, here-strings PowerShell (@'…'@, @"…"@, fermeture en début de ligne) et code
+# passé en ligne (python -c, php -r, node -e…). Sinon un `=>`, un `<>`, une adresse `<a@b.c>`
 # ou une balise `<style …>` DANS le contenu écrit passe pour une redirection et bloque
 # une commande légitime.
 $scan = $cmd
 $scan = [regex]::Replace($scan, '(?s)<<-?\s*[\x27"]?(\w+)[\x27"]?\r?\n.*?\r?\n\s*\1\b', ' ')
+$scan = [regex]::Replace($scan, '(?s)@([\x27"])[ \t]*\r?\n.*?\r?\n\1@', ' ')
 $scan = [regex]::Replace($scan, '(?is)\b(?:python3?|php|node|perl|ruby)\s+(?:-\w+\s+)*-(?:c|r|e)\s+(?:"(?:[^"\\]|\\.)*"|\x27(?:[^\x27\\]|\\.)*\x27)', ' ')
 
 # Découpe une ligne de commande en commandes simples, dans l'ordre d'exécution : ; | && ||

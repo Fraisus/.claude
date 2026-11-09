@@ -32,8 +32,10 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 
 ## 3. Intégrer
 - Une équipe se juge à son orchestration, jamais à son nombre : chaque agent reçoit un rôle net (codeur d'une zone, vérificateur, adversaire) et connaît, par l'annuaire, les agents des zones voisines et les fichiers de chacun ; il ne message un voisin que pour un blocage.
-- Arbitre des essais (porte (8) du CLAUDE.md global) : un arbitre neuf par vague reprend l'environnement d'essai de séance par la passation, jamais un arbitre gardé toute la séance. Il lance une seule fois l'union des essais des fichiers touchés sur l'arbre intégré (jamais un essai par lot, par copie ni par agent), borne le parallélisme à la capacité mesurée de la machine et tient la file ; il n'isole un lot (copie, bissection) que pour attribuer un rouge, ne corrige rien et rend un rapport court.
-- À chaque lot reçu, le principal relance le niveau 0 (CLAUDE.md, porte (8)) ; une hausse renvoie le lot à un agent neuf.
+- Arbitre des essais (porte (8)) : un arbitre neuf par vague reprend l'environnement d'essai de séance par la passation, jamais un arbitre gardé toute la séance. Il lance une seule fois l'union des essais des fichiers touchés sur l'arbre intégré (jamais un essai par lot, par copie ni par agent), borne le parallélisme à la capacité mesurée de la machine et tient la file ; il n'isole un lot (copie, bissection) que pour attribuer un rouge, ne corrige rien et rend un rapport court.
+- À chaque lot reçu, le principal relance le niveau 0 (porte (8)) ; une hausse renvoie le lot à un agent neuf.
+- Un défaut trouvé sur un lot repart chez un codeur avec le rapport, puis repasse chez le vérificateur ; au troisième échec, stop et retour à l'utilisateur.
+- Le principal dit à l'utilisateur ce qui a été trouvé et corrigé ; un écart ancien trouvé en chemin (défaut, essai rouge, dette en hausse) se corrige aussi, dans la foulée ; seuls une idée, ou ce qui attend une décision de l'utilisateur, vont à la file des écarts du projet.
 - Vérifie qu'aucun agent n'a écrit hors de ses fichiers permis (diff des fichiers touchés contre les globs de sa zone) ; un fichier hors zone = zone refusée, à relancer.
 - Lance la vérification déclarée du plan.
 - Une seule relecture finale quand le projet l'exige (sécurité, machines, adversaire), à contexte vierge, sur les lignes changées.

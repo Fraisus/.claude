@@ -41,7 +41,6 @@ complet développé directement dans le dépôt (pas de dépôt séparé, pas de
 │   ├── code-style.md              # 2 occurrences, commentaires, destroy, build des assets
 │   ├── css-scss.md                # Invariants CSS (baseline du projet, zéro déclaration morte)
 │   ├── wordpress-php.md
-│   ├── morph-blocks.md
 │   └── astro.md
 ├── workflows/                 # Scripts d'orchestration multi-agents réutilisables
 │   ├── generator-critic-verifier.js

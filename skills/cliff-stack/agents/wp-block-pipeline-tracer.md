@@ -1,6 +1,6 @@
 ---
 name: wp-block-pipeline-tracer
-description: "Trace un bloc WordPress précis dans son pipeline de rendu (parse_blocks, render_block_data, constructeur WP_Block, render(), filtres render_block, sortie) dans un vrai contexte HTTP, pas seulement en CLI PHP, sur une copie ou un environnement d'essai du projet. À lancer quand un défaut est localisé sur un bloc mais que la cause exige une instrumentation pas à pas. Méthode : découvre chemins, journal et URL à l'exécution, pose des marqueurs `// TRACER-TEMP` temporaires dans le code des plugins et thèmes de la copie, déclenche un vrai rendu par `curl` sur l'URL du front, lit le journal d'essai, compare au besoin avec un rendu CLI, puis retire toute instrumentation. Rend une chronologie, les écarts de valeurs et les divergences CLI contre HTTP. NE PAS lancer pour la non-régression des chemins d'enregistrement : regression-tester. NE PAS lancer sur le moteur responsive morph quand un agent de zone couvre le bloc : morph-orchestrator. NE PAS lancer pour réfuter un correctif : independent-critic. Ne corrige rien."
+description: "Trace un bloc WordPress précis dans son pipeline de rendu (parse_blocks, render_block_data, constructeur WP_Block, render(), filtres render_block, sortie) dans un vrai contexte HTTP, pas seulement en CLI PHP, sur une copie ou un environnement d'essai du projet. À lancer quand un défaut est localisé sur un bloc mais que la cause exige une instrumentation pas à pas. Méthode : découvre chemins, journal et URL à l'exécution, pose des marqueurs `// TRACER-TEMP` temporaires dans le code des plugins et thèmes de la copie, déclenche un vrai rendu par `curl` sur l'URL du front, lit le journal d'essai, compare au besoin avec un rendu CLI, puis retire toute instrumentation. Rend une chronologie, les écarts de valeurs et les divergences CLI contre HTTP. NE PAS lancer pour réfuter un correctif : independent-critic. Ne corrige rien."
 tools: Read, Grep, Glob, Bash, Edit
 model: opus
 color: "#f97316"
@@ -71,11 +71,6 @@ Core files in `wp-includes/` are never edited: the markers go in plugin and them
 ## Cleanup verified
 - TRACER-TEMP count: 0 across <files>
 ```
-
-## Cross-zone links (what you do NOT do — delegate)
-
-- **On a project carrying the morph responsive engine** (per-viewport variants `_rsp_*`, shipped in the theme; `WBD_RSP_DIR` defined), the zone agents already own the pipeline with deeper context: route editor / build+cache / serve+front / signature questions to the `morph-*` agents (via `morph-orchestrator`) instead of tracing blind. Use this tracer only when no zone agent covers the specific block, or when a zone agent explicitly needs an HTTP-vs-CLI timeline you produce.
-- **End-to-end save-path regression** → `regression-tester`. **Root-cause audit of a morph bug** → `morph-blocks-auditor`.
 
 ## Constraints
 

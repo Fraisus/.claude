@@ -1,4 +1,4 @@
-﻿# guard-cause-before-code.ps1 <prompt|pre|stop> - portes (1) à (3) et (5) du CLAUDE.md global, sur un défaut signalé.
+﻿# guard-cause-before-code.ps1 <prompt|pre|stop> - portes (1) à (3) et (5) (references/portes.md), sur un défaut signalé.
 # prompt : le rappel, dès le message qui signale un défaut. pre : aucune écriture de code tant que le tour n'a pas écrit
 # « Cause : <fichier:ligne> » et « Niveau : ... », ou « Demande : ... » pour un comportement demandé sans cause à trouver.
 # stop : pas d'annonce de résultat sans « Ailleurs : ... » et une recherche lancée ; sur un défaut qui revient, pas sans
@@ -136,6 +136,8 @@ try {
             if (WritesCode $b.name $b.input) { $wrote = $k }
             if ($b.name -eq 'Grep' -or ($b.name -in 'Bash', 'PowerShell' -and $b.input.command -match $SEARCH)) { $searched = $true }
             if ($b.name -eq 'Agent' -and "$($b.input.subagent_type)" -match $CRITIC_AGENT) { $critic = $k }
+            # Resuming the critic launched in this turn re-submits the new lot to it.
+            elseif ($b.name -eq 'SendMessage' -and $critic -ge 0) { $critic = $k }
         }
         if ($wrote -lt 0 -or $text -notmatch $CLAIM) { exit 0 }
         $all = SaidOf $turn.blocks

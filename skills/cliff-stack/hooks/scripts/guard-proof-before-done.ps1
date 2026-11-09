@@ -1,11 +1,28 @@
-﻿# guard-proof-before-done.ps1 - hook Stop global : porte (8) des « Huit portes » (~/.claude/CLAUDE.md).
+﻿# guard-proof-before-done.ps1 - hook Stop global : porte (8) des « Huit portes » (references/portes.md).
 # Bloque la fin d'un tour qui annonce un résultat (corrigé, fini, livré…) quand ce tour a modifié du code sans lancer
 # de vérification après la dernière modification. Une fois par tour (stop_hook_active), jamais en boucle.
 
 $ErrorActionPreference = 'Stop'
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $CODE = '\.(py|js|mjs|cjs|ts|tsx|jsx|php|css|scss|html|ps1|sh|json)$'
-$CHECK = '(test_|_test\.|tests?/|pytest|node --check|py_compile|check_|faux_hote|bench|playwright|ux-e2e|--verifier|phpcs|npm (run )?test|vitest|jest)'
+# A verification is a shell command, run after the last edit, that executes one of these probes. Grouped by the
+# method's levels and rungs (references/portes.md, skill probing-by-levels): a read-only probe of the running app is
+# often the most direct proof, and refusing it would push towards heavier probes.
+$CHECKS = @(
+    # level 0, static: syntax, lint, types, JSON parse
+    'node --check', 'py_compile', 'php(\.exe)?\b[^|;&]*\s-l\b', 'phpcs', '\btsc\b', 'eslint', 'stylelint',
+    'ConvertFrom-Json', 'JSON\.parse', 'json\.tool',
+    # level 1, tests
+    'test_', '_test\.', '(^|[\s/\\"''])tests?[/\\]', 'pytest', 'npm (run )?test', 'vitest', 'jest', 'check_', '--verifier', 'faux_hote', 'bench',
+    # stored rung: tooled read of the running application
+    'wp(\.bat)? eval-file',
+    # served rung: a request to a local server only (reserved names: localhost RFC 6761, .test RFC 2606, .local RFC 6762);
+    # a request elsewhere is a download, not a probe of the code just edited
+    '(curl(\.exe)?|Invoke-WebRequest|iwr)\b[^|;&]*https?://(localhost|127\.0\.0\.1|\[::1\]|[\w.-]+\.(localhost|test|local))(?=[:/\s"'']|$)',
+    # computed rung and real gesture
+    'playwright', 'ux-e2e'
+)
+$CHECK = '(' + ($CHECKS -join '|') + ')'
 $CLAIM = '(?i)\b(corrig[ée]e?s?|r[ée]gl[ée]e?s?|r[ée]solue?s?|fini|termin[ée]e?s?|livr[ée]e?s?|en place|c''est fait|fixed|done)\b'
 try {
     $raw = [Console]::In.ReadToEnd()

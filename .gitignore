@@ -57,6 +57,9 @@
 /plugins/plugin-catalog-cache.json
 /plugins/.last_inuse_sweep
 /plugins/plugin-directory-cache-v2.json
+# et sauf les corbeilles du runtime (skills et plugins retirés) : propres à la machine
+/plugins/.trash/
+/skills/.trash/
 # et sauf l'état de synchronisation claude.ai (etag, tour de sync, copies .staging) : réécrit à chaque session
 /plugins/synced/
 /skills/synced/

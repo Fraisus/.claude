@@ -83,7 +83,7 @@ Pour chaque correction validée, déléguer à un agent qui corrige **dans le bo
 
 ## 6. Valider
 - Un seul arbitre des essais pour tout le fan-out : chaque correctif se prouve par un parcours réel, par les commandes du projet (testing-real-ux), sur une copie ou un environnement d'essai du site, avec le symptôme du ticket reproduit avant et absent après.
-- Critique indépendant (`cliff-stack:independent-critic`) dans les cas du CLAUDE.md global, avec le diff, la commande qui montre le symptôme et le critère « le symptôme décrit a disparu, sans régression ni cause laissée en place » ; non concluant = pas résolu.
+- Critique indépendant (`cliff-stack:independent-critic`) dans les cas de lancement de sa description, avec le diff, la commande qui montre le symptôme et le critère « le symptôme décrit a disparu, sans régression ni cause laissée en place » ; non concluant = pas résolu.
 
 ## Garde-fous
 - Lecture Asana libre ; **écriture Asana** limitée aux commentaires validés par l'utilisateur (étape 3) ; **écriture code** seulement après go.

@@ -41,7 +41,7 @@ Confirmé / Piste non vérifiée / Durcissement (méthode de la matrice partagé
 ### 6. Corriger (seulement sur demande)
 1. Corriger la cause au niveau partagé (le helper qui colle l'URL, pas chaque appelant).
 2. Rejouer la preuve : le déclenchement échoue désormais, le chemin nominal marche toujours.
-3. **Critique indépendant sur le diff**, dans les cas du CLAUDE.md global : `cliff-stack:independent-critic`, avec le diff, la commande de preuve et le critère « la faille est fermée, et aucun appelant, contrat HTTP ni copie dans un autre projet ne casse ».
+3. **Critique indépendant sur le diff**, dans les cas de lancement de sa description : `cliff-stack:independent-critic`, avec le diff, la commande de preuve et le critère « la faille est fermée, et aucun appelant, contrat HTTP ni copie dans un autre projet ne casse ».
 4. Supprimer un fichier vulnérable seulement après avoir prouvé l'absence d'appelant sur tout le périmètre (référence §9), puis vérifier le 404.
 
 ## Secrets

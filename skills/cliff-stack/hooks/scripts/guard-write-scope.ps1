@@ -387,6 +387,7 @@ foreach ($p in $collectedPaths) {
     }
     if ($p -match '/dev/(null|stdout|stderr|tty)') { continue }
     if ($p -match '^[a-z]:/+(localhost|[a-z0-9.-]+\.[a-z]{2,})(:\d+)?(/|$)') { continue }  # fragments d'URL (host[:port] avec ou sans chemin)
+    if ($p -match '^[a-z]:///') { continue }  # fragment d'URL file:/// (autorité vide) : jamais la forme d'un chemin Windows
     if (-not (Is-PathInProject $p)) {
         # Hors zone : ne bloquer que si c'est une CIBLE d'écriture/destruction.
         # Si des cibles ont été identifiées et que ce chemin n'en est pas une → SOURCE
