@@ -10,6 +10,15 @@
             "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject-method.mjs"]
           }
         ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/prune-session-temp.ps1\" -Days 7"
+          }
+        ]
       }
     ],
     "SubagentStart": [
