@@ -196,14 +196,32 @@ function Split-ShellSegments([string]$s, [string]$esc) {
     return ,$segs
 }
 
+# Copie de même longueur où le contenu des chaînes entre guillemets est masqué : un chevron écrit dans une
+# chaîne (motif de recherche, balise, adresse) est du contenu, jamais une redirection.
+function Hide-QuotedContent([string]$s, [string]$esc) {
+    $sb = New-Object System.Text.StringBuilder $s
+    $q = ''
+    for ($i = 0; $i -lt $s.Length; $i++) {
+        $c = [string]$s[$i]
+        if ($c -eq $esc -and $q -ne "'" -and $i + 1 -lt $s.Length) { if ($q) { $sb[$i] = '_'; $sb[$i + 1] = '_' }; $i++; continue }
+        if ($q) { if ($c -eq $q) { $q = '' } else { $sb[$i] = '_' }; continue }
+        if ($c -eq '"' -or $c -eq "'") { $q = $c }
+    }
+    return $sb.ToString()
+}
+
 # Cibles de dépôt d'une commande simple : redirections, tee/touch, cmdlets écrivains, cp/mv.
 function Get-WriteTargets([string]$seg) {
     $targets = @()
     # Redirections > / >> (cible quotée ou nue), hors flux (&1, /dev/null…) et hors opérateurs
     # de langage qui contiennent un chevron (`=>`, `->`, `<>`, `>=`) : les prendre pour une
-    # redirection bloquait des commandes légitimes.
-    foreach ($m in [regex]::Matches($seg, '(?<![0-9&=<>\-])>{1,2}(?!=)\s*(?:"([^"]+)"|''([^'']+)''|([^\s;&|<>]+))')) {
-        $targets += if ($m.Groups[1].Value) { $m.Groups[1].Value } elseif ($m.Groups[2].Value) { $m.Groups[2].Value } else { $m.Groups[3].Value }
+    # redirection bloquait des commandes légitimes. Les chevrons se cherchent hors chaînes, la cible
+    # se lit dans le texte d'origine.
+    $masked = Hide-QuotedContent $seg $esc
+    foreach ($m in [regex]::Matches($masked, '(?<![0-9&=<>\-])>{1,2}(?!=)')) {
+        $t = [regex]::Match($seg.Substring($m.Index + $m.Length), '^\s*(?:"([^"]+)"|''([^'']+)''|([^\s;&|<>]+))')
+        if (-not $t.Success) { continue }
+        $targets += if ($t.Groups[1].Value) { $t.Groups[1].Value } elseif ($t.Groups[2].Value) { $t.Groups[2].Value } else { $t.Groups[3].Value }
     }
     # tee / touch
     foreach ($m in [regex]::Matches($seg, '(?i)\b(tee|touch)\s+(?:-a\s+)?(?:"([^"]+)"|''([^'']+)''|([^\s;&|<>-][^\s;&|<>]*))')) {

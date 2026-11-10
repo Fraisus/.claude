@@ -22,6 +22,12 @@ function Assert-Root([string]$label, [int]$expected, [string]$tool, [string]$com
 Assert-Root 'redirection to a new root file: blocked' 2 'PowerShell' 'echo x > nouveau.md'
 Assert-Root 'here-string then a real root redirection: blocked' 2 'PowerShell' ("Write-Output @'" + $nl + 'a <b@c.d>' + $nl + "'@ > nouveau.md")
 Assert-Root 'bash heredoc then a real root redirection: blocked' 2 'Bash' ("cat <<'EOF' > nouveau.md" + $nl + 'x' + $nl + 'EOF')
+Assert-Root 'quoted chevron then a real root redirection: blocked' 2 'PowerShell' "Write-Output '<a>' > nouveau.md"
+Assert-Root 'quoted root target after a quoted chevron: blocked' 2 'PowerShell' "Write-Output 'a>b' > 'nouveau.md'"
+# Chevrons inside quoted strings are content, not redirections.
+Assert-Root 'regex with chevrons in single quotes: allowed' 0 'PowerShell' "[regex]::Matches(`$t, '<svg[^>]*>') | Select-Object -First 1"
+Assert-Root 'chevron in double quotes: allowed' 0 'PowerShell' '$s = "a > b"; Write-Output $s'
+Assert-Root 'bash grep pattern with chevrons: allowed' 0 'Bash' "grep -o '<!--[^>]{0,120}-->' file.html"
 # Chevrons inside a here-string are content, not redirections.
 Assert-Root 'single-quoted here-string with <a@b.c>: allowed' 0 'PowerShell' ("git commit -q -m @'" + $nl + 'msg' + $nl + $nl + 'Co-Authored-By: X <noreply@example.com>' + $nl + "'@")
 Assert-Root 'double-quoted here-string with a tag: allowed' 0 'PowerShell' ('$t = @"' + $nl + '<style a="b">x</style>' + $nl + '"@')
