@@ -32,6 +32,11 @@ Assert-Root 'bash grep pattern with chevrons: allowed' 0 'Bash' "grep -o '<!--[^
 Assert-Root 'single-quoted here-string with <a@b.c>: allowed' 0 'PowerShell' ("git commit -q -m @'" + $nl + 'msg' + $nl + $nl + 'Co-Authored-By: X <noreply@example.com>' + $nl + "'@")
 Assert-Root 'double-quoted here-string with a tag: allowed' 0 'PowerShell' ('$t = @"' + $nl + '<style a="b">x</style>' + $nl + '"@')
 
+# A rooted path without a drive letter is absolute elsewhere (a remote command, the MSYS root), never the project root.
+Assert-Root 'mkdir of a new root folder: blocked' 2 'Bash' 'mkdir -p nouveau/kit'
+Assert-Root 'remote mkdir of a rooted POSIX path: allowed' 0 'Bash' "ssh host 'mkdir -p /root/kit/models'"
+Assert-Root 'remote rooted path in a PowerShell string: allowed' 0 'PowerShell' "ssh.exe host 'chmod 0755 /root/tool; mkdir -p /root/kit/models'"
+
 Write-Host "$($script:n - $script:ko)/$($script:n) OK"
 Remove-Item -LiteralPath $project -Recurse -Force
 if ($script:ko -eq 0) { exit 0 } else { exit 1 }

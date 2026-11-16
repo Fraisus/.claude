@@ -94,6 +94,9 @@ function ConvertTo-AbsolutePath([string]$path, [string]$base) {
     if ($p -match '^/([a-zA-Z])(/.*)?$') { $p = "$($matches[1]):\$($matches[2])" }
     if ($p -match '^~(?=[\\/]|$)' -and $env:USERPROFILE) { $p = $env:USERPROFILE + $p.Substring(1) }
     $p = $p -replace '/','\'
+    # Chemin enraciné sans lettre de lecteur (« /root/kit » d'une commande distante, « \x » de
+    # PowerShell) : absolu sur la racine de MSYS ou du lecteur courant, jamais relatif au projet.
+    if ($p -match '^\\(?!\\)') { return $null }
     if ($p -notmatch '^[a-zA-Z]:' -and -not $p.StartsWith('\\')) {
         if (-not $base) { return $null }
         $p = $base.TrimEnd('\') + '\' + $p

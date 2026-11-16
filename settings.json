@@ -64,6 +64,36 @@
   },
   "model": "claude-fable-5-1[1m]",
   "enableAllProjectMcpServers": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:/Program Files/nodejs/node.exe",
+            "args": [
+              "C:/Users/Shadow/PresenceKeeper/claude-code-hook.mjs"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "C:/Program Files/nodejs/node.exe",
+            "args": [
+              "C:/Users/Shadow/PresenceKeeper/claude-code-hook.mjs"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {},
   "language": "french",
   "effortLevel": "high",
