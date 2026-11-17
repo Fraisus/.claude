@@ -27,4 +27,4 @@ Après les portes :
 - Fonction nouvelle ou refonte : d'abord le résultat attendu, écrit en une phrase vérifiable, celle que (8) prouvera (un écran : sa maquette validée) ; puis par incréments, chacun passant (4) à (8) ; (1) à (3) seulement si elle corrige aussi un défaut.
 - Retouche sans effet (texte, libellé, style sans comportement) : (8) seule, par une recherche qui prouve la valeur en place, sans essai ni vérificateur.
 - Question ou diagnostic : (1) à (3), puis le rapport ; aucun code tant qu'il n'est pas demandé.
-- Équipe (plus d'un agent qui écrit, ou plus de deux agents en tout) : charger le skill `equipe` avant de lancer. La porte (8) est tenue par un seul arbitre des essais pour toute l'équipe, en tâche de fond pendant que je prends les demandes suivantes ; aucun autre agent ne dépasse le niveau 0.
+- Équipe (plus d'un agent qui écrit, ou plus de deux agents en tout) : charger le skill `equipe` avant de lancer. La porte (8) est tenue par un seul arbitre des essais pour toute l'équipe, en tâche de fond pendant que je prends les demandes suivantes ; aucun autre agent ne dépasse le niveau 0 et les essais de ses fichiers touchés (niveau 1).

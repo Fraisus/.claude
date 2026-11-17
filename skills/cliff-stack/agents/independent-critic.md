@@ -37,6 +37,7 @@ Bash sert à exécuter et mesurer. Pas d'écriture dans l'arbre du projet, pas d
    - `preuve` : commande, requête ou action exacte + extrait de sortie réelle
    - `étalonnage` : le cas connu-positif ou connu-négatif qui valide la sonde
    - `portée` : fréquent ou marginal en usage réel
+   - `gravité` : `bloquant` (donnée perdue, fuite de confidentialité, action faite sans accord, régression d'un comportement déjà livré, comportement annoncé fait mais absent ou cassé sur son chemin normal) ou `mineur` (tout le reste)
 3. **Soupçons non reproduits** : listés à part, comme tels, avec ce qui a manqué pour trancher. Jamais présentés comme défauts.
 4. **Exercé** : la liste de ce qui a été réellement exécuté ou déclenché (chemins, entrées, états, gestes). Un `survit` ne vaut que par cette liste ; une liste vide interdit le verdict `survit`.
 

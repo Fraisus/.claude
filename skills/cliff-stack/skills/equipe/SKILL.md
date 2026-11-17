@@ -13,6 +13,8 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 - Restitue la demande en une phrase.
 - Nomme les fichiers candidats par commande (`git ls-files`, grep des termes), jamais de mémoire.
 - Découpe en ZONES disjointes à partir des candidats : co-changement (`git log --name-only`), imports, et les `paths:` des rules du projet. Deux fichiers couplés (co-modifiés souvent, import direct) vont dans la MÊME zone ; sinon zones séparées. Un fichier ne vit que dans une zone. Les fichiers partagés (version commune, CLAUDE.md, contrats) restent au principal.
+- Un lot se borne par un livrable vérifiable (une ligne de l'état dû du projet, un écran, un comportement), jamais par une durée, et se découpe avant le lancement : un lot redécoupé en route était mal cadré. Un plan s'écrit seulement quand le lot crée ou change une brique partagée, une frontière ou un contrat ; sinon le brief est le plan.
+- Le budget d'écrivains est un plafond, pas une cible : un front de plus ne s'ouvre que si sa zone est disjointe et que la relecture et l'intégration des autres suivent.
 - Palier par la forme : session seule (rien) ; sous-agents (≥2 zones disjointes, chacune ≥2 fichiers) ; /batch ou workflow (≥5 éléments homogènes, même transformation, vérification déterministe) ; équipe coordonnée (allers-retours répétés entre zones que le principal relaie mal), refusée aujourd'hui par la garde (règles P2) : reste en sous-agents.
 - Modèles : Opus pour tout agent qui écrit ou juge ; Sonnet pour la récupération pure ; l'orchestration reste sur le modèle de conversation, l'adversaire sur Opus.
 - Dès que ≥2 agents écrivent : montre le plan court (zones, écrivains, fichiers, budget) en l'annonçant, puis lance, sans attendre ; seule une action irréversible hors du périmètre demandé attend l'accord.
@@ -27,14 +29,16 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 - Un agent = un lot ; son rapport est sa passation, écrite dans un fichier. La suite part avec un agent neuf qui lit passation et diff ; jamais reprendre un agent qui a rendu, sauf code à moitié écrit après une coupure.
 - Brief commun et annuaire dans un fichier lu par chaque agent.
 - Sous-agents : pas de message d'agent à agent hors blocage ; rien envoyé à un agent fini. Un agent qui doit écrire à un voisin a l'outil SendMessage (`general-purpose`) ; `ouvrier-zone` et les experts de projet ne l'ont pas : leurs fichiers partagés se tranchent par le principal avant le lancement.
-- Adversaire neuf par lot, sur le diff ; arbitre neuf par vague.
+- Adversaire neuf par lot, sur le diff ; arbitre neuf par vague. Un expert d'agencement du projet passe seul avant un lot qui crée ou change une brique partagée ; après le lot, son angle se fond dans le brief de l'adversaire, un seul passage.
 - Petite retouche : le principal. Tâche mécanique : modèle léger.
 
 ## 3. Intégrer
 - Une équipe se juge à son orchestration, jamais à son nombre : chaque agent reçoit un rôle net (codeur d'une zone, vérificateur, adversaire) et connaît, par l'annuaire, les agents des zones voisines et les fichiers de chacun ; il ne message un voisin que pour un blocage.
 - Arbitre des essais (porte (8)) : un arbitre neuf par vague reprend l'environnement d'essai de séance par la passation, jamais un arbitre gardé toute la séance. Il lance une seule fois l'union des essais des fichiers touchés sur l'arbre intégré (jamais un essai par lot, par copie ni par agent), borne le parallélisme à la capacité mesurée de la machine et tient la file ; il n'isole un lot (copie, bissection) que pour attribuer un rouge, ne corrige rien et rend un rapport court.
-- À chaque lot reçu, le principal relance le niveau 0 (porte (8)) ; une hausse renvoie le lot à un agent neuf.
-- Un défaut trouvé sur un lot repart chez un codeur avec le rapport, puis repasse chez le vérificateur ; au troisième échec, stop et retour à l'utilisateur.
+- À chaque lot reçu, le principal relance le niveau 0 (porte (8)) ; une hausse renvoie le lot à un agent neuf. Un écrivain ne lance que le niveau 0 et les essais de ses fichiers touchés ; le contrôle complet du projet se lance une seule fois, par le principal, à l'intégration.
+- Un défaut trouvé sur un lot se traite selon la gravité que rend l'adversaire. Bloquant : il repart chez un codeur neuf avec le rapport, puis repasse chez le vérificateur ; les refus se comptent dans le plan, au troisième, stop et retour à l'utilisateur. Mineur : le lot s'intègre, le défaut s'écrit dans la dette du plan et l'état dû reste « partiel » tant qu'elle est ouverte.
+- Tronc : une branche par lot, partie du tronc, commitée à chaque étape ; elle reprend le tronc une seule fois, juste avant d'entrer, et entre dès qu'elle est verte et relue sans défaut bloquant. Une fonctionnalité inachevée entre cachée par le mécanisme du projet, prouvée sans chemin jusqu'à son action.
+- Le principal note par lot, dans le plan ou le suivi du projet : lancement, refus, entrée au tronc, défauts bloquants trouvés après ; sans ces dates, un changement de méthode ne se juge pas.
 - Le principal dit à l'utilisateur ce qui a été trouvé et corrigé ; un écart ancien trouvé en chemin (défaut, essai rouge, dette en hausse) se corrige aussi, dans la foulée ; seuls une idée, ou ce qui attend une décision de l'utilisateur, vont à la file des écarts du projet.
 - Vérifie qu'aucun agent n'a écrit hors de ses fichiers permis (diff des fichiers touchés contre les globs de sa zone) ; un fichier hors zone = zone refusée, à relancer.
 - Lance la vérification déclarée du plan.
