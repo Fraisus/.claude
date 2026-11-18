@@ -1,5 +1,5 @@
 ﻿# guard-rules-style.ps1 - hook PostToolUse (Write|Edit|MultiEdit) global.
-# Fichiers d'instructions lus par le modèle (CLAUDE.md, .claude/rules/*.md, SKILL.md, définitions d'agents) :
+# Fichiers d'instructions lus par le modèle (CLAUDE.md, la méthode injectée par le plugin, .claude/rules/**.md, SKILL.md, définitions d'agents) :
 # signale une taille hors cible, une emphase répétée, une citation ou un lien. Contrat : règle « Fichiers de règles »
 # de ~/.claude/CLAUDE.md. Informe seulement : findings -> stderr + exit 2 (feedback à Claude), sinon exit 0.
 
@@ -11,9 +11,9 @@ try {
     $file = ($raw | ConvertFrom-Json).tool_input.file_path
     if (-not $file -or -not (Test-Path -LiteralPath $file)) { exit 0 }
     $p = $file -replace '\\', '/'
-    $kind = if ($p -match '/CLAUDE\.md$') { 'claude' }
+    $kind = if ($p -match '/CLAUDE\.md$' -or [IO.Path]::GetFullPath($file) -ieq [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../../references/portes.md'))) { 'claude' }
             elseif ($p -match '/SKILL\.md$') { 'skill' }
-            elseif ($p -match '/\.claude/rules/[^/]+\.md$' -or $p -match '/\.claude/agents/[^/]+\.md$' -or $p -match '/skills/[^/]+/agents/[^/]+\.md$') { 'rule' }
+            elseif ($p -match '/\.claude/rules/.+\.md$' -or $p -match '/\.claude/agents/[^/]+\.md$' -or $p -match '/skills/[^/]+/agents/[^/]+\.md$') { 'rule' }
             else { $null }
     if (-not $kind) { exit 0 }
     if ($p -match '/(tmp_essais|node_modules|\.git)/') { exit 0 }

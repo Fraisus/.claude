@@ -2,12 +2,25 @@
 paths:
   - "**/*.php"
   - "**/*.js"
+  - "**/*.mjs"
+  - "**/*.cjs"
   - "**/*.jsx"
   - "**/*.ts"
   - "**/*.tsx"
   - "**/*.py"
   - "**/*.astro"
   - "**/*.vue"
+  - "**/*.svelte"
+  - "**/*.go"
+  - "**/*.rs"
+  - "**/*.java"
+  - "**/*.kt"
+  - "**/*.c"
+  - "**/*.cpp"
+  - "**/*.h"
+  - "**/*.rb"
+  - "**/*.swift"
+  - "**/*.ps1"
 ---
 
 # Point d'extension : invariants de mise en œuvre
