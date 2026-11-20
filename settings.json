@@ -62,7 +62,7 @@
       "~/.claude"
     ]
   },
-  "model": "fable",
+  "model": "opus",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "PostToolUse": [
@@ -99,7 +99,7 @@
   "effortLevel": "high",
   "modelSettings": {
     "claude-opus-5-5": {
-      "effortLevel": "xhigh"
+      "effortLevel": "high"
     },
     "claude-fable-5-1": {
       "effortLevel": "high"
