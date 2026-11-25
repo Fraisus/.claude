@@ -39,4 +39,4 @@ Décision : monter le plafond (et le filet de 50 000 au-dessus) si la plupart de
 - Les 17 hooks tournent en node (`hooks.json` : 28 appels `node`, aucun `powershell`), briques `lib/hook.mjs`, `lib/regex.mjs`, `lib/agents.mjs`, `lib/turn-timing.mjs` ; essais verts dans un miroir sans aucun `.ps1` et dans le plugin ; session réelle : refus attendus (racine, secret), aucune erreur de hook.
 - `.ps1` retirés le 25/11 au soir ; les essais ne comparent plus qu'aux attendus (comparaison au `.ps1` sautée quand il manque). Sessions ouvertes avant : sans gardes jusqu'à leur relance.
 - Constat : lancées en nombre, les gardes PowerShell rendaient 0 (laisser passer) au lieu de 2 sur des cas qu'elles bloquent seules.
-- Corrigé le 25/11 : guard-agent-resume ne juge plus qu'une reprise d'agent fini (`finished` du meta) ; sémantique .NET de `s` (U+0085) et du point dans `lib/regex.mjs` et `readPayload`, relevée par la relecture adverse.
+- Corrigé le 25/11 : guard-agent-resume ne juge plus qu'une reprise d'agent fini (`finished` du meta) ; sémantique .NET de `\s` (U+0085) et du point dans `lib/regex.mjs` et `readPayload`, relevée par la relecture adverse.
