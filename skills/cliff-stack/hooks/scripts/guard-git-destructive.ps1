@@ -47,8 +47,8 @@ try {
 
     # Ouvrier de zone (agents/ouvrier-zone.md) : liste fermée de sous-commandes, refus sans invite (aucun humain
     # n'attend un sous-agent). Type lu dans le payload, sinon dans le meta de sa transcription (agent-usage.mjs).
-    # Chaque git de la commande BRUTE est lu (plusieurs lignes, sh -c "...", $(...)) ; un « git push » cité dans
-    # un message de commit est donc refusé aussi : refus sûr, l'ouvrier reformule. Filet contre l'erreur d'un agent
+    # Chaque git de la commande brute est lu (plusieurs lignes, sh -c "...", $(...)), hors corps de heredoc ; un
+    # message -m dont la ponctuation relance la lecture (« ; git x ») peut être refusé : l'ouvrier reformule. Filet contre l'erreur d'un agent
     # de bonne foi, pas barrière : une sous-commande cachée (guillemets, variable, xargs, eval) échappe à une lecture
     # du texte ; ce qui interdit le push à l'ouvrier est son contrat (agents/ouvrier-zone.md).
     if ($payload.agent_id -and ($cmd -match '(?i)git')) {
@@ -62,16 +62,19 @@ try {
             $val = '(?:"[^"]*"|''[^'']*''|[^\s"'']+)'
             $opt = "(?:(?:-C|-c|--git-dir|--work-tree|--namespace|--config-env)\s+$val|--[\w-]+(?:=$val)?|-[A-Za-z]+)"
             $rx = "(?i)(?<![\w.-])[""']?git(?:\.exe)?[""']?((?:\s+$opt)*)\s+([a-z][\w-]*)([^\r\n;&|()$``]*)"
-            foreach ($m in [regex]::Matches($cmd, $rx)) {
+            # Le corps d'un heredoc (message de commit du harnais) est du texte, pas des commandes.
+            $brut = $cmd -replace "(?s)<<-?\s*['""]?(\w+)['""]?.*?\r?\n\1\b", ' '
+            foreach ($m in [regex]::Matches($brut, $rx)) {
                 $sous = $m.Groups[2].Value.ToLowerInvariant(); $reste = $m.Groups[3].Value
                 # Lectures seules de sous-commandes qui savent aussi écrire ; branch : options groupées (-df) et
                 # préfixes d'options longues (--dele) compris, comme le parseur de git les accepte.
                 $lecture = (($sous -eq 'worktree') -and ($reste -match '^\s*list\b')) -or
                     (($sous -eq 'stash') -and ($reste -match '^\s*(list|show)\b')) -or
-                    (($sous -eq 'remote') -and ($reste -match '^\s*(-v\s*$|-v\s+show\b|show\b|get-url\b|$)')) -or
-                    (($sous -eq 'config') -and ($reste -match '^\s*(--get(-all|-regexp)?|--list|-l)\b')) -or
+                    (($sous -eq 'remote') -and ($reste -notmatch '\b(add|remove|rm|rename|set-url|set-head|set-branches|prune|update)\b')) -or
+                    (($sous -eq 'config') -and ($reste -match '^\s*(--get(-all|-regexp)?|--list|-l|get|list)\b')) -or
                     (($sous -eq 'reflog') -and ($reste -notmatch '\b(expire|delete|drop)\b'))
-                $branche = ($sous -eq 'branch') -and ($reste -match '(^|\s)(-[a-zA-Z]*[dDmMcCf][a-zA-Z]*\b|--(de|mo|co|fo)[a-z-]*)')
+                # Préfixes uniques seulement (--d, --mo, --cop, --forc) : --co et --fo désignent aussi --contains, --format.
+                $branche = ($sous -eq 'branch') -and ($reste -match '(^|\s)(-[a-zA-Z]*[dDmMcCf][a-zA-Z]*\b|--(d|mo|cop|forc)[a-z-]*)')
                 $refus = (($sous -notmatch $permis) -and -not $lecture) -or $branche
                 if ($refus) {
                     $why = "Ouvrier de zone : git $sous refusé. Permis : add et commit de tes fichiers, merge du tronc si le brief le demande, lectures (status, diff, log, show). Rends un signal au thread principal pour le reste."

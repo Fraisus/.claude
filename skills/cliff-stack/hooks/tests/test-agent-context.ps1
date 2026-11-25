@@ -105,7 +105,9 @@ Verifier 'autre sous-agent : push non touche par la regle de l ouvrier' (-not (G
 foreach ($contournement in @("git add a`ngit commit -m x`ngit push", 'sh -c "git push"', 'git log $(git push)', 'git -C "C:/x y" push', 'git --work-tree . push', '"git" push')) {
     Verifier "ouvrier : contournement refuse ($($contournement -replace "`n", ' \n '))" ((Git 'aouv' $contournement).out -match '"permissionDecision":"deny"')
 }
-foreach ($b in @('git branch -df z', 'git branch --dele z', 'git branch --forc main HEAD~3', 'git worktree add x', 'git stash drop', 'git remote add o u', 'git config user.name x', 'git reflog expire --all')) {
+Verifier 'ouvrier : commit en heredoc dont le message cite git passe' (-not (Git 'aouv' "git commit -F - <<'EOF'`nGarde git de l'ouvrier`nEOF").out.Trim())
+Verifier 'ouvrier : lectures branch --contains, remote --verbose, config get passent' (-not (Git 'aouv' "git branch --contains abc`ngit remote -v 2>&1`ngit remote --verbose`ngit config get user.name").out.Trim())
+foreach ($b in @('git branch --d z', 'git branch -df z', 'git branch --dele z', 'git branch --forc main HEAD~3', 'git worktree add x', 'git stash drop', 'git remote add o u', 'git config user.name x', 'git reflog expire --all')) {
     Verifier "ouvrier : $b refuse" ((Git 'aouv' $b).out -match '"permissionDecision":"deny"')
 }
 Verifier 'ouvrier : lectures worktree, stash, remote, config, reflog passent' (-not (Git 'aouv' "git worktree list`ngit stash list`ngit remote -v`ngit config --get user.name`ngit reflog -5`ngit branch --show-current").out.Trim())
