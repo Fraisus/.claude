@@ -6,14 +6,13 @@
 // Exit 2 with a JSON reason on stderr blocks, exit 0 allows.
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
-import { ask, projectDir, refuse, run } from './lib/hook.mjs';
-import { B as NET_BOUNDARY } from './lib/regex.mjs';
+import { ask, refuse, run } from './lib/hook.mjs';
+import { net } from './lib/regex.mjs';
 
-// The patterns keep the .NET semantics of the PowerShell version: \b and \d see Unicode letters and digits,
-// `$` also matches before a final newline, `.` is written [^\n].
+// The patterns keep the .NET semantics of the PowerShell version (lib/regex.mjs net); `$` also matches before a final
+// newline.
 const END = String.raw`(?=\n?$)`;
 const BT = '`';
-const net = (source, flags) => new RegExp(source.replaceAll(String.raw`\b`, NET_BOUNDARY).replaceAll(String.raw`\d`, String.raw`\p{Nd}`), `${flags}u`);
 // PowerShell -match: case-insensitive, first match.
 const match = (text, source) => net(source, 'i').exec(text);
 // [regex]::Matches: case-sensitive unless the caller asks otherwise.
@@ -209,7 +208,8 @@ run((payload) => {
   if (!raw) return;
   const cmd = String(raw);
 
-  const project = projectDir(payload);
+  // The zone is CLAUDE_PROJECT_DIR alone, as in the PowerShell version: never the payload's cwd.
+  const project = process.env.CLAUDE_PROJECT_DIR && existsSync(process.env.CLAUDE_PROJECT_DIR) ? process.env.CLAUDE_PROJECT_DIR : null;
   const roots = allowedRoots(project);
   const projectDb = projectDatabase(project);
 

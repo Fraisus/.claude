@@ -196,7 +196,7 @@ run((payload) => {
   const toAbsolute = (path, base) => {
     if (!path) return null;
     let p = path.replace(/^["']+|["']+$/g, '');
-    const msys = /^\/([a-zA-Z])(\/.*)?$/.exec(p);
+    const msys = /^\/([a-zA-Z])(\/[^\n]*)?$/.exec(p); // [^\n] is the .NET "."
     if (msys) p = `${msys[1]}:\\${msys[2] ?? ''}`;
     if (/^~(?=[\\/]|$)/.test(p) && process.env.USERPROFILE) p = process.env.USERPROFILE + p.slice(1);
     p = p.replace(/\//g, '\\');

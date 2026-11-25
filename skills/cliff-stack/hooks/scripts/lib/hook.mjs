@@ -7,7 +7,10 @@ import { join } from 'node:path';
 export function readPayload() {
   try {
     const raw = readFileSync(0, 'utf8').replace(/^﻿/, '');
-    return raw.trim() ? JSON.parse(raw) : null;
+    const payload = raw.trim() ? JSON.parse(raw) : null;
+    // PowerShell splits words on U+0085 and JavaScript's \s misses it: a guard reading the command must see a space.
+    if (typeof payload?.tool_input?.command === 'string') payload.tool_input.command = payload.tool_input.command.replaceAll('\u0085', ' ');
+    return payload;
   } catch {
     return null;
   }

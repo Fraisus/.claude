@@ -22,14 +22,14 @@ New-Item -ItemType Directory -Force -Path $sub | Out-Null
 $utf8 = New-Object System.Text.UTF8Encoding($false)
 
 # Transcription d'agent : une ligne assistant par tour, contexte = cache_read (le reste à 0), chaque id écrit deux fois.
-function Transcription([string]$id, [int[]]$contextes, [string]$type = 'general-purpose') {
+function Transcription([string]$id, [int[]]$contextes, [string]$type = 'general-purpose', [bool]$fini = $true) {
     $lignes = foreach ($i in 0..($contextes.Count - 1)) {
         $u = @{ input_tokens = 0; cache_creation_input_tokens = 0; cache_read_input_tokens = $contextes[$i]; output_tokens = 10 }
         $l = @{ type = 'assistant'; agentId = $id; message = @{ id = "msg_$i"; model = 'claude-test'; usage = $u } } | ConvertTo-Json -Depth 5 -Compress
         $l; $l
     }
     [System.IO.File]::WriteAllText((Join-Path $sub "agent-$id.jsonl"), (($lignes -join "`n") + "`n"), $utf8)
-    [System.IO.File]::WriteAllText((Join-Path $sub "agent-$id.meta.json"), (@{ agentType = $type; model = 'opus'; effort = 'high'; spawnDepth = 1 } | ConvertTo-Json -Compress), $utf8)
+    [System.IO.File]::WriteAllText((Join-Path $sub "agent-$id.meta.json"), (@{ agentType = $type; model = 'opus'; effort = 'high'; spawnDepth = 1; finished = $fini } | ConvertTo-Json -Compress), $utf8)
 }
 
 $script:n = 0; $script:ko = 0
@@ -86,6 +86,9 @@ $r = Lancer 'node' $resume @{ session_id = $session; transcript_path = $principa
 Verifier 'reprise au-dela de max moins palier : refus' ($r.out -match '"permissionDecision":"deny"') $r.out
 $r = Lancer 'node' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'suite #reprise' } }
 Verifier '#reprise passe outre' (-not $r.out.Trim()) $r.out
+Transcription 'abcdef0123456' @(80000, 120000) 'general-purpose' $false
+$r = Lancer 'node' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'conclus' } }
+Verifier 'message a un agent encore en marche : passe, rien ne se recharge' (-not $r.out.Trim()) $r.out
 
 Write-Host 'guard-git-destructive.mjs, ouvrier de zone'
 $git = "`"$(Join-Path $scripts 'guard-git-destructive.mjs')`""
