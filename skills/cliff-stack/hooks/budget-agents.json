@@ -12,8 +12,8 @@
   "iterations_max": 8,
   "steriles_arret": 3,
   "ttl_agent_min": 60,
-  "contexte_agent_max": 150000,
-  "contexte_palier": 50000,
+  "contexte_agent_max": 400000,
+  "contexte_palier": 100000,
   "_contexte": "jetons de contexte du dernier tour d'un sous-agent (agent-usage.mjs) ; au-dela de contexte_agent_max, guard-agent-context lui fait rendre sa passation, rappel a chaque palier ; guard-agent-resume refuse une reprise au-dela de max moins palier ; lus par les scripts node, sans surcharge CLIFF_EQUIPE_*",
   "seuils": {
     "_": "composition et escalade (etape 2) ; aucun seuil valide publiquement, tous reglables et journalises",
@@ -40,6 +40,6 @@
     "simultanes": "asana-triage (5 en parallele)",
     "ecrivains_simultanes": "communaute : 3, 5 au plus (suivi/equipes-agents/03-communaute.md)",
     "playwright_simultanes": "regle maison : un seul agent Playwright a la fois (navigateur et session partages)",
-    "contexte_agent_max": "valeur reprise de l'ancienne limite de guard-agent-resume (estimee, sans source) ; a fixer par mesure : contexte des agents (agents.jsonl) croise avec les refus par lot. Repere mesure le 25/11/2026 sur un projet : contexte de depart median 56 000"
+    "contexte_agent_max": "400 000 fixe par l'utilisateur le 25/11/2026 (150 000 avant, valeur estimee sans source) : sur un projet, six lots de 282 000 a 603 000 de contexte, des defauts sans lien avec la taille, et un plafond a 150 000 qui aurait coupe chaque lot deux ou trois fois ; a confirmer par mesure : contexte des agents (agents.jsonl) croise avec les refus par lot. Repere mesure le 25/11/2026 sur un projet : contexte de depart median 56 000"
   }
 }
