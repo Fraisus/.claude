@@ -21,7 +21,7 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 
 ## 2. Activer
 - Écris les contrats partagés toi-même d'abord.
-- Un `Agent` par zone, rôle `cliff-stack:ouvrier-zone`, brief rempli depuis `reference/brief-ouvrier.md` ; les conseillers « avant » passent avant les écrivains.
+- Un `Agent` par zone, rôle `cliff-stack:ouvrier-zone` (jamais `general-purpose` pour écrire : ses outils lui font démarrer vers 56 000 tokens de contexte contre 33 000, payés à chaque tour), brief rempli depuis `reference/brief-ouvrier.md` ; les conseillers « avant » passent avant les écrivains.
 - Deux écrivains jamais sur le même fichier. Jamais plus d'agents que le budget.
 - Route selon la forme : fan-out homogène → `/batch` natif ; pipeline ordonné → un workflow ; zones disjointes → sous-agents simples.
 
@@ -39,10 +39,10 @@ Le thread principal orchestre et écrit les contrats partagés ; chaque sous-age
 - Un défaut trouvé sur un lot se traite selon la gravité que rend son vérificateur. Bloquant : il repart chez un codeur neuf avec le rapport, puis repasse chez le vérificateur ; les refus se comptent dans le plan, au troisième, stop et retour à l'utilisateur. Mineur : le lot s'intègre, le défaut s'écrit dans la dette du plan et l'état dû reste « partiel » tant qu'elle est ouverte.
 - Tronc : une branche par lot, partie du tronc, commitée à chaque étape ; elle reprend le tronc une seule fois, juste avant d'entrer, et entre dès qu'elle est verte et relue sans défaut bloquant. Une fonctionnalité inachevée entre cachée par le mécanisme du projet, prouvée sans chemin jusqu'à son action.
 - Le principal note par lot, dans le plan ou le suivi du projet : lancement, refus, entrée au tronc, défauts bloquants trouvés après ; sans ces dates, un changement de méthode ne se juge pas.
-- Le principal dit à l'utilisateur ce qui a été trouvé et corrigé ; un écart ancien trouvé en chemin (défaut, essai rouge, dette en hausse) se corrige aussi, dans la foulée ; seuls une idée, ou ce qui attend une décision de l'utilisateur, vont à la file des écarts du projet.
+- Le principal dit à l'utilisateur ce qui a été trouvé et corrigé ; un écart ancien trouvé en chemin (défaut, essai rouge, dette en hausse) se corrige aussi, dans la foulée ; seuls une idée, ou ce qui attend une décision de l'utilisateur, vont à la file des écarts du projet.
 - Lance la vérification déclarée du plan.
 - Une seule relecture finale quand le projet l'exige (sécurité, machines, adversaire), à contexte vierge, sur les lignes changées.
 
 ## 4. Escalader (en cours de route)
 - Un ouvrier ne monte rien : il rend un signal (`hors_zone_requis`, `contrat_insuffisant`, `echec_repete`, `fanout_homogene`). Le principal lit, réécrit le plan, relance la zone à neuf au bon palier. L'état transmis est le plan plus les diffs déjà produits, jamais le contexte vivant d'un agent.
-- Passages et signaux : `reference/escalade.md`.
+- Passages et signaux : `reference/escalade.md`.

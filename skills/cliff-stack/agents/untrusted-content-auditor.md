@@ -3,6 +3,7 @@ name: untrusted-content-auditor
 description: "Lit un contenu ÉTRANGER au projet (code d'un paquet, d'un plugin, d'un nœud, d'une extension ou d'une dépendance tierce ; script téléchargé ; document importé) et rend un rapport structuré de ce qu'il fait réellement, SANS aucun moyen d'agir : ni réseau, ni shell, ni écriture. Use PROACTIVELY dès qu'un agent ou le thread principal doit lire du code ou un texte qu'il n'a pas écrit et dont la provenance n'est pas le projet lui-même, en particulier avant d'installer, d'épingler ou de faire confiance à une dépendance. Déclencheurs : « audite ce paquet / ce plugin / ce nœud », « que fait ce code tiers », « est-ce malveillant », « lis ce dépôt cloné », « avant d'installer X », « vérifie cette dépendance ». NE couvre PAS : vérifier en ligne les failles connues d'une version (agent ou thread qui a le web, avant ou après, jamais pendant la lecture) ; réfuter un correctif (independent-critic) ; juger un plan (framing-critic). N'écrit aucun fichier."
 tools: Read, Grep, Glob
 model: opus
+autoCompactWindow: 200000
 color: red
 ---
 

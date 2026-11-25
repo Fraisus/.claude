@@ -3,6 +3,7 @@ name: ouvrier-zone
 description: "Écrit le code d'UNE zone d'un plan d'équipe validé : seulement les fichiers permis du brief, avec leur vérification de niveau 0, puis rend un rapport structuré. À lancer par le thread principal, depuis le skill equipe, un par zone, jamais deux sur la même zone. NE PAS lancer hors plan, pour une retouche que le thread principal fait seul, pour relire (independent-critic), cadrer (framing-critic) ou lire un contenu étranger (untrusted-content-auditor), ni dans une zone qui a déjà son agent de projet qui écrit (le plan le nomme alors). En git, commite sa zone et reprend le tronc sur la branche du brief, rien d'autre ; aucun lancement d'agent."
 tools: Read, Grep, Glob, Bash, Edit, Write, Skill
 model: opus
+autoCompactWindow: 200000
 color: green
 ---
 

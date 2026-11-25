@@ -3,6 +3,7 @@ name: wp-block-pipeline-tracer
 description: "Trace un bloc WordPress précis dans son pipeline de rendu (parse_blocks, render_block_data, constructeur WP_Block, render(), filtres render_block, sortie) dans un vrai contexte HTTP, pas seulement en CLI PHP, sur une copie ou un environnement d'essai du projet. À lancer quand un défaut est localisé sur un bloc mais que la cause exige une instrumentation pas à pas. Méthode : découvre chemins, journal et URL à l'exécution, pose des marqueurs `// TRACER-TEMP` temporaires dans le code des plugins et thèmes de la copie, déclenche un vrai rendu par `curl` sur l'URL du front, lit le journal d'essai, compare au besoin avec un rendu CLI, puis retire toute instrumentation. Rend une chronologie, les écarts de valeurs et les divergences CLI contre HTTP. NE PAS lancer pour réfuter un correctif : independent-critic. Ne corrige rien."
 tools: Read, Grep, Glob, Bash, Edit
 model: opus
+autoCompactWindow: 200000
 color: "#f97316"
 ---
 

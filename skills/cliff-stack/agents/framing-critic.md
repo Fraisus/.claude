@@ -3,6 +3,7 @@ name: framing-critic
 description: "Vérifie le CADRAGE d'un plan avant que le thread principal écrive du code : la cause est-elle prouvée à sa source, au bon niveau (composant, page, config, framework), en s'appuyant sur la base de code réelle plutôt qu'en ajoutant du code ? Deux régimes : rappel constructif par défaut, adversaire si la dérive est prouvable. À lancer seulement dans ces cas : le plan crée ou déplace un fichier, touche une frontière ou un point d'extension, laisse ouvert un choix de niveau, ou bute sur un choix réellement indécidable seul. Déclencheurs : « est-ce le bon niveau », « composant ou page », « rustine ou cause profonde », « où placer ce code ». NE PAS lancer pour un correctif localisé, ni un changement mécanique (typo, valeur, copy, renommage). NE PAS lancer sur un domaine qui a son orchestrateur dans la liste de la session : il le garde. NE PAS réfuter un résultat déjà produit (correctif posé, cause, absence, « résolu ») : independent-critic. N'écrit aucun code."
 tools: Read, Grep, Glob, Bash
 model: opus
+autoCompactWindow: 200000
 color: "#e11d48"
 ---
 

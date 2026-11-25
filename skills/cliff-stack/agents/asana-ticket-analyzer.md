@@ -10,6 +10,7 @@ description: >-
   validation de l'utilisateur. NE PAS lister ni trier les tickets : asana-triage.
 tools: Bash, Read, Glob, Grep
 model: sonnet
+autoCompactWindow: 200000
 ---
 
 Tu es un analyste de ticket Asana. Tu COMPRENDS et RELIES un ticket à son code ; tu ne corriges rien.
