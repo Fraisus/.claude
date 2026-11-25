@@ -2,7 +2,7 @@
 // One reader for three consumers: guard-agent-context.mjs (live cap), guard-agent-resume.ps1 and log-agents.ps1
 // (through the CLI below). Context of a turn = input + cache_creation + cache_read tokens of its `message.usage`;
 // one API message spans several transcript lines, so totals are deduplicated by `message.id`.
-import { closeSync, existsSync, fstatSync, openSync, readFileSync, readSync } from 'node:fs';
+import { closeSync, existsSync, fstatSync, openSync, readdirSync, readFileSync, readSync } from 'node:fs';
 import { basename, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -28,8 +28,19 @@ export function agentTranscript({ transcriptPath, agentTranscriptPath, agentId }
   if (!transcriptPath || !agentId) return null;
   const own = `agent-${agentId}.jsonl`;
   if (basename(transcriptPath) === own) return existsSync(transcriptPath) ? transcriptPath : null;
-  const derived = join(transcriptPath.replace(/\.jsonl$/i, ''), 'subagents', own);
-  return existsSync(derived) ? derived : null;
+  const subagents = join(transcriptPath.replace(/\.jsonl$/i, ''), 'subagents');
+  const derived = join(subagents, own);
+  if (existsSync(derived)) return derived;
+  // Agents launched by a Workflow live under subagents/workflows/<run>/.
+  try {
+    for (const run of readdirSync(join(subagents, 'workflows'))) {
+      const p = join(subagents, 'workflows', run, own);
+      if (existsSync(p)) return p;
+    }
+  } catch {
+    // no workflow ran in this session
+  }
+  return null;
 }
 
 const contextOf = (u) => (u.input_tokens || 0) + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);

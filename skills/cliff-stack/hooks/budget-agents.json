@@ -31,7 +31,7 @@
     "source": "code.claude.com/docs/en/sub-agents, Concurrent subagent limit ; une surcharge CLIFF_EQUIPE_SIMULTANES ne depasse jamais cette valeur"
   },
   "appliques": {
-    "etape_1": ["simultanes", "playwright_simultanes", "total_par_plan (Workflow, declaration agents-max)", "empreinte identique vivante", "regles P2 si CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1"],
+    "etape_1": ["simultanes", "playwright_simultanes", "total_par_plan (Workflow, declaration agents-max)", "empreinte identique vivante", "regles P2 si CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1", "imbrication (tout mode)", "contexte_agent_max et contexte_palier (guard-agent-context, guard-agent-resume)"],
     "etape_2": ["ecrivains_simultanes", "ecrivains_par_zone", "total_par_plan (Agent dans un plan)", "iterations_max", "steriles_arret", "seuils"],
     "etape_4": ["p2_coequipiers"]
   },

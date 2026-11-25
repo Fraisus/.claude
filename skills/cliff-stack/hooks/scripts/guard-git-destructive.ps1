@@ -47,17 +47,21 @@ try {
 
     # Ouvrier de zone (agents/ouvrier-zone.md) : liste fermée de sous-commandes, refus sans invite (aucun humain
     # n'attend un sous-agent). Type lu dans le payload, sinon dans le meta de sa transcription (agent-usage.mjs).
-    if ($payload.agent_id -and ($c -match '(?i)\bgit\b')) {
+    # Chaque git de la commande BRUTE est lu (plusieurs lignes, sh -c "...", $(...)) ; un « git push » cité dans
+    # un message de commit est donc refusé aussi : refus sûr, l'ouvrier reformule.
+    if ($payload.agent_id -and ($cmd -match '(?i)git')) {
         $type = [string]$payload.agent_type
         if (-not $type) {
             $meta = & node (Join-Path $PSScriptRoot 'agent-usage.mjs') meta --agent ([string]$payload.agent_id) --transcript ([string]$payload.transcript_path) | ConvertFrom-Json
             if ($meta) { $type = [string]$meta.agentType }
         }
         if (($type -replace '^[^:]+:', '') -eq 'ouvrier-zone') {
-            $permis = '^(status|diff|log|show|add|commit|merge|rev-parse|ls-files|blame|grep|mv|rm|branch)$'
-            foreach ($seg in $segments) {
-                if ($seg -notmatch '(?i)\bgit\b((?:\s+(?:-C\s+\S+|-c\s+\S+|--[\w-]+(?:=\S+)?))*)\s+([a-z][\w-]*)(.*)$') { continue }
-                $sous = $Matches[2].ToLowerInvariant(); $reste = $Matches[3]
+            $permis = '^(status|diff|log|show|add|commit|merge|branch|mv|rm|rev-parse|rev-list|merge-base|ls-files|ls-tree|blame|grep|show-ref|describe|cat-file|diff-tree|shortlog|name-rev|for-each-ref|help)$'
+            $val = '(?:"[^"]*"|''[^'']*''|[^\s"'']+)'
+            $opt = "(?:(?:-C|-c|--git-dir|--work-tree|--namespace|--config-env)\s+$val|--[\w-]+(?:=$val)?|-[A-Za-z]+)"
+            $rx = "(?i)(?<![\w.-])[""']?git(?:\.exe)?[""']?((?:\s+$opt)*)\s+([a-z][\w-]*)([^\r\n;&|()$``]*)"
+            foreach ($m in [regex]::Matches($cmd, $rx)) {
+                $sous = $m.Groups[2].Value.ToLowerInvariant(); $reste = $m.Groups[3].Value
                 $refus = ($sous -notmatch $permis) -or (($sous -eq 'branch') -and ($reste -match '(?i)(^|\s)(-[dDmMcCf]\b|--(delete|move|copy|force)\b)'))
                 if ($refus) {
                     $why = "Ouvrier de zone : git $sous refusé. Permis : add et commit de tes fichiers, merge du tronc si le brief le demande, lectures (status, diff, log, show). Rends un signal au thread principal pour le reste."

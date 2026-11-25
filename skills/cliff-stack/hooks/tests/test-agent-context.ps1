@@ -102,6 +102,10 @@ Verifier 'ouvrier : push refuse' ((Git 'aouv' 'git push origin zone').out -match
 Verifier 'ouvrier : branch -D refuse' ((Git 'aouv' 'git branch -D zone').out -match '"permissionDecision":"deny"')
 Verifier 'ouvrier (type par le payload) : rebase refuse' ((Git 'aautre' 'git rebase main' 'cliff-stack:ouvrier-zone').out -match '"permissionDecision":"deny"')
 Verifier 'autre sous-agent : push non touche par la regle de l ouvrier' (-not (Git 'agen' 'git push origin x').out.Trim())
+foreach ($contournement in @("git add a`ngit commit -m x`ngit push", 'sh -c "git push"', 'git log $(git push)', 'git -C "C:/x y" push', 'git --work-tree . push', '"git" push')) {
+    Verifier "ouvrier : contournement refuse ($($contournement -replace "`n", ' \n '))" ((Git 'aouv' $contournement).out -match '"permissionDecision":"deny"')
+}
+Verifier 'ouvrier : merge-base et rev-list passent' (-not (Git 'aouv' "git merge-base HEAD main`ngit rev-list --count main..HEAD").out.Trim())
 
 Write-Host 'log-agents.ps1, tokens'
 $r = Lancer 'powershell.exe' "-NoProfile -ExecutionPolicy Bypass -File `"$(Join-Path $scripts 'log-agents.ps1')`"" @{ session_id = $session; cwd = $essai; agent_id = 'a1'; agent_type = 'general-purpose'; transcript_path = $principal; last_assistant_message = 'fin' }
