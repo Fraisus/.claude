@@ -40,6 +40,6 @@
     "simultanes": "asana-triage (5 en parallele)",
     "ecrivains_simultanes": "communaute : 3, 5 au plus (suivi/equipes-agents/03-communaute.md)",
     "playwright_simultanes": "regle maison : un seul agent Playwright a la fois (navigateur et session partages)",
-    "contexte_agent_max": "mesure sur 396 sous-agents d'un projet (25/11/2026) : contexte de depart median 56 000, 98,5 % des jetons en relecture de cache, 226 agents au-dela de 150 000"
+    "contexte_agent_max": "valeur reprise de l'ancienne limite de guard-agent-resume (estimee, sans source) ; a fixer par mesure : contexte des agents (agents.jsonl) croise avec les refus par lot. Repere mesure le 25/11/2026 sur un projet : contexte de depart median 56 000"
   }
 }
