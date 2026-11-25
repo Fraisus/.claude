@@ -22,7 +22,13 @@ export const meta = {
 // args.maxChallengers (optionnel, défaut 1, max 2) nb de challengers par affirmation ; le nombre
 //                    d'affirmations challengées baisse d'autant pour tenir AGENTS_MAX
 let input = args
-if (typeof input === 'string') { try { input = JSON.parse(input) } catch { input = {} } }
+// A plain-text argument is the question itself; only a JSON object carries the options.
+if (typeof input === 'string') {
+  const text = input.trim()
+  let parsed = null
+  try { parsed = JSON.parse(text) } catch { parsed = null }
+  input = parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : { question: text }
+}
 input = input ?? {}
 
 const question = input.question

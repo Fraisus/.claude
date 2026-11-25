@@ -1,7 +1,7 @@
 export const meta = {
   name: 'generator-critic-verifier',
   description: 'Boucle réutilisable Générateur→Critique-adversarial→Vérifieur-anti-régression (Evaluator-optimizer + Verifier loop), avec garde-fous coût/convergence, application en git worktree isolé.',
-  whenToUse: 'Tâche à forte valeur où la rigueur multi-agents se justifie (le critique doit réfuter, le vérifieur exécute de VRAIS tests). PAS pour une tâche triviale/déterministe — la porte d\'entrée le refuse. Lancer par scriptPath vers ce fichier : la garde guard-budget-agents bloque un lancement par name seul.',
+  whenToUse: 'Tâche à forte valeur où la rigueur multi-agents se justifie (le critique doit réfuter, le vérifieur exécute de VRAIS tests). PAS pour une tâche triviale/déterministe — la porte d\'entrée le refuse. Lancer par scriptPath vers ce fichier : la garde guard-budget-agents bloque un lancement par name seul. args est un objet { task, successCriteria } (les deux requis), jamais un texte simple.',
   phases: [
     { title: 'Gate', detail: 'le multi-agent est-il justifié ?' },
     { title: 'Generate', detail: 'produire le livrable' },
