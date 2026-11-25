@@ -48,7 +48,9 @@ try {
     # Ouvrier de zone (agents/ouvrier-zone.md) : liste fermée de sous-commandes, refus sans invite (aucun humain
     # n'attend un sous-agent). Type lu dans le payload, sinon dans le meta de sa transcription (agent-usage.mjs).
     # Chaque git de la commande BRUTE est lu (plusieurs lignes, sh -c "...", $(...)) ; un « git push » cité dans
-    # un message de commit est donc refusé aussi : refus sûr, l'ouvrier reformule.
+    # un message de commit est donc refusé aussi : refus sûr, l'ouvrier reformule. Filet contre l'erreur d'un agent
+    # de bonne foi, pas barrière : une sous-commande cachée (guillemets, variable, xargs, eval) échappe à une lecture
+    # du texte ; ce qui interdit le push à l'ouvrier est son contrat (agents/ouvrier-zone.md).
     if ($payload.agent_id -and ($cmd -match '(?i)git')) {
         $type = [string]$payload.agent_type
         if (-not $type) {
@@ -62,7 +64,15 @@ try {
             $rx = "(?i)(?<![\w.-])[""']?git(?:\.exe)?[""']?((?:\s+$opt)*)\s+([a-z][\w-]*)([^\r\n;&|()$``]*)"
             foreach ($m in [regex]::Matches($cmd, $rx)) {
                 $sous = $m.Groups[2].Value.ToLowerInvariant(); $reste = $m.Groups[3].Value
-                $refus = ($sous -notmatch $permis) -or (($sous -eq 'branch') -and ($reste -match '(?i)(^|\s)(-[dDmMcCf]\b|--(delete|move|copy|force)\b)'))
+                # Lectures seules de sous-commandes qui savent aussi écrire ; branch : options groupées (-df) et
+                # préfixes d'options longues (--dele) compris, comme le parseur de git les accepte.
+                $lecture = (($sous -eq 'worktree') -and ($reste -match '^\s*list\b')) -or
+                    (($sous -eq 'stash') -and ($reste -match '^\s*(list|show)\b')) -or
+                    (($sous -eq 'remote') -and ($reste -match '^\s*(-v\s*$|-v\s+show\b|show\b|get-url\b|$)')) -or
+                    (($sous -eq 'config') -and ($reste -match '^\s*(--get(-all|-regexp)?|--list|-l)\b')) -or
+                    (($sous -eq 'reflog') -and ($reste -notmatch '\b(expire|delete|drop)\b'))
+                $branche = ($sous -eq 'branch') -and ($reste -match '(^|\s)(-[a-zA-Z]*[dDmMcCf][a-zA-Z]*\b|--(de|mo|co|fo)[a-z-]*)')
+                $refus = (($sous -notmatch $permis) -and -not $lecture) -or $branche
                 if ($refus) {
                     $why = "Ouvrier de zone : git $sous refusé. Permis : add et commit de tes fichiers, merge du tronc si le brief le demande, lectures (status, diff, log, show). Rends un signal au thread principal pour le reste."
                     @{ hookSpecificOutput = @{ hookEventName = 'PreToolUse'; permissionDecision = 'deny'; permissionDecisionReason = $why } } | ConvertTo-Json -Compress -Depth 4

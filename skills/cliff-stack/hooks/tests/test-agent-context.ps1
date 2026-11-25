@@ -105,6 +105,10 @@ Verifier 'autre sous-agent : push non touche par la regle de l ouvrier' (-not (G
 foreach ($contournement in @("git add a`ngit commit -m x`ngit push", 'sh -c "git push"', 'git log $(git push)', 'git -C "C:/x y" push', 'git --work-tree . push', '"git" push')) {
     Verifier "ouvrier : contournement refuse ($($contournement -replace "`n", ' \n '))" ((Git 'aouv' $contournement).out -match '"permissionDecision":"deny"')
 }
+foreach ($b in @('git branch -df z', 'git branch --dele z', 'git branch --forc main HEAD~3', 'git worktree add x', 'git stash drop', 'git remote add o u', 'git config user.name x', 'git reflog expire --all')) {
+    Verifier "ouvrier : $b refuse" ((Git 'aouv' $b).out -match '"permissionDecision":"deny"')
+}
+Verifier 'ouvrier : lectures worktree, stash, remote, config, reflog passent' (-not (Git 'aouv' "git worktree list`ngit stash list`ngit remote -v`ngit config --get user.name`ngit reflog -5`ngit branch --show-current").out.Trim())
 Verifier 'ouvrier : merge-base et rev-list passent' (-not (Git 'aouv' "git merge-base HEAD main`ngit rev-list --count main..HEAD").out.Trim())
 
 Write-Host 'log-agents.ps1, tokens'
