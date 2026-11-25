@@ -1,0 +1,6 @@
+.box {
+  margin: 4px;
+  position: absolute;
+  top: 0;
+  display: flex;
+}

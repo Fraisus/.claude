@@ -1,9 +1,9 @@
-# test-guard-write-scope.ps1 - behaviour tests for guard-write-scope.ps1 (PreToolUse, shell writes outside the zones).
+# test-guard-write-scope.ps1 - behaviour tests for guard-write-scope.mjs (PreToolUse, shell writes outside the zones).
 # Run: powershell -NoProfile -ExecutionPolicy Bypass -File hooks\tests\test-guard-write-scope.ps1
 # Each case feeds the hook a PowerShell tool payload on stdin and checks the exit code: 2 blocks, 0 allows.
 # Nothing runs the commands themselves; blocking cases come first and calibrate the probe.
 
-$hook = Join-Path (Split-Path $PSScriptRoot) 'scripts\guard-write-scope.ps1'
+$hook = Join-Path (Split-Path $PSScriptRoot) 'scripts\guard-write-scope.mjs'
 $env:CLAUDE_PROJECT_DIR = Join-Path $env:TEMP 'claude-scope-test-project'
 $inZone = Join-Path $env:LOCALAPPDATA 'Temp\claude\scope-test\probe.mjs'
 
@@ -11,7 +11,7 @@ $script:n = 0; $script:ko = 0
 function Assert-Scope([string]$label, [int]$expected, [string]$command) {
     $script:n++
     $payload = @{ tool_name = 'PowerShell'; tool_input = @{ command = $command } } | ConvertTo-Json -Compress
-    $payload | powershell -NoProfile -ExecutionPolicy Bypass -File $hook 2>$null | Out-Null
+    $payload | node $hook 2>$null | Out-Null
     $code = $LASTEXITCODE
     if ($code -eq $expected) { Write-Host "  OK   $label" } else { $script:ko++; Write-Host "  KO   $label (exit $code, expected $expected)" }
 }

@@ -1,21 +1,42 @@
-# test-guard-root-hygiene.ps1 - behaviour tests for guard-root-hygiene.ps1 (no new file at a project root).
+# test-guard-root-hygiene.ps1 - behaviour tests for guard-root-hygiene.mjs (no new file at a project root).
 # Run: powershell -NoProfile -ExecutionPolicy Bypass -File hooks\tests\test-guard-root-hygiene.ps1
 # Each case feeds the hook a shell tool payload on stdin, against a throwaway project folder, and checks the exit
 # code: 2 blocks, 0 allows. Nothing runs the commands themselves; blocking cases come first and calibrate the probe.
+# While the PowerShell hook it replaces still sits beside it, the case also requires the same exit code, stdout and
+# stderr from both.
 
-$hook = Join-Path (Split-Path $PSScriptRoot) 'scripts\guard-root-hygiene.ps1'
+$scripts = Join-Path (Split-Path $PSScriptRoot) 'scripts'
+$hook = Join-Path $scripts 'guard-root-hygiene.mjs'
+$legacy = Join-Path $scripts 'guard-root-hygiene.ps1'
 $project = Join-Path $env:TEMP 'claude-root-test-project'
 New-Item -ItemType Directory -Force -Path $project | Out-Null
 $env:CLAUDE_PROJECT_DIR = $project
 $nl = "`n"
 
+function Invoke-Hook([string]$file, [string[]]$arguments, [string]$payload) {
+    $psi = New-Object System.Diagnostics.ProcessStartInfo $file
+    $psi.Arguments = ($arguments | ForEach-Object { '"' + $_ + '"' }) -join ' '
+    $psi.UseShellExecute = $false; $psi.CreateNoWindow = $true
+    $psi.RedirectStandardInput = $true; $psi.RedirectStandardOutput = $true; $psi.RedirectStandardError = $true
+    $psi.StandardOutputEncoding = [System.Text.Encoding]::UTF8; $psi.StandardErrorEncoding = [System.Text.Encoding]::UTF8
+    $p = [System.Diagnostics.Process]::Start($psi)
+    $bytes = (New-Object System.Text.UTF8Encoding $false).GetBytes($payload)
+    $p.StandardInput.BaseStream.Write($bytes, 0, $bytes.Length); $p.StandardInput.Close()
+    $err = $p.StandardError.ReadToEndAsync(); $out = $p.StandardOutput.ReadToEnd(); $p.WaitForExit()
+    return @{ code = $p.ExitCode; out = $out; err = ($err.Result -replace "`r`n", "`n") }
+}
+
 $script:n = 0; $script:ko = 0
 function Assert-Root([string]$label, [int]$expected, [string]$tool, [string]$command) {
     $script:n++
     $payload = @{ tool_name = $tool; cwd = $project; tool_input = @{ command = $command } } | ConvertTo-Json -Compress
-    $payload | powershell -NoProfile -ExecutionPolicy Bypass -File $hook 2>$null | Out-Null
-    $code = $LASTEXITCODE
-    if ($code -eq $expected) { Write-Host "  OK   $label" } else { $script:ko++; Write-Host "  KO   $label (exit $code, expected $expected)" }
+    $r = Invoke-Hook 'node' @($hook) $payload
+    $why = if ($r.code -ne $expected) { "exit $($r.code), expected $expected" }
+    if (-not $why -and (Test-Path -LiteralPath $legacy)) {
+        $l = Invoke-Hook 'powershell.exe' @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $legacy) $payload
+        if ($l.code -ne $r.code -or $l.out -ne $r.out -or $l.err -ne $r.err) { $why = "differs from the .ps1: [$($l.code) $($l.out) $($l.err)] vs [$($r.code) $($r.out) $($r.err)]" }
+    }
+    if (-not $why) { Write-Host "  OK   $label" } else { $script:ko++; Write-Host "  KO   $label ($why)" }
 }
 
 # Calibration: real redirections to a new root file stay blocked.

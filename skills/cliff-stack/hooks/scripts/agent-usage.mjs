@@ -9,8 +9,11 @@ import { fileURLToPath } from 'node:url';
 const BUDGET = fileURLToPath(new URL('../budget-agents.json', import.meta.url));
 const DEFAULTS = { contexte_agent_max: 150000, contexte_palier: 50000 };
 
+// The budget file; CLIFF_EQUIPE_BUDGET points tests at their own.
+export const budgetPath = () => process.env.CLIFF_EQUIPE_BUDGET || BUDGET;
+
 export function readBudget() {
-  const path = process.env.CLIFF_EQUIPE_BUDGET || BUDGET;
+  const path = budgetPath();
   try {
     const b = JSON.parse(readFileSync(path, 'utf8').replace(/^﻿/, ''));
     return {

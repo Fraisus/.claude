@@ -1,0 +1,5 @@
+const { spawn } = require('node:child_process');
+const child = spawn('node', ['worker.js'], { detached: true, stdio: 'ignore' });
+child.unref();
+/re/.exec('x');
+cp.execFile('tool', [(1)]);

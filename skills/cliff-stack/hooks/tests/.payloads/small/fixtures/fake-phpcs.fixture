@@ -1,0 +1,16 @@
+<?php
+// Stands for phpcs: arguments echoed, verdict chosen by a marker inside the checked file.
+$args = array_slice($argv, 1);
+$file = array_pop($args);
+$args = array_map(function ($a) {
+    return strpos($a, '--standard=') === 0 ? '--standard=' . basename(substr($a, 11)) : $a;
+}, $args);
+$src = file_get_contents($file);
+if (strpos($src, 'STDERR') !== false) {
+    fwrite(STDERR, "PHP Deprecated: noise\n");
+}
+if (strpos($src, 'CLEAN') !== false) {
+    exit(0);
+}
+echo "\nFILE: $file\n----------\nFOUND 1 ERROR AFFECTING 1 LINE\n----------\n 3 | ERROR | Issue (" . implode(' ', $args) . ")\n----------\n\n";
+exit(1);

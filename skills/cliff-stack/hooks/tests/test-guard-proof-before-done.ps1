@@ -1,11 +1,11 @@
-# test-guard-proof-before-done.ps1 - behaviour tests for guard-proof-before-done.ps1 (Stop hook, gate 8).
+# test-guard-proof-before-done.ps1 - behaviour tests for guard-proof-before-done.mjs (Stop hook, gate 8).
 # Run: powershell -NoProfile -ExecutionPolicy Bypass -File hooks\tests\test-guard-proof-before-done.ps1
 # Each case writes a one-turn transcript into a throwaway folder hooks\tests\.essais\<timestamp>\ (git-ignored,
 # deleted when every case passes), feeds the hook its path on stdin and checks the exit code: 2 blocks the claim,
 # 0 lets it through. Known-blocking cases calibrate the probe before the accepted ones count.
 
 $ErrorActionPreference = 'Stop'
-$hook = Join-Path (Split-Path $PSScriptRoot) 'scripts\guard-proof-before-done.ps1'
+$hook = Join-Path (Split-Path $PSScriptRoot) 'scripts\guard-proof-before-done.mjs'
 $root = Join-Path $PSScriptRoot '.essais'
 New-Item -ItemType Directory -Force -Path $root | Out-Null
 Set-Content -LiteralPath (Join-Path $root '.gitignore') -Value '*' -Encoding Ascii
@@ -26,7 +26,7 @@ function Assert-Hook([string]$label, [int]$expected, [array]$steps, [switch]$act
     [System.IO.File]::WriteAllLines($transcript, [string[]]$lines, (New-Object System.Text.UTF8Encoding $false))
     $payload = @{ transcript_path = $transcript; stop_hook_active = [bool]$active } | ConvertTo-Json -Compress
     $ErrorActionPreference = 'Continue'  # Windows PowerShell 5.1 turns a native stderr line into a terminating error under Stop
-    $payload | powershell -NoProfile -ExecutionPolicy Bypass -File $hook 2>$null | Out-Null
+    $payload | node $hook 2>$null | Out-Null
     $code = $LASTEXITCODE
     if ($code -eq $expected) { Write-Host "  OK   $label" } else { $script:ko++; Write-Host "  KO   $label (exit $code, expected $expected)" }
 }

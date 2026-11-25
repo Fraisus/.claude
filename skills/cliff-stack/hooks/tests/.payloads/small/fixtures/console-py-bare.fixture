@@ -1,0 +1,7 @@
+from subprocess import run, Popen
+flags = CREATE_NEW_CONSOLE
+run(["a"],
+    check=True)
+Popen(["b"], **OPTIONS)
+call(["c"])
+rerun(["d"])

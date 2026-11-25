@@ -1,4 +1,4 @@
-﻿# test-guard-budget-agents.ps1 — Essais de comportement de guard-budget-agents.ps1 et log-agents.ps1.
+﻿# test-guard-budget-agents.ps1 — Essais de comportement de guard-budget-agents.mjs et log-agents.mjs.
 # Lancement : powershell -NoProfile -ExecutionPolicy Bypass -File hooks\tests\test-guard-budget-agents.ps1
 # Chaque essai nourrit le script par stdin avec un payload de hook et vérifie le code de retour et le journal.
 # Tout se passe dans un dossier d'essai jetable hooks\tests\.essais\<horodatage>\ (auto-ignoré par git, effacé
@@ -7,8 +7,8 @@
 
 $ErrorActionPreference = 'Stop'
 $racine = Split-Path $PSScriptRoot
-$garde = Join-Path $racine 'scripts\guard-budget-agents.ps1'
-$log = Join-Path $racine 'scripts\log-agents.ps1'
+$garde = Join-Path $racine 'scripts\guard-budget-agents.mjs'
+$log = Join-Path $racine 'scripts\log-agents.mjs'
 $essaisRacine = Join-Path $PSScriptRoot '.essais'
 New-Item -ItemType Directory -Force -Path $essaisRacine | Out-Null
 Set-Content -LiteralPath (Join-Path $essaisRacine '.gitignore') -Value '*' -Encoding Ascii
@@ -29,8 +29,8 @@ $script:n = 0; $script:ko = 0
 function Lancer([string]$mode, $payload) {
     $json = if ($null -eq $payload) { '' } else { $payload | ConvertTo-Json -Depth 6 -Compress }
     $psi = New-Object System.Diagnostics.ProcessStartInfo
-    $psi.FileName = 'powershell.exe'
-    $psi.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$garde`" $mode"
+    $psi.FileName = 'node'
+    $psi.Arguments = "`"$garde`" $mode"
     $psi.RedirectStandardInput = $true; $psi.RedirectStandardError = $true; $psi.RedirectStandardOutput = $true
     $psi.UseShellExecute = $false
     $proc = [System.Diagnostics.Process]::Start($psi)
@@ -163,9 +163,9 @@ Attendu 'CLAUDE_PROJECT_DIR prime sur cwd : meme etat, refuse' (Lancer 'pre' $pc
 $env:CLAUDE_PROJECT_DIR = $projetDirInitial
 $env:CLIFF_EQUIPE_LOG_DIR = $essai
 
-Write-Host "log-agents.ps1"
+Write-Host "log-agents.mjs"
 $payload = @{ session_id = 'sess-L'; cwd = 'C:\p'; agent_id = 'a-l'; agent_type = 'cliff-stack:framing-critic'; stop_hook_active = $false; last_assistant_message = ('x' * 500); background_tasks = @(@{ id = 1 }) } | ConvertTo-Json -Depth 4 -Compress
-$psi = New-Object System.Diagnostics.ProcessStartInfo 'powershell.exe', "-NoProfile -ExecutionPolicy Bypass -File `"$log`""
+$psi = New-Object System.Diagnostics.ProcessStartInfo 'node', "`"$log`""
 $psi.RedirectStandardInput = $true; $psi.UseShellExecute = $false
 $proc = [System.Diagnostics.Process]::Start($psi)
 $octets = [System.Text.Encoding]::UTF8.GetBytes([string]$payload)

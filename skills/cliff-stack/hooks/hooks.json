@@ -7,7 +7,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject-method.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject-method.mjs"
+            ]
           }
         ]
       },
@@ -16,7 +18,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/prune-session-temp.ps1\" -Days 7"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/prune-session-temp.mjs",
+              "-Days",
+              "7"
+            ]
           }
         ]
       }
@@ -27,7 +34,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject-method.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/inject-method.mjs"
+            ]
           }
         ]
       }
@@ -38,7 +47,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-cause-before-code.ps1\" pre"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-cause-before-code.mjs",
+              "pre"
+            ]
           }
         ]
       },
@@ -47,7 +60,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-private-read.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-private-read.mjs"
+            ]
           }
         ]
       },
@@ -56,19 +72,31 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-write-scope.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-write-scope.mjs"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-secrets-read.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-secrets-read.mjs"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-git-destructive.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-git-destructive.mjs"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-root-hygiene.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-root-hygiene.mjs"
+            ]
           }
         ]
       },
@@ -77,7 +105,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-root-hygiene.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-root-hygiene.mjs"
+            ]
           }
         ]
       },
@@ -86,7 +117,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-budget-agents.ps1\" pre"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-budget-agents.mjs",
+              "pre"
+            ]
           }
         ]
       },
@@ -95,7 +130,10 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-agent-resume.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-agent-resume.mjs"
+            ]
           }
         ]
       },
@@ -104,7 +142,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/play-sound.ps1\" always"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/play-sound.mjs",
+              "always"
+            ]
           }
         ]
       }
@@ -116,7 +158,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-agent-context.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-agent-context.mjs"
+            ]
           }
         ]
       },
@@ -125,7 +169,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-budget-agents.ps1\" post"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-budget-agents.mjs",
+              "post"
+            ]
           }
         ]
       },
@@ -134,19 +182,33 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/phpcs-wp-native.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/phpcs-wp-native.mjs"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-console-window.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-console-window.mjs"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/css-order.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/css-order.mjs",
+              "--hook",
+              "--fix"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-rules-style.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-rules-style.mjs"
+            ]
           }
         ]
       }
@@ -156,11 +218,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/turn-timer.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/turn-timer.mjs"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-cause-before-code.ps1\" prompt"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-cause-before-code.mjs",
+              "prompt"
+            ]
           }
         ]
       }
@@ -171,7 +240,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/play-sound.ps1\" always"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/play-sound.mjs",
+              "always"
+            ]
           }
         ]
       }
@@ -181,16 +254,25 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/log-agents.ps1\""
-          },
-          {
-            "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-budget-agents.ps1\" stop"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/log-agents.mjs"
+            ]
           },
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-agent-context.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-budget-agents.mjs",
+              "stop"
+            ]
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-agent-context.mjs"
+            ]
           }
         ]
       }
@@ -200,15 +282,26 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-proof-before-done.ps1\""
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-proof-before-done.mjs"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-cause-before-code.ps1\" stop"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/guard-cause-before-code.mjs",
+              "stop"
+            ]
           },
           {
             "type": "command",
-            "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/play-sound.ps1\" stop"
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/scripts/play-sound.mjs",
+              "stop"
+            ]
           }
         ]
       }

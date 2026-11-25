@@ -1,0 +1,5 @@
+import subprocess
+DETACHED_PROCESS = 0x00000008
+subprocess.Popen(["worker"], creationflags=DETACHED_PROCESS)
+subprocess.run(["tool", "--flag", str(len("x"))], check=True)
+subprocess.check_output(["a"])

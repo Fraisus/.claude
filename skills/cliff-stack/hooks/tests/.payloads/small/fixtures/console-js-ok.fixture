@@ -1,0 +1,4 @@
+import { spawn } from 'node:child_process';
+const HIDE = { windowsHide: true };
+spawn('node', ['worker.js'], { detached: true, stdio: 'ignore', windowsHide: true });
+spawn('node', ['other.js'], { detached: true, ...HIDE });

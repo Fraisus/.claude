@@ -3,19 +3,15 @@
 // a writer finishes its step and writes its handover, a reader returns a report marked partial. A PostToolUse runs
 // after the tool, so nothing is cut mid-write. The native auto-compaction of a subagent fires near its window's end
 // and keeps it going on a lossy summary without any handover; this cap fires far earlier and ends the agent instead.
-// The main session (no agent_id) is never touched. SubagentStop removes the agent's band marker.
+// The main session (no agent_id) is never touched. SubagentStop removes the agent's band marker. Each handover asked
+// leaves a line in decisions.jsonl.
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { agentTranscript, lastContext, readBudget } from './agent-usage.mjs';
+import { appendJsonl, equipeLogDir, readPayload } from './lib/hook.mjs';
 
-let p;
-try {
-  const raw = readFileSync(0, 'utf8').replace(/^﻿/, ''); // Windows PowerShell 5.1 pipes a BOM
-  p = raw.trim() ? JSON.parse(raw) : null;
-} catch {
-  process.exit(0);
-}
+const p = readPayload();
 if (!p || !p.agent_id) process.exit(0);
 
 const dir = join(tmpdir(), 'cliff-equipe-contexte');
@@ -50,6 +46,10 @@ try {
     'Si tu lis ou vérifies : rends ton rapport marqué « partiel », avec ce qui est établi, sa preuve, et ce qui reste à vérifier. ' +
     'Un agent neuf reprendra depuis ta passation.';
   process.stdout.write(JSON.stringify({ decision: 'block', reason }));
+  appendJsonl(equipeLogDir(p), 'decisions.jsonl', {
+    ts: new Date().toISOString(), session_id: p.session_id ?? null, mode: 'contexte', tool: p.tool_name ?? null,
+    agent_id: p.agent_id, agent_type: p.agent_type ?? null, decision: 'passation', contexte: context, plafond: max,
+  });
 } catch {
   // a guard that fails must never stop the agent
 }

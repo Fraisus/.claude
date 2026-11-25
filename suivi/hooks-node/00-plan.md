@@ -34,3 +34,8 @@ Question : le plafond `contexte_agent_max` (150 000) et le filet `autoCompactWin
 3. Croiser avec la mesure par lot du projet (Réactorm : `docs/mesure.md`) : passations par lot, refus et défauts trouvés après, selon que le lot a eu une passation ou non, et selon le contexte maximal de ses écrivains.
 4. Comparer au relevé du 25/11 : 56 000 au premier tour pour `general-purpose`, 33 000 pour `ouvrier-zone` ; 98,5 % des tokens en cache lu.
 Décision : monter le plafond (et le filet de 50 000 au-dessus) si la plupart des lots ont plus d'une passation sans gain sur les refus ; le baisser si les refus suivent les contextes longs.
+
+## État au 25/11/2026 au soir
+- Les 17 hooks tournent en node (`hooks.json` : 28 appels `node`, aucun `powershell`), briques `lib/hook.mjs`, `lib/regex.mjs`, `lib/agents.mjs`, `lib/turn-timing.mjs` ; essais verts dans un miroir sans aucun `.ps1` et dans le plugin ; session réelle : refus attendus (racine, secret), aucune erreur de hook.
+- Reste : retirer les `.ps1` (sauf aucun) quand plus aucune session ouverte avant le passage ne tourne : ces sessions ont chargé l'ancien câblage et perdraient leurs gardes. Retirer aussi les comparaisons au `.ps1` dans les essais à ce moment.
+- Constat : lancées en nombre, les gardes PowerShell rendaient 0 (laisser passer) au lieu de 2 sur des cas qu'elles bloquent seules.

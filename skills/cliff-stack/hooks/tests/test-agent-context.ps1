@@ -1,5 +1,5 @@
 # test-agent-context.ps1 - Essais de agent-usage.mjs et de ses consommateurs : guard-agent-context.mjs (plafond de contexte),
-# guard-agent-resume.ps1 (reprise), log-agents.ps1 (tokens journalisés), guard-git-destructive.ps1 (git de l'ouvrier de zone).
+# guard-agent-resume.mjs (reprise), log-agents.mjs (tokens journalisés), guard-git-destructive.mjs (git de l'ouvrier de zone).
 # Lancement : powershell -NoProfile -ExecutionPolicy Bypass -File hooks\tests\test-agent-context.ps1
 # Fausses transcriptions dans un dossier jetable hooks\tests\.essais\<horodatage>\, effacé quand tout passe.
 
@@ -76,25 +76,25 @@ Write-Host 'agent-usage.mjs totals'
 $t = & node (Join-Path $scripts 'agent-usage.mjs') totals --agent a1 --transcript $principal | ConvertFrom-Json
 Verifier 'totaux dedupliques par message.id' ($t.tours -eq 3 -and $t.cache_lu -eq 426000 -and $t.contexte_max -eq 210000 -and $t.modele_demande -eq 'opus' -and $t.effort -eq 'high') ($t | ConvertTo-Json -Compress)
 
-Write-Host 'guard-agent-resume.ps1'
-$resume = "-NoProfile -ExecutionPolicy Bypass -File `"$(Join-Path $scripts 'guard-agent-resume.ps1')`""
+Write-Host 'guard-agent-resume.mjs'
+$resume = "`"$(Join-Path $scripts 'guard-agent-resume.mjs')`""
 Transcription 'abcdef0123456' @(80000)
-$r = Lancer 'powershell.exe' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'suite' } }
+$r = Lancer 'node' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'suite' } }
 Verifier 'reprise sous max moins palier : passe' (-not $r.out.Trim()) $r.out
 Transcription 'abcdef0123456' @(80000, 120000)
-$r = Lancer 'powershell.exe' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'suite' } }
+$r = Lancer 'node' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'suite' } }
 Verifier 'reprise au-dela de max moins palier : refus' ($r.out -match '"permissionDecision":"deny"') $r.out
-$r = Lancer 'powershell.exe' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'suite #reprise' } }
+$r = Lancer 'node' $resume @{ session_id = $session; transcript_path = $principal; tool_input = @{ to = 'abcdef0123456'; message = 'suite #reprise' } }
 Verifier '#reprise passe outre' (-not $r.out.Trim()) $r.out
 
-Write-Host 'guard-git-destructive.ps1, ouvrier de zone'
-$git = "-NoProfile -ExecutionPolicy Bypass -File `"$(Join-Path $scripts 'guard-git-destructive.ps1')`""
+Write-Host 'guard-git-destructive.mjs, ouvrier de zone'
+$git = "`"$(Join-Path $scripts 'guard-git-destructive.mjs')`""
 Transcription 'aouv' @(1000) 'cliff-stack:ouvrier-zone'
 Transcription 'agen' @(1000) 'general-purpose'
 function Git([string]$id, [string]$cmd, [string]$type = $null) {
     $pl = @{ session_id = $session; transcript_path = $principal; agent_id = $id; tool_name = 'Bash'; tool_input = @{ command = $cmd } }
     if ($type) { $pl.agent_type = $type }
-    Lancer 'powershell.exe' $git $pl
+    Lancer 'node' $git $pl
 }
 Verifier 'ouvrier (type par le meta) : commit passe' (-not (Git 'aouv' 'git add a.rs && git commit -m "push --force dans le message"').out.Trim())
 Verifier 'ouvrier : merge du tronc par -C passe' (-not (Git 'aouv' 'git -C C:/wt merge main').out.Trim())
@@ -113,8 +113,8 @@ foreach ($b in @('git branch --d z', 'git branch -df z', 'git branch --dele z', 
 Verifier 'ouvrier : lectures worktree, stash, remote, config, reflog passent' (-not (Git 'aouv' "git worktree list`ngit stash list`ngit remote -v`ngit config --get user.name`ngit reflog -5`ngit branch --show-current").out.Trim())
 Verifier 'ouvrier : merge-base et rev-list passent' (-not (Git 'aouv' "git merge-base HEAD main`ngit rev-list --count main..HEAD").out.Trim())
 
-Write-Host 'log-agents.ps1, tokens'
-$r = Lancer 'powershell.exe' "-NoProfile -ExecutionPolicy Bypass -File `"$(Join-Path $scripts 'log-agents.ps1')`"" @{ session_id = $session; cwd = $essai; agent_id = 'a1'; agent_type = 'general-purpose'; transcript_path = $principal; last_assistant_message = 'fin' }
+Write-Host 'log-agents.mjs, tokens'
+$r = Lancer 'node' "`"$(Join-Path $scripts 'log-agents.mjs')`"" @{ session_id = $session; cwd = $essai; agent_id = 'a1'; agent_type = 'general-purpose'; transcript_path = $principal; last_assistant_message = 'fin' }
 $la = Get-Content -LiteralPath (Join-Path $essai 'agents.jsonl') -Encoding UTF8 | Select-Object -Last 1 | ConvertFrom-Json
 Verifier 'agents.jsonl porte contexte maximal, tours et modele' ($la.contexte_max -eq 210000 -and $la.tours -eq 3 -and $la.modele -eq 'claude-test') ($la | ConvertTo-Json -Compress)
 
