@@ -26,3 +26,11 @@ Un appel Bash paie aujourd'hui six hooks PowerShell en série : c'est le chemin 
 - Les essais existants (`hooks/tests/*.ps1`) restent l'oracle : chacun pointe le script node à la place du PowerShell et doit rester vert sans changer ses attendus ; puis une session réelle `claude -p --debug-file` mesure les durées.
 - Le PowerShell porté se retire dans le même commit que son câblage dans `hooks.json` (pas de double).
 - Fonctions communes (lecture du payload avec BOM, résolution du dossier de projet, sortie d'un refus) dans un module partagé dès leur deuxième usage.
+
+## Audit à une semaine (à partir du 25/11/2026)
+Question : le plafond `contexte_agent_max` (150 000) et le filet `autoCompactWindow` (200 000) sont-ils au bon niveau, et la méthode accélère-t-elle les lots ?
+1. Par projet, `.claude/equipe-log/agents.jsonl` : par type d'agent, contexte du premier tour, contexte maximal, tours, cache lu ; part des agents qui dépassent le plafond.
+2. `decisions.jsonl` : lignes `mode: contexte` (passations demandées) par agent ; lancement relié à son plan et sa zone par l'empreinte (`pre` puis `post`) ; refus d'imbrication.
+3. Croiser avec la mesure par lot du projet (Réactorm : `docs/mesure.md`) : passations par lot, refus et défauts trouvés après, selon que le lot a eu une passation ou non, et selon le contexte maximal de ses écrivains.
+4. Comparer au relevé du 25/11 : 56 000 au premier tour pour `general-purpose`, 33 000 pour `ouvrier-zone` ; 98,5 % des tokens en cache lu.
+Décision : monter le plafond (et le filet de 50 000 au-dessus) si la plupart des lots ont plus d'une passation sans gain sur les refus ; le baisser si les refus suivent les contextes longs.
