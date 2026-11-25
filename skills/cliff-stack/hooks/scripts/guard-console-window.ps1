@@ -6,6 +6,7 @@
 # Findings -> stderr + exit 2 (remontés à Claude comme feedback). Sinon exit 0. Ne réécrit rien.
 
 $ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
 try {
     $raw = [Console]::In.ReadToEnd()
     if (-not $raw) { exit 0 }

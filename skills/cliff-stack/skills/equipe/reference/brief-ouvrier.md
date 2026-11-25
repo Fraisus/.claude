@@ -3,7 +3,7 @@
 À remplir et passer à un agent `cliff-stack:ouvrier-zone`, un par zone. Les deux premières lignes sont lues par le garde de budget ; garde-les en tête.
 
 ```
-plan: <chemin absolu du plan, ou « aucun » hors plan>
+plan: <chemin absolu du plan (un ouvrier ne se lance jamais hors plan)>
 zone: <identifiant de la zone>
 
 But : <ce que la zone doit livrer, une phrase>

@@ -14,6 +14,7 @@
 # exit 2 = block, exit 0 = allow.
 
 $ErrorActionPreference = 'Stop'
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
 $raw = [Console]::In.ReadToEnd()
 if (-not $raw) { exit 0 }
 try { $payload = $raw | ConvertFrom-Json } catch { exit 0 }

@@ -19,6 +19,8 @@
 # mais matche largement les motifs destructifs connus.
 
 $ErrorActionPreference = 'SilentlyContinue'
+# Sans ceci PowerShell 5.1 écrit en page OEM et le harnais reçoit des accents abîmés.
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
 
 try {
     $raw = [Console]::In.ReadToEnd()
