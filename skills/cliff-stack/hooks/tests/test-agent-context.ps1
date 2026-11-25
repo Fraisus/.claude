@@ -50,14 +50,19 @@ function Contexte($payload) { Lancer 'node' "`"$(Join-Path $scripts 'guard-agent
 function Outil([string]$id, [string]$chemin = $principal) { @{ session_id = $session; hook_event_name = 'PostToolUse'; tool_name = 'Read'; agent_id = $id; transcript_path = $chemin } }
 
 Write-Host 'guard-agent-context.mjs'
-Transcription 'a1' @(56000, 120000)
+Transcription 'a1' @(56000, 90000)
 $r = Contexte @{ session_id = $session; hook_event_name = 'PostToolUse'; tool_name = 'Read'; transcript_path = $principal }
 Verifier 'session principale (sans agent_id) : rien' ($r.code -eq 0 -and -not $r.out.Trim()) $r.out
 $r = Contexte (Outil 'a1')
-Verifier 'sous le plafond : rien' ($r.code -eq 0 -and -not $r.out.Trim()) $r.out
+Verifier 'a plus d un palier du plafond : rien' ($r.code -eq 0 -and -not $r.out.Trim()) $r.out
+Transcription 'a1' @(56000, 120000)
+$r = Contexte (Outil 'a1')
+Verifier 'dernier palier sous le plafond : rappel sans ordre de rendre' ($r.code -eq 0 -and $r.out -match '"decision":"block"' -and $r.out -match 'Au plafond tu devras rendre' -and $r.out -notmatch 'Arr') $r.out
+$r = Contexte (Outil 'a1')
+Verifier 'meme palier sous le plafond : un seul rappel' (-not $r.out.Trim()) $r.out
 Transcription 'a1' @(56000, 160000)
 $r = Contexte (Outil 'a1')
-Verifier 'au-dela du plafond : block avec passation' ($r.code -eq 0 -and $r.out -match '"decision":"block"' -and $r.out -match 'passation') $r.out
+Verifier 'au-dela du plafond : block avec passation' ($r.code -eq 0 -and $r.out -match '"decision":"block"' -and $r.out -match 'Un agent neuf reprendra') $r.out
 $r = Contexte (Outil 'a1')
 Verifier 'meme palier : un seul rappel' (-not $r.out.Trim()) $r.out
 Transcription 'a1' @(56000, 160000, 210000)

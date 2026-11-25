@@ -14,7 +14,7 @@
   "ttl_agent_min": 60,
   "contexte_agent_max": 400000,
   "contexte_palier": 100000,
-  "_contexte": "jetons de contexte du dernier tour d'un sous-agent (agent-usage.mjs) ; au-dela de contexte_agent_max, guard-agent-context lui fait rendre sa passation, rappel a chaque palier ; guard-agent-resume refuse une reprise au-dela de max moins palier ; lus par les scripts node, sans surcharge CLIFF_EQUIPE_*",
+  "_contexte": "jetons de contexte du dernier tour d'un sous-agent (agent-usage.mjs) ; un palier avant contexte_agent_max, guard-agent-context le previent une fois de fermer ce qui est ouvert ; au-dela, il lui fait rendre sa passation, rappel a chaque palier ; guard-agent-resume refuse une reprise au-dela de max moins palier ; lus par les scripts node, sans surcharge CLIFF_EQUIPE_*",
   "seuils": {
     "_": "composition et escalade (etape 2) ; aucun seuil valide publiquement, tous reglables et journalises",
     "p0_fichiers_max": 5,

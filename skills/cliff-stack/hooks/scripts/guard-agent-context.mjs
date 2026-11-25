@@ -1,5 +1,6 @@
 // guard-agent-context.mjs - PostToolUse (every tool) and SubagentStop hook: caps a subagent's context.
-// Past contexte_agent_max (budget-agents.json) the agent is told to hand over, once per contexte_palier band:
+// One contexte_palier under contexte_agent_max (budget-agents.json) the agent is warned once to close what is open.
+// Past the cap it is told to hand over, once per contexte_palier band:
 // a writer finishes its step and writes its handover, a reader returns a report marked partial. A PostToolUse runs
 // after the tool, so nothing is cut mid-write. The native auto-compaction of a subagent fires near its window's end
 // and keeps it going on a lossy summary without any handover; this cap fires far earlier and ends the agent instead.
@@ -27,9 +28,10 @@ try {
   if (!file) process.exit(0);
   const { max, step } = readBudget();
   const context = lastContext(file);
-  if (context < max) process.exit(0);
+  // Band -1 is the last band under the cap: the agent is warned there, once, before it is told to hand over.
   const band = Math.floor((context - max) / step);
-  let seen = -1;
+  if (band < -1) process.exit(0);
+  let seen = -2;
   try {
     seen = Number(readFileSync(marker, 'utf8'));
   } catch {
@@ -39,16 +41,20 @@ try {
   mkdirSync(dir, { recursive: true });
   writeFileSync(marker, String(band));
   const k = Math.round(context / 1000);
-  const reason =
-    `Contexte de ${k} 000 jetons, au-delà du plafond de ${max / 1000} 000 (budget-agents.json, contexte_agent_max). ` +
-    'Arrête-toi au point stable le plus proche. Si tu écris : finis seulement l\'étape en cours, commite si ton brief le permet, ' +
-    'écris ta passation (fait, prouvé, reste, fichiers touchés) dans le fichier que ton brief nomme, sinon dans ton rapport, puis rends. ' +
-    'Si tu lis ou vérifies : rends ton rapport marqué « partiel », avec ce qui est établi, sa preuve, et ce qui reste à vérifier. ' +
-    'Un agent neuf reprendra depuis ta passation.';
+  const warned = band === -1;
+  const reason = warned
+    ? `Contexte de ${k} 000 jetons, plafond à ${max / 1000} 000 (budget-agents.json, contexte_agent_max). ` +
+      'Continue, mais ferme ce qui est ouvert : finis le sujet en cours, commite-le si ton brief le permet, n\'en ouvre pas un grand autre, ' +
+      'et tiens ta passation prête (fait, prouvé, reste, fichiers touchés). Au plafond tu devras rendre.'
+    : `Contexte de ${k} 000 jetons, au-delà du plafond de ${max / 1000} 000 (budget-agents.json, contexte_agent_max). ` +
+      'Arrête-toi au point stable le plus proche. Si tu écris : finis seulement l\'étape en cours, commite si ton brief le permet, ' +
+      'écris ta passation (fait, prouvé, reste, fichiers touchés) dans le fichier que ton brief nomme, sinon dans ton rapport, puis rends. ' +
+      'Si tu lis ou vérifies : rends ton rapport marqué « partiel », avec ce qui est établi, sa preuve, et ce qui reste à vérifier. ' +
+      'Un agent neuf reprendra depuis ta passation.';
   process.stdout.write(JSON.stringify({ decision: 'block', reason }));
   appendJsonl(equipeLogDir(p), 'decisions.jsonl', {
     ts: new Date().toISOString(), session_id: p.session_id ?? null, mode: 'contexte', tool: p.tool_name ?? null,
-    agent_id: p.agent_id, agent_type: p.agent_type ?? null, decision: 'passation', contexte: context, plafond: max,
+    agent_id: p.agent_id, agent_type: p.agent_type ?? null, decision: warned ? 'rappel' : 'passation', contexte: context, plafond: max,
   });
 } catch {
   // a guard that fails must never stop the agent
