@@ -43,6 +43,29 @@ try {
 
     $blockedReason = $null
 
+    # Ouvrier de zone (agents/ouvrier-zone.md) : liste fermée de sous-commandes, refus sans invite (aucun humain
+    # n'attend un sous-agent). Type lu dans le payload, sinon dans le meta de sa transcription (agent-usage.mjs).
+    if ($payload.agent_id -and ($c -match '(?i)\bgit\b')) {
+        $type = [string]$payload.agent_type
+        if (-not $type) {
+            $meta = & node (Join-Path $PSScriptRoot 'agent-usage.mjs') meta --agent ([string]$payload.agent_id) --transcript ([string]$payload.transcript_path) | ConvertFrom-Json
+            if ($meta) { $type = [string]$meta.agentType }
+        }
+        if (($type -replace '^[^:]+:', '') -eq 'ouvrier-zone') {
+            $permis = '^(status|diff|log|show|add|commit|merge|rev-parse|ls-files|blame|grep|mv|rm|branch)$'
+            foreach ($seg in $segments) {
+                if ($seg -notmatch '(?i)\bgit\b((?:\s+(?:-C\s+\S+|-c\s+\S+|--[\w-]+(?:=\S+)?))*)\s+([a-z][\w-]*)(.*)$') { continue }
+                $sous = $Matches[2].ToLowerInvariant(); $reste = $Matches[3]
+                $refus = ($sous -notmatch $permis) -or (($sous -eq 'branch') -and ($reste -match '(?i)(^|\s)(-[dDmMcCf]\b|--(delete|move|copy|force)\b)'))
+                if ($refus) {
+                    $why = "Ouvrier de zone : git $sous refusé. Permis : add et commit de tes fichiers, merge du tronc si le brief le demande, lectures (status, diff, log, show). Rends un signal au thread principal pour le reste."
+                    @{ hookSpecificOutput = @{ hookEventName = 'PreToolUse'; permissionDecision = 'deny'; permissionDecisionReason = $why } } | ConvertTo-Json -Compress -Depth 4
+                    exit 0
+                }
+            }
+        }
+    }
+
     foreach ($seg in $segments) {
         $s = $seg.Trim()
         if ($s -notmatch '(?i)\bgit\b') { continue }

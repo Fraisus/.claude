@@ -12,6 +12,9 @@
   "iterations_max": 8,
   "steriles_arret": 3,
   "ttl_agent_min": 60,
+  "contexte_agent_max": 150000,
+  "contexte_palier": 50000,
+  "_contexte": "jetons de contexte du dernier tour d'un sous-agent (agent-usage.mjs) ; au-dela de contexte_agent_max, guard-agent-context lui fait rendre sa passation, rappel a chaque palier ; guard-agent-resume refuse une reprise au-dela de max moins palier ; lus par les scripts node, sans surcharge CLIFF_EQUIPE_*",
   "seuils": {
     "_": "composition et escalade (etape 2) ; aucun seuil valide publiquement, tous reglables et journalises",
     "p0_fichiers_max": 5,
@@ -36,6 +39,7 @@
     "total_par_plan": "ancienne garde guard-workflow-budget (12 depuis le 19/07/2026) ; la prose « ~10 » renvoie ici",
     "simultanes": "asana-triage (5 en parallele)",
     "ecrivains_simultanes": "communaute : 3, 5 au plus (suivi/equipes-agents/03-communaute.md)",
-    "playwright_simultanes": "regle maison : un seul agent Playwright a la fois (navigateur et session partages)"
+    "playwright_simultanes": "regle maison : un seul agent Playwright a la fois (navigateur et session partages)",
+    "contexte_agent_max": "mesure sur 396 sous-agents d'un projet (25/11/2026) : contexte de depart median 56 000, 98,5 % des jetons en relecture de cache, 226 agents au-dela de 150 000"
   }
 }

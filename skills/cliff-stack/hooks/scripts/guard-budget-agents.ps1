@@ -18,7 +18,8 @@
 #   sous mutex, TTL ttl_agent_min), classe le rôle (écrivain, lecteur, Playwright) d'après la définition de
 #   l'agent, et applique : simultanes, playwright_simultanes, empreinte identique vivante, et les règles P2
 #   (seulement si CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 est dans l'environnement : sans le flag, un `name`
-#   n'est qu'un sous-agent adressable et passe). En mode `journal`, rien n'est refusé sauf les règles P2 :
+#   n'est qu'un sous-agent adressable et passe), et l'imbrication : un sous-agent (`agent_id` présent) ne lance qu'un
+#   lecteur, jamais un écrivain ni un workflow. En mode `journal`, rien n'est refusé sauf les règles P2 et l'imbrication :
 #   la décision est écrite `aurait_refuse` dans decisions.jsonl. Les règles de plan (écrivains par zone,
 #   total par plan) viennent à l'étape 2 ; les lignes `plan:` et `zone:` du brief sont déjà relevées.
 #
@@ -190,6 +191,10 @@ try {
 
     # ------------------------------------------------------------------ Workflow (historique) ------
     if ($Mode -eq 'pre' -and $tool -eq 'Workflow') {
+        if ($p.agent_id) {
+            Decide 'Workflow' @{ decision = 'refuse'; raison = 'imbrique'; lanceur = [string]$p.agent_id }
+            Refuser 'Workflow' 'un sous-agent ne lance pas de workflow : rends un signal au thread principal'
+        }
         $MAX = 12
         if ($B -and $B.total_par_plan) { $MAX = [int]$B.total_par_plan }
         if (-not $ti) { exit 0 }
@@ -258,8 +263,12 @@ try {
             $pw = if ($B -and $B.playwright_simultanes) { [int]$B.playwright_simultanes } else { 1 }
             $vivantsPw = @($vivants | Where-Object { $_.playwright }).Count
 
+            # Imbrication : un sous-agent ne lance qu'un lecteur ; un généraliste (type omis compris) ou un fork écrit.
+            $nu = $type -replace '^[^:]+:', ''
+            $ecritImbrique = $role.ecrit -or ($nu -in @('', 'general-purpose', 'claude', 'fork'))
             $raison = $null; $p2 = $false
-            if ($flagP2 -and $nom -and ($lanceur -ne 'principal')) { $raison = 'un sous-agent ne cree pas de coequipier : rends un signal au thread principal'; $p2 = $true }
+            if (($lanceur -ne 'principal') -and $ecritImbrique) { $raison = "un sous-agent ne lance pas d'agent qui ecrit ($(if ($type) { $type } else { 'general-purpose' })) : rends un signal au thread principal"; $p2 = $true }
+            elseif ($flagP2 -and $nom -and ($lanceur -ne 'principal')) { $raison = 'un sous-agent ne cree pas de coequipier : rends un signal au thread principal'; $p2 = $true }
             elseif ($flagP2 -and $nom) { $raison = "coequipier (name='$nom') refuse : la garde ne prend pas encore en charge le palier P2 (etape 4) ; lance sans name"; $p2 = $true }
             elseif ($vivants.Count -ge $simult) { $raison = "plafond simultanes atteint ($($vivants.Count)/$simult agents vivants) : attends la fin d'un agent" }
             elseif ($role.playwright -and ($vivantsPw -ge $pw)) { $raison = "un seul agent Playwright a la fois ($vivantsPw vivant) : la session navigateur est partagee" }

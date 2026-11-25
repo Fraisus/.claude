@@ -5,9 +5,10 @@
 #   - agents.jsonl, nouveau, dans le PROJET : <projet>\.claude\equipe-log\ (projet = CLAUDE_PROJECT_DIR, sinon
 #     le cwd du payload ; dossier auto-ignoré par git, créé par guard-budget-agents.ps1 ou ici) : une ligne par
 #     sous-agent terminé, tout type, pour mesurer les équipes (rôles, nombre, blocages, durée par recoupement
-#     avec decisions.jsonl). La configuration globale ne reçoit aucune donnée d'un projet.
+#     avec decisions.jsonl, tokens et contexte maximal par agent-usage.mjs). La configuration globale ne reçoit
+#     aucune donnée d'un projet.
 # Champs d'entrée utilisés : session_id, cwd, agent_id, agent_type, stop_hook_active, last_assistant_message,
-# background_tasks. Jamais de contenu au-delà d'un extrait de 400 caractères.
+# background_tasks, transcript_path, agent_transcript_path. Jamais de contenu au-delà d'un extrait de 400 caractères.
 # Non bloquant, n'échoue jamais le hook (toujours exit 0). Variable d'essai : CLIFF_EQUIPE_LOG_DIR.
 
 $ErrorActionPreference = 'SilentlyContinue'
@@ -51,6 +52,12 @@ try {
         fond             = $fond
         excerpt          = $msg
     }
+    # Tokens, contexte maximal, modèle et effort, lus dans la transcription de l'agent (agent-usage.mjs).
+    try {
+        $usage = Join-Path $PSScriptRoot 'agent-usage.mjs'
+        $t = & node $usage totals --agent ([string]$payload.agent_id) --transcript ([string]$payload.transcript_path) --agent-transcript ([string]$payload.agent_transcript_path) | ConvertFrom-Json
+        if ($t) { foreach ($prop in @($t.PSObject.Properties)) { $agent[$prop.Name] = $prop.Value } }
+    } catch { }
     $dir2 = $env:CLIFF_EQUIPE_LOG_DIR
     if (-not $dir2) {
         $projet = $env:CLAUDE_PROJECT_DIR

@@ -81,11 +81,17 @@ Attendu 'agent 5 apres stop : passe' (Lancer 'pre' (Agent 'Explore' 'e' 'cherche
 Write-Host "Playwright et roles"
 Budget 'bloquer' 10
 $sidPw = 'sess-PW'
-Attendu 'critique Playwright 1 : passe' (Lancer 'pre' (Agent 'cliff-stack:independent-critic' 'c1' 'refute x' $sidPw)) 0
-Attendu 'critique Playwright 2 : refuse' (Lancer 'pre' (Agent 'cliff-stack:independent-critic' 'c2' 'refute y' $sidPw)) 2 'Playwright'
+# Aucun agent du plugin n'a d'outil Playwright : un agent d'essai le déclare dans un projet fictif.
+$projetPw = Join-Path $essai 'projet-pw'
+New-Item -ItemType Directory -Force -Path (Join-Path $projetPw '.claude\agents') | Out-Null
+Set-Content -LiteralPath (Join-Path $projetPw '.claude\agents\testeur-pw.md') -Value "---`nname: testeur-pw`ntools: Read, Bash, mcp__playwright__browser_click`n---`n" -Encoding UTF8
+$env:CLAUDE_PROJECT_DIR = $projetPw
+Attendu 'agent Playwright 1 : passe' (Lancer 'pre' (Agent 'testeur-pw' 'c1' 'refute x' $sidPw)) 0
+Attendu 'agent Playwright 2 : refuse' (Lancer 'pre' (Agent 'testeur-pw' 'c2' 'refute y' $sidPw)) 2 'Playwright'
 Attendu 'framing-critic (sans Playwright) : passe' (Lancer 'pre' (Agent 'cliff-stack:framing-critic' 'f' 'cadre z' $sidPw)) 0
+$env:CLAUDE_PROJECT_DIR = $projetDirInitial
 $d = Decisions | Where-Object { $_.session_id -eq $sidPw -and $_.tool -eq 'Agent' }
-$script:n++; if (($d | Where-Object { $_.type -eq 'cliff-stack:independent-critic' } | Select-Object -First 1).role -eq 'lecteur' -and ($d | Select-Object -First 1).playwright -eq $true) { Write-Host '  OK   independent-critic classe lecteur Playwright' } else { $script:ko++; Write-Host '  KO   classement independent-critic' }
+$script:n++; if (($d | Where-Object { $_.type -eq 'testeur-pw' } | Select-Object -First 1).role -eq 'lecteur' -and ($d | Select-Object -First 1).playwright -eq $true) { Write-Host '  OK   agent Playwright sans Edit classe lecteur Playwright' } else { $script:ko++; Write-Host '  KO   classement agent Playwright' }
 $script:n++; if (($d | Where-Object { $_.type -eq 'cliff-stack:framing-critic' }).role -eq 'lecteur') { Write-Host '  OK   framing-critic classe lecteur' } else { $script:ko++; Write-Host '  KO   classement framing-critic' }
 $dg = Decisions | Where-Object { $_.session_id -eq 'sess-A' -and $_.type -eq 'general-purpose' } | Select-Object -First 1
 $script:n++; if ($dg.role -eq 'lecteur') { Write-Host '  OK   general-purpose hors plan classe lecteur' } else { $script:ko++; Write-Host '  KO   general-purpose hors plan' }
@@ -110,6 +116,16 @@ Attendu 'name avec flag depuis le principal : refuse meme en mode journal' (Lanc
 Attendu 'name avec flag depuis un sous-agent : refuse' (Lancer 'pre' (Agent 'Explore' 'n3' 'x' 'sess-N' 'chercheur3' 'a-sub')) 2 'sous-agent ne cree pas'
 Attendu 'sans name avec flag : passe' (Lancer 'pre' (Agent 'Explore' 'n4' 'x' 'sess-N')) 0
 $env:CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = $null
+
+Write-Host "Imbrication : un sous-agent ne lance qu'un lecteur, quel que soit le mode"
+Budget 'journal' 10
+Attendu 'sous-agent lance Explore : passe' (Lancer 'pre' (Agent 'Explore' 'i1' 'x' 'sess-I' $null 'a-sub')) 0
+Attendu 'sous-agent lance framing-critic (lecteur) : passe' (Lancer 'pre' (Agent 'cliff-stack:framing-critic' 'i2' 'x' 'sess-I' $null 'a-sub')) 0
+Attendu 'sous-agent lance general-purpose : refuse meme en journal' (Lancer 'pre' (Agent 'general-purpose' 'i3' 'x' 'sess-I' $null 'a-sub')) 2 'qui ecrit'
+Attendu 'sous-agent lance un type omis : refuse' (Lancer 'pre' (Agent '' 'i4' 'x' 'sess-I' $null 'a-sub')) 2 'qui ecrit'
+Attendu 'sous-agent lance ouvrier-zone : refuse' (Lancer 'pre' (Agent 'cliff-stack:ouvrier-zone' 'i5' "plan: C:\x`nzone: z" 'sess-I' $null 'a-sub')) 2 'qui ecrit'
+Attendu 'principal lance general-purpose : passe' (Lancer 'pre' (Agent 'general-purpose' 'i6' 'x' 'sess-I')) 0
+Attendu 'sous-agent lance un Workflow : refuse' (Lancer 'pre' @{ session_id = 'sess-I'; agent_id = 'a-sub'; tool_name = 'Workflow'; tool_input = @{ script = "// agents-max: 2`nagent('x')" } }) 2 'workflow'
 
 Write-Host "Surcharge et robustesse"
 Budget 'bloquer' 1
